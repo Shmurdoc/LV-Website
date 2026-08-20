@@ -135,6 +135,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   box-shadow: 0 4px 20px rgba(223, 184, 77, 0.25);
   transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
   position: relative; z-index: 210;
+  background: var(--cream);
 }
 .nav__logo:hover {
   transform: scale(1.12) rotate(3deg);
@@ -664,7 +665,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   max-width: 1200px; margin: 0 auto; padding: 0 24px;
   display: grid; grid-template-columns: 1.2fr 0.8fr 0.8fr; gap: 40px; align-items: start;
 }
-.footer__brand .footer__logo { margin-bottom: 14px; border-radius: 50%; width: 90px; height: 90px; object-fit: cover; }
+.footer__brand .footer__logo { margin-bottom: 14px; border-radius: 50%; width: 90px; height: 90px; object-fit: cover; background: var(--cream); border: 3px solid var(--gold); }
 .footer__brand p { color: rgba(195, 187, 170, 0.78); font-size: 1.05rem; max-width: 340px; margin: 0; }
 .footer__nav, .footer__contact { display: grid; gap: 12px; align-content: start; }
 .footer__nav a, .footer__contact a { color: rgba(195, 187, 170, 0.78); font-size: 1.05rem; }
