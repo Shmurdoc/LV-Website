@@ -58,7 +58,7 @@
 
 /* ---------- Base ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: 90px; font-size: 18px; }
+html { scroll-behavior: smooth; scroll-padding-top: 120px; font-size: 18px; }
 body {
   font-family: var(--font-body);
   background: var(--white);
@@ -114,40 +114,44 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 /* ---------- Navigation ---------- */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  padding: 18px 0;
-  transition: padding 0.35s var(--ease), background 0.35s, box-shadow 0.35s;
+  /* desktop: floating centered pill */
+  max-width: 880px; margin: 14px auto 0;
+  border-radius: 999px;
+  background: rgba(7, 33, 68, 0.45);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px rgba(7, 33, 68, 0.25), inset 0 0 0 1px rgba(195, 187, 170, 0.1);
+  transition: background 0.4s var(--ease), box-shadow 0.4s var(--ease), border-radius 0.4s var(--ease);
+  overflow: visible;
 }
 .nav.is-scrolled {
-  padding: 8px 0;
-  background: var(--navy-92);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 24px rgba(7, 33, 68, 0.35);
+  background: rgba(7, 33, 68, 0.92);
+  box-shadow: 0 12px 40px rgba(7, 33, 68, 0.45), inset 0 0 0 1px rgba(195, 187, 170, 0.15);
 }
 .nav__inner {
-  max-width: 1200px; margin: 0 auto; padding: 0 24px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 30px; gap: 16px; height: 56px;
 }
 .nav__brand {
   display: flex; align-items: center; gap: 12px; color: var(--taupe);
-  text-decoration: none;
+  text-decoration: none; flex-shrink: 0;
 }
 .nav__brand:hover { color: var(--taupe); }
 .nav__logo {
-  flex-shrink: 0; width: 72px; height: 72px;
+  flex-shrink: 0; width: 48px; height: 48px;
   border-radius: 50%; object-fit: cover;
-  border: 2px solid rgba(223, 184, 77, 0.4);
-  background: var(--cream);
-  box-shadow: 0 4px 20px rgba(223, 184, 77, 0.2);
+  border: 2px solid rgba(223, 184, 77, 0.35);
+  background: var(--navy);
+  box-shadow: 0 2px 12px rgba(223, 184, 77, 0.15);
   transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.3s;
 }
 .nav__logo:hover {
   transform: scale(1.1) rotate(3deg);
-  box-shadow: 0 6px 30px rgba(223, 184, 77, 0.4), 0 0 0 6px rgba(223, 184, 77, 0.12);
+  box-shadow: 0 6px 30px rgba(223, 184, 77, 0.35), 0 0 0 6px rgba(223, 184, 77, 0.1);
   border-color: var(--sage);
 }
-.nav__menu { display: flex; align-items: center; gap: 26px; }
+.nav__menu { display: flex; align-items: center; gap: 22px; }
 .nav__menu a {
-  color: rgba(195, 187, 170, 0.78); font-size: 1.05rem; font-weight: 700; letter-spacing: 0.02em;
+  color: rgba(195, 187, 170, 0.78); font-size: 0.98rem; font-weight: 700; letter-spacing: 0.02em;
   position: relative; padding: 6px 0;
 }
 .nav__menu a::after {
@@ -160,26 +164,42 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .nav__menu a[aria-current="page"], .nav__menu a.is-active { color: var(--white); }
 .nav__cta {
   background: var(--gold); color: var(--navy) !important; border-radius: 999px;
-  padding: 11px 24px !important; font-weight: 800; font-size: 1rem;
+  padding: 9px 22px !important; font-weight: 800; font-size: 0.95rem;
 }
 .nav__cta:hover { background: var(--sage); color: var(--white) !important; }
 .nav__admin {
-  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-  color: rgba(195, 187, 170, 0.35) !important; padding: 4px 10px !important;
-  border: 1px solid rgba(195, 187, 170, 0.12); border-radius: 999px;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(195, 187, 170, 0.3) !important; padding: 4px 10px !important;
+  border: 1px solid rgba(195, 187, 170, 0.1); border-radius: 999px;
   transition: color 0.3s, border-color 0.3s, background 0.3s;
 }
 .nav__admin:hover {
-  color: var(--white) !important; border-color: var(--gold); background: rgba(223, 184, 77, 0.12);
+  color: var(--white) !important; border-color: var(--gold); background: rgba(223, 184, 77, 0.1);
 }
 .nav__toggle {
-  display: none; background: none; border: 0; width: 46px; height: 46px;
-  flex-direction: column; justify-content: center; gap: 8px; padding: 10px;
+  display: none; background: none; border: 0; width: 44px; height: 44px;
+  flex-direction: column; justify-content: center; gap: 7px; padding: 10px;
 }
 .nav__toggle span { display: block; height: 2.5px; background: var(--taupe); border-radius: 2px; transition: 0.3s var(--ease); }
 .nav__toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
 .nav__toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .nav__toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+/* --- Big floating logo below pill (desktop) --- */
+.nav__logo-float {
+  position: absolute; left: 50%; bottom: -36px; transform: translateX(-50%);
+  width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+  border: 3px solid rgba(223, 184, 77, 0.45);
+  background: var(--navy);
+  box-shadow: 0 8px 32px rgba(7, 33, 68, 0.4), 0 0 0 6px rgba(223, 184, 77, 0.08);
+  z-index: 230;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.3s;
+}
+.nav__logo-float:hover {
+  transform: translateX(-50%) scale(1.08);
+  box-shadow: 0 12px 40px rgba(7, 33, 68, 0.5), 0 0 0 10px rgba(223, 184, 77, 0.12);
+  border-color: var(--sage);
+}
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -708,12 +728,17 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
-  /* --- Floating logo: center on tablet, push out below nav --- */
-  .nav__inner { justify-content: center; padding-bottom: 46px; overflow: visible; }
-  .nav__brand { position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); z-index: 220; }
-  .nav__logo { width: 68px; height: 68px; }
+  /* --- Tablet: full-width floating bar, logo hidden in pill, big float logo below --- */
+  .nav { max-width: 100%; margin: 10px 16px 0; border-radius: 18px; }
+  .nav__inner { height: 50px; padding: 0 22px; justify-content: center; overflow: visible; }
+  .nav__brand { display: none; }
+  .nav__logo-float {
+    display: block !important;
+    position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%);
+    width: 80px; height: 80px; z-index: 230;
+  }
   .nav__menu { gap: 16px; }
-  .nav__menu a { font-size: 0.95rem; }
+  .nav__menu a { font-size: 0.92rem; }
   .nav__admin { font-size: 0.7rem; }
 
   .place__grid { grid-template-columns: 1fr 1fr; }
@@ -733,11 +758,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   .hero__slidebar { bottom: 100px; }
   .hero__slidebar-caption { font-size: 1.05rem; }
 
-  /* --- Nav: mobile layout --- */
-  .nav { overflow: visible; }
-  .nav__inner { justify-content: space-between; padding-bottom: 0; overflow: visible; }
+  /* --- Nav: mobile — logo left, hamburger right, no pill --- */
+  .nav { margin: 10px 10px 0; border-radius: 16px; overflow: visible; }
+  .nav__inner { justify-content: space-between; padding-bottom: 0; overflow: visible; height: 52px; padding: 0 18px; }
   .nav__brand { position: static; transform: none; }
-  .nav__logo { width: 52px; height: 52px; }
+  .nav__logo { width: 56px; height: 56px; }
   .nav__toggle { display: flex; }
   .nav__menu {
     position: fixed; top: 0; right: 0; bottom: 0; width: min(320px, 85vw);
@@ -764,6 +789,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   }
   .nav__cta { width: auto; margin-top: 4px; }
   body.nav-open { overflow: hidden; }
+  .nav__logo-float { display: none !important; }
 
   .room { grid-template-columns: 1fr; gap: 34px; }
   .room--flip .room__media, .room--flip .room__body { order: 0; }
@@ -781,7 +807,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 @media (max-width: 480px) {
   /* --- Small phone nav --- */
-  .nav__logo { width: 44px; height: 44px; }
+  .nav { margin: 6px 6px 0; border-radius: 14px; }
+  .nav__logo { width: 48px; height: 48px; }
+  .nav__inner { height: 48px; padding: 0 14px; }
   .nav__toggle { width: 40px; height: 40px; gap: 6px; padding: 8px; }
   .nav__toggle span { height: 2px; }
   .nav__menu { width: 100vw; padding: 20px 28px 36px; }

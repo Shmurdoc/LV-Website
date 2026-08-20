@@ -57,6 +57,23 @@
   /* ---------------- Progress bar + nav state ---------------- */
   var bar = $('#progressBar');
   var nav = $('#nav');
+  var floatLogo = $('.nav__logo-float');
+
+  function updateScrollPadding() {
+    if (!nav) return;
+    var w = window.innerWidth;
+    var navRect = nav.getBoundingClientRect();
+    var scrollPad = 120;
+    if (floatLogo && w > 768) {
+      scrollPad = Math.ceil(navRect.bottom - navRect.top) + 52;
+    } else if (w <= 768 && w > 480) {
+      scrollPad = 72;
+    } else if (w <= 480) {
+      scrollPad = 64;
+    }
+    document.documentElement.style.scrollPaddingTop = scrollPad + 'px';
+  }
+
   var onScroll = function () {
     if (bar) {
       var st = window.scrollY || document.documentElement.scrollTop;
@@ -68,6 +85,8 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   if (lenis) lenis.on('scroll', onScroll);
   onScroll();
+  updateScrollPadding();
+  window.addEventListener('resize', updateScrollPadding, { passive: true });
 
   /* ---------------- Back to top ---------------- */
   var toTop = $('#toTop');
