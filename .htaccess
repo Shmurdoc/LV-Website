@@ -1,0 +1,51 @@
+RewriteEngine On
+
+# =====================================================
+# SECURITY HEADERS
+# =====================================================
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://www.youtube-nocookie.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://www.google.com"
+</IfModule>
+
+# =====================================================
+# COMPRESSION
+# =====================================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json
+</IfModule>
+
+# =====================================================
+# CACHING
+# =====================================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# =====================================================
+# FIX TYPO: /accommodation/ -> /accomodation/
+# (canonical is the typo, Google-indexed)
+# =====================================================
+RewriteCond %{HTTP_HOST} ^viataluxe\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.viataluxe\.com$
+RewriteRule ^accommodation(/.*)?$ /accomodation$1 [R=301,L]
+
+# =====================================================
+# PHP ROUTING — Front Controller
+# =====================================================
+
+# If the request is for an existing file or directory, serve it directly
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Route everything else through index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
