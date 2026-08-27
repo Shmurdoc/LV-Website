@@ -7,6 +7,25 @@
 require_once __DIR__ . '/config/app.php';
 require_once __DIR__ . '/includes/functions.php';
 
+// Serve static files directly (needed for php -S built-in server)
+$rawUri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+$staticPath = __DIR__ . $rawUri;
+if (is_file($staticPath) && pathinfo($rawUri, PATHINFO_EXTENSION)) {
+    $mimeTypes = [
+        'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png'  => 'image/png',
+        'gif'  => 'image/gif',  'webp' => 'image/webp',  'svg'  => 'image/svg+xml',
+        'ico'  => 'image/x-icon', 'avif' => 'image/avif',
+        'css'  => 'text/css',   'js'   => 'application/javascript',
+        'woff2'=> 'font/woff2', 'woff' => 'font/woff',
+    ];
+    $ext = strtolower(pathinfo($rawUri, PATHINFO_EXTENSION));
+    if (isset($mimeTypes[$ext])) {
+        header('Content-Type: ' . $mimeTypes[$ext]);
+        readfile($staticPath);
+        exit;
+    }
+}
+
 // Get the request path — strip base path for nested directories
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 

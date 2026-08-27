@@ -17,7 +17,7 @@ test.describe('Frontend ↔ DB ↔ Admin — brutal', () => {
   });
 
   test('hero + nav + footer render (design system)', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     // Nav per header.php: .nav + #navToggle + #mobileDrawer + .nav__brand
     await expect(page.locator('.nav'), 'missing .nav (header.php parity)').toBeVisible({ timeout: 5000 }).catch(() => {});
     const navVisible = await page.locator('.nav').isVisible().catch(() => false);
@@ -72,7 +72,7 @@ test.describe('Frontend ↔ DB ↔ Admin — brutal', () => {
   test('phamtom tables — faqs/contact-form sections actually render when DB has data', async ({ page }) => {
     // We added faqs.php + contact-form.php + api/contact + page_seo JSON-LD
     // Hit contact page which should contain contact-form if section exists
-    await page.goto('/contact/');
+    await page.goto('/contact/', { waitUntil: 'domcontentloaded' });
     const body = await page.content();
     const hasContactForm = /id="contactForm"|name="message"/i.test(body);
     const hasFaqsDetails = /<details/i.test(body);

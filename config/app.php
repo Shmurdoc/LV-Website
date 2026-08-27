@@ -24,7 +24,7 @@ define('BASE_URL', rtrim(env('BASE_URL', 'https://viataluxe.com'), '/'));
 
 // Paths
 define('ROOT_PATH', dirname(__DIR__));
-define('UPLOAD_DIR', ROOT_PATH . '/assets/uploads');
+define('UPLOAD_DIR', ROOT_PATH . '/uploads');
 define('LUXURY_IMAGES', ROOT_PATH . '/Luxury Images');
 
 // Timezone

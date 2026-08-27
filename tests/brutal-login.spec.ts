@@ -15,7 +15,7 @@ test('admin login with seed creds succeeds', async ({ page }) => {
 });
 
 test('contact POST creates row (no auth required)', async ({ page }) => {
-  await page.goto('/contact');
+  await page.goto('/contact', { waitUntil: 'domcontentloaded' });
   const token = await page.getAttribute('input[name="csrf_token"]', 'value');
   console.log(`csrf token=${token?.slice(0, 8)}`);
 
