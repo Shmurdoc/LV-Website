@@ -1,9 +1,12 @@
 node_modules/
 screenshots/
+test-results/
+playwright-report/
 package-lock.json
 .env
 .env.local
 assets/uploads/*
 !assets/uploads/.htaccess
-Luxury_Images
+Luxury Images/
+Luxury_Images/
 .env.backup

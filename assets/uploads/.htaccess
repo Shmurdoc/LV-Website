@@ -1,0 +1,8 @@
+# Disable PHP execution in upload directories
+php_flag engine off
+AddHandler cgi-script .php .php3 .php4 .php5 .phtml
+Options -ExecCGI
+
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|jsp|asp|htm|shtml|sh|cgi)$">
+    Deny from all
+</FilesMatch>

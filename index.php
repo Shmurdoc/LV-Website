@@ -7,8 +7,20 @@
 require_once __DIR__ . '/config/app.php';
 require_once __DIR__ . '/includes/functions.php';
 
-// Get the request path
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// Get the request path — strip base path for nested directories
+$uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+// Compute base path: the project directory relative to DocumentRoot
+// e.g. DocumentRoot=C:\wamp64\www, project=C:\wamp64\www\work\final website => base=/work/final website
+$docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');
+$baseDir = str_replace('\\', '/', __DIR__);
+$basePath = str_replace($docRoot, '', $baseDir);
+$basePath = '/' . ltrim($basePath, '/');
+
+// Strip base path from URI
+if ($basePath !== '/' && strpos($uri, $basePath) === 0) {
+    $uri = substr($uri, strlen($basePath));
+}
 $uri = rtrim($uri, '/');
 
 // Delegate /admin/* to admin front controller (avoid phantom 404)
@@ -54,27 +66,40 @@ if (isset($routes[$uriWithSlash])) {
     exit;
 }
 
-// Check for apartment pages by slug (dynamic lookup)
-$db = Database::get();
-$stmt = $db->prepare('SELECT slug FROM apartments WHERE slug = :slug AND is_published = 1');
-$stmt->execute(['slug' => ltrim($uri, '/')]);
-$apartment = $stmt->fetch();
-if ($apartment) {
-    require __DIR__ . '/pages/apartment.php';
-    exit;
-}
+// Dynamic routes — wrapped in try-catch for DB fallback
+try {
+    $db = Database::get();
 
-// Check pages table for dynamic routes
-$slug = ltrim($uri, '/');
-if ($slug) {
-    $page = get_page($slug);
-    if ($page) {
-        $templateFile = __DIR__ . '/pages/' . $page['template'] . '.php';
-        if (file_exists($templateFile)) {
-            require $templateFile;
-            exit;
+    // Check for apartment pages by slug
+    $stmt = $db->prepare('SELECT slug FROM apartments WHERE slug = :slug AND is_published = 1');
+    $stmt->execute(['slug' => ltrim($uri, '/')]);
+    $apartment = $stmt->fetch();
+    if ($apartment) {
+        require __DIR__ . '/pages/apartment.php';
+        exit;
+    }
+
+    // Check pages table for dynamic routes
+    $slug = ltrim($uri, '/');
+    if ($slug) {
+        $page = get_page($slug);
+        if ($page) {
+            $templateFile = __DIR__ . '/pages/' . $page['template'] . '.php';
+            if (file_exists($templateFile)) {
+                require $templateFile;
+                exit;
+            }
         }
     }
+} catch (\PDOException $e) {
+    if (APP_DEBUG) {
+        http_response_code(503);
+        echo '<h1>Database Connection Failed</h1><p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        exit;
+    }
+    http_response_code(503);
+    require __DIR__ . '/templates/503.php';
+    exit;
 }
 
 // 404

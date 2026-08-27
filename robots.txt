@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Sitemap: https://viataluxe.com/sitemap.xml
+
+# Viata Luxe Guesthouse — 86 Nollie Bosman Street, Phalaborwa

@@ -22,8 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($username && $password) {
             $db = Database::get();
-            $stmt = $db->prepare('SELECT id, username, password_hash, full_name, role, is_active FROM admin_users WHERE username = :u OR email = :u LIMIT 1');
-            $stmt->execute(['u' => $username]);
+            $stmt = $db->prepare('SELECT id, username, password_hash, full_name, role, is_active FROM admin_users WHERE username = :u1 OR email = :u2 LIMIT 1');
+            $stmt->execute(['u1' => $username, 'u2' => $username]);
             $user = $stmt->fetch();
 
             if ($user && $user['is_active'] && password_verify($password, $user['password_hash'])) {
@@ -34,8 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['admin_role'] = $user['role'];
                 $_SESSION['last_activity'] = time();
 
-                $db->prepare('UPDATE admin_users SET last_login = NOW() WHERE id = :id')->execute(['id' => $user['id']]);
-                log_activity('login', 'admin_users', $user['id']);
+                try {
+                    $db->prepare('UPDATE admin_users SET last_login = NOW() WHERE id = :id')->execute(['id' => $user['id']]);
+                    log_activity('login', 'admin_users', $user['id']);
+                } catch (\Throwable $e) {
+                    error_log('Login post-auth warning: ' . $e->getMessage());
+                }
 
                 header('Location: /admin/dashboard');
                 exit;
