@@ -13,11 +13,11 @@ $isNew = $apartment === null;
 $a = $apartment ?? [];
 ?>
 <div class="admin-page">
-  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
-    <div><h2><?= $isNew ? 'New Apartment' : 'Edit Apartment' ?></h2><p class="muted small"><?= $isNew ? 'Create a new apartment' : 'Editing "' . e($a['name'] ?? '') . '"' ?></p></div>
+  <div class="page-header page-header-inline">
+    <div><h2><?= $isNew ? 'New Apartment' : 'Edit Apartment' ?></h2><p class="muted small"><?= $isNew ? 'Create a new apartment' : 'Editing ' . e($a['name'] ?? '') ?></p></div>
     <a href="/admin/apartments" class="btn btn-outline">&larr; Back</a>
   </div>
-  <div class="card" style="padding:20px;max-width:760px">
+  <div class="form-card"><div class="form-card__body" style="max-width:760px">
     <form method="POST" action="/admin/api/crud.php" data-ajax>
       <?= csrf_field() ?>
       <input type="hidden" name="entity" value="apartment">
@@ -102,5 +102,5 @@ $a = $apartment ?? [];
         <a href="/admin/apartments" class="btn btn-outline">Cancel</a>
       </div>
     </form>
-  </div>
+  </div></div>
 </div>

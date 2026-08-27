@@ -22,7 +22,7 @@ $testimonials = $db->query('
       <?php foreach ($testimonials as $t): ?>
         <tr>
           <td><strong><?= e($t['reviewer_name']) ?></strong><?php if ($t['is_featured']) echo ' <span class="badge-published">Featured</span>'; ?></td>
-          <td><?= str_repeat('★', (int)$t['rating']) ?><span class="muted"><?= (int)$t['rating'] ?></span></td>
+          <td><span class="rating-stars" title="<?= (int)$t['rating'] ?>/5"><?= str_repeat('★', (int)$t['rating']) ?></span></td>
           <td><?= e($t['apartment_name'] ?? '—') ?></td>
           <td><span class="<?= $t['is_published'] ? 'badge-published' : 'badge-draft' ?>"><?= $t['is_published'] ? 'Published' : 'Draft' ?></span></td>
           <td>

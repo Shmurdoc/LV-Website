@@ -15,7 +15,7 @@ foreach ($settings as $s) {
   <?php else: ?>
     <?php foreach ($groups as $group => $items): ?>
       <h3 style="margin:24px 0 12px;text-transform:capitalize"><?= e($group ?: 'general') ?></h3>
-      <div class="card" style="padding:20px">
+      <div class="form-card"><div class="form-card__body">
         <?php foreach ($items as $s): ?>
           <form method="POST" action="/admin/api/crud.php" data-ajax style="padding:16px 0;border-bottom:1px solid var(--admin-border)">
             <?= csrf_field() ?>
@@ -56,5 +56,5 @@ foreach ($settings as $s) {
       </div>
       <button type="submit" class="btn btn-primary">Add Setting</button>
     </form>
-  </div>
+  </div></div>
 </div>

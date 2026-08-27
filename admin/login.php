@@ -56,104 +56,152 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login — Viata Luxe</title>
-    <link rel="stylesheet" href="/css/tokens.css">
+    <title>Sign In &middot; Viata Luxe Admin</title>
+    <link rel="icon" type="image/png" href="<?= e(url('/Luxury Images/logos/logo-viata-monogram-gold.png')) ?>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
-            font-family: 'Inter', var(--font-sans, sans-serif);
-            background: var(--navy, #0a1f2f);
+            font-family: 'Manrope', system-ui, sans-serif;
+            background: var(--navy, #0B1A2E);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
         }
+        /* soft gold aurora */
+        body::before, body::after {
+            content: ''; position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5;
+        }
+        body::before { width: 420px; height: 420px; background: rgba(140,116,52,.40); top: -80px; left: -80px; }
+        body::after  { width: 380px; height: 380px; background: rgba(19,40,66,.80); bottom: -100px; right: -60px; }
+
         .login-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 3rem 2.5rem;
+            position: relative; z-index: 2;
+            background: var(--cream, #FFFFFF);
+            border-radius: 18px;
+            padding: 3rem 3rem 2.75rem;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 70px rgba(0,0,0,.45);
+            border: 1px solid rgba(255,255,255,.08);
         }
+        .login-lock {
+            width: 52px; height: 52px; margin: 0 auto 18px;
+            display: grid; place-items: center;
+            border-radius: 14px;
+            background: var(--gold-100, #F5F0E1);
+            color: var(--gold, #8C7434);
+        }
+        .login-lock svg { width: 24px; height: 24px; }
         .login-card h1 {
-            font-size: 1.5rem;
-            color: var(--navy, #0a1f2f);
-            text-align: center;
-            margin-bottom: 0.5rem;
+            font-family: 'Fraunces', serif; font-weight: 300;
+            font-size: 1.6rem; color: var(--navy, #0B1A2E);
+            text-align: center; letter-spacing: .02em;
         }
-        .login-card p {
-            text-align: center;
-            color: #666;
+        .login-card .brand-sub {
+            text-align: center; color: var(--muted, #8A93A0);
+            font-size: .78rem; letter-spacing: .18em; text-transform: uppercase;
             margin-bottom: 2rem;
-            font-size: 0.9rem;
         }
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
+        .form-group { margin-bottom: 1.25rem; }
         .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 0.4rem;
-            font-size: 0.85rem;
+            display: block; font-weight: 600; color: var(--text, #1A2233);
+            margin-bottom: .45rem; font-size: .82rem;
+        }
+        .form-group .field {
+            position: relative;
+        }
+        .form-group .field svg {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            width: 18px; height: 18px; color: #A7B0BD;
         }
         .form-group input {
             width: 100%;
-            padding: 0.7rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
+            padding: .82rem 1rem .82rem 44px;
+            border: 1px solid var(--border, #E5E8EE);
+            border-radius: 10px;
+            font-size: .95rem;
+            font-family: inherit;
+            color: var(--text, #1A2233);
+            background: #FAFBFC;
+            transition: border-color .2s, box-shadow .2s;
         }
         .form-group input:focus {
             outline: none;
-            border-color: var(--gold, #c9a84c);
-            box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+            border-color: var(--gold, #8C7434);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(140,116,52,.16);
         }
         .error {
-            background: #fee;
-            color: #c00;
-            padding: 0.7rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.25rem;
-            font-size: 0.85rem;
-            border: 1px solid #fcc;
+            display: flex; align-items: flex-start; gap: 8px;
+            background: #FDECEC; color: #B91C1C;
+            padding: .7rem 1rem; border-radius: 10px;
+            margin-bottom: 1.25rem; font-size: .82rem;
+            border: 1px solid #F6D0D0;
         }
+        .error svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
         .btn {
             width: 100%;
-            padding: 0.8rem;
-            background: var(--gold, #c9a84c);
+            padding: .85rem;
+            background: var(--gold, #8C7434);
             color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            border: none; border-radius: 10px;
+            font-size: .95rem; font-weight: 700; font-family: inherit;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background .2s, transform .1s;
         }
-        .btn:hover { background: #b8963f; }
+        .btn:hover { background: var(--gold-600, #7A642C); }
+        .btn:active { transform: translateY(1px); }
+        .login-foot {
+            margin-top: 1.5rem; text-align: center;
+            font-size: .74rem; color: var(--muted, #8A93A0);
+        }
+        .login-foot a { color: var(--gold, #8C7434); text-decoration: none; font-weight: 600; }
+        .login-foot a:hover { text-decoration: underline; }
+        /* login icon inline helper */
+        .icon { display: none; }
     </style>
 </head>
 <body>
     <div class="login-card">
+        <div class="login-lock" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
         <h1>Viata Luxe</h1>
-        <p>Admin Panel</p>
+        <p class="brand-sub">Guesthouse &middot; Admin Panel</p>
         <?php if ($error): ?>
-            <div class="error" role="alert"><?= e($error) ?></div>
+            <div class="error" role="alert">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg>
+                <span><?= e($error) ?></span>
+            </div>
         <?php endif; ?>
         <form method="POST" action="/admin/login">
             <?= csrf_field() ?>
             <div class="form-group">
-                <label for="username">Username or Email</label>
-                <input type="text" id="username" name="username" required autofocus autocomplete="username" value="<?= e($_POST['username'] ?? '') ?>">
+                <label for="username">Username or email</label>
+                <div class="field">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <input type="text" id="username" name="username" required autofocus autocomplete="username" value="<?= e($_POST['username'] ?? '') ?>">
+                </div>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password">
+                <div class="field">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
             </div>
-            <button type="submit" class="btn">Sign In</button>
+            <button type="submit" class="btn">Sign in to Admin</button>
         </form>
+        <div class="login-foot">
+            <a href="<?= e(url('/')) ?>" rel="noopener">&larr; Back to website</a>
+        </div>
     </div>
 </body>
 </html>

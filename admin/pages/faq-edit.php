@@ -16,11 +16,11 @@ $isNew = $faq === null || (int)($_GET['id'] ?? 0) === 0;
 $f = $faq ?? [];
 ?>
 <div class="admin-page">
-  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+  <div class="page-header page-header-inline">
     <div><h2><?= $isNew ? 'New FAQ' : 'Edit FAQ' ?></h2><p class="muted small"><?= $isNew ? 'Create a new question' : 'Editing "' . e($f['question'] ?? '') . '"' ?></p></div>
     <a href="/admin/faqs" class="btn btn-outline">&larr; Back</a>
   </div>
-  <div class="card" style="padding:20px;max-width:760px">
+  <div class="form-card"><div class="form-card__body" style="max-width:760px">
     <form method="POST" action="/admin/api/crud.php" data-ajax>
       <?= csrf_field() ?>
       <input type="hidden" name="entity" value="faq">
@@ -59,5 +59,5 @@ $f = $faq ?? [];
         <a href="/admin/faqs" class="btn btn-outline">Cancel</a>
       </div>
     </form>
-  </div>
+  </div></div>
 </div>

@@ -12,11 +12,11 @@ $isNew = $page === null;
 $p = $page ?? [];
 ?>
 <div class="admin-page">
-  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+  <div class="page-header page-header-inline">
     <div><h2><?= $isNew ? 'New Page' : 'Edit Page' ?></h2><p class="muted small"><?= $isNew ? 'Create a new page' : 'Editing "' . e($p['title'] ?? '') . '"' ?></p></div>
     <a href="/admin/pages" class="btn btn-outline">&larr; Back</a>
   </div>
-  <div class="card" style="padding:20px;max-width:760px">
+  <div class="form-card"><div class="form-card__body" style="max-width:760px">
     <form method="POST" action="/admin/api/crud.php" data-ajax>
       <?= csrf_field() ?>
       <input type="hidden" name="entity" value="page">
@@ -67,5 +67,5 @@ $p = $page ?? [];
         <a href="/admin/pages" class="btn btn-outline">Cancel</a>
       </div>
     </form>
-  </div>
+  </div></div>
 </div>

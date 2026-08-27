@@ -19,11 +19,11 @@ $s = $section ?? [];
 $sectionTypes = ['hero','about','services','features','text-left','text-right','text-top','image-top','text-only','image-only','full-width','centered','grid'];
 ?>
 <div class="admin-page">
-  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+  <div class="page-header page-header-inline">
     <div><h2><?= $isNew ? 'New Section' : 'Edit Section' ?></h2><p class="muted small"><?= $isNew ? 'Create a new section' : 'Editing "' . e($s['title'] ?? '') . '"' ?></p></div>
     <a href="/admin/sections" class="btn btn-outline">&larr; Back</a>
   </div>
-  <div class="card" style="padding:20px;max-width:760px">
+  <div class="form-card"><div class="form-card__body" style="max-width:760px">
     <form method="POST" action="/admin/api/crud.php" data-ajax>
       <?= csrf_field() ?>
       <input type="hidden" name="entity" value="section">
@@ -132,5 +132,5 @@ $sectionTypes = ['hero','about','services','features','text-left','text-right','
         <a href="/admin/sections" class="btn btn-outline">Cancel</a>
       </div>
     </form>
-  </div>
+  </div></div>
 </div>
