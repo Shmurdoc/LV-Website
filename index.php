@@ -11,6 +11,19 @@ require_once __DIR__ . '/includes/functions.php';
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = rtrim($uri, '/');
 
+// Delegate /admin/* to admin front controller (avoid phantom 404)
+if (strpos($uri, '/admin') === 0) {
+    require __DIR__ . '/admin/index.php';
+    exit;
+}
+// Also allow /api/* direct files when not via .htaccess (php -S)
+if (strpos($uri, '/api/') === 0) {
+    $apiFile = __DIR__ . $uri . '.php';
+    if (file_exists($apiFile)) { require $apiFile; exit; }
+    $apiFile2 = __DIR__ . $uri;
+    if (file_exists($apiFile2)) { require $apiFile2; exit; }
+}
+
 // Route map: URI path => page file
 $routes = [
     ''                  => 'pages/home.php',
@@ -24,6 +37,8 @@ $routes = [
     '/gallery'          => 'pages/gallery.php',
     '/safari'           => 'pages/safari.php',
     '/contact'          => 'pages/contact.php',
+    '/api/health'       => 'api/health.php',
+    '/api/contact'      => 'api/contact.php',
 ];
 
 // Check for exact match

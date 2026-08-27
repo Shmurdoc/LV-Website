@@ -189,7 +189,9 @@ INSERT INTO sections (page_id, section_type, title, subtitle, content, image, li
 -- =====================================================
 INSERT INTO sections (page_id, section_type, title, subtitle, content, image, link_url, link_text, sort_order) VALUES
 (5, 'hero', 'Contact Us', 'Get in Touch', NULL, 'uploads/hero/contact-hero.jpg', NULL, NULL, 1),
-(5, 'text-content', 'We''d Love to Hear From You', 'Reach Out', '<p>Whether you have a question about availability, need help planning your stay, or want to arrange a special request, our team is here to help.</p><p><strong>Email:</strong> reservations@vialuxe.co.za</p><p><strong>Phone:</strong> +27 82 000 0000</p><p><strong>WhatsApp:</strong> +27 82 000 0000</p>', NULL, NULL, NULL, 2);
+(5, 'text-content', 'We''d Love to Hear From You', 'Reach Out', '<p>Whether you have a question about availability, need help planning your stay, or want to arrange a special request, our team is here to help.</p><p><strong>Email:</strong> reservations@vialuxe.co.za</p><p><strong>Phone:</strong> +27 82 000 0000</p><p><strong>WhatsApp:</strong> +27 82 000 0000</p>', NULL, NULL, NULL, 2),
+(5, 'contact-form', 'Send us a message', 'We reply within hours', NULL, NULL, NULL, NULL, 3),
+(2, 'faqs', 'Frequently Asked Questions', 'Everything you need to know', NULL, NULL, NULL, NULL, 5);
 
 -- =====================================================
 -- SECTIONS — ABOUT PAGE
@@ -227,8 +229,8 @@ INSERT INTO section_orientation (section_id, layout, background_color, text_colo
 (22, 'text-left', NULL, NULL, '4rem', '4rem', 'left', 'fade-up'),
 (23, 'centered', NULL, NULL, '4rem', '4rem', 'center', 'fade-up'),
 (24, 'full-width', '#0B1D33', '#F8F6F1', '5rem', '5rem', 'center', 'fade-up'),
-(25, 'full-width', NULL, NULL, '0', '0', 'center', 'fade-up'),
-(26, 'text-left', NULL, NULL, '4rem', '4rem', 'left', 'fade-up');
+(25, 'centered', NULL, NULL, '4rem', '4rem', 'left', 'fade-up'),
+(26, 'centered', NULL, NULL, '4rem', '4rem', 'left', 'fade-up');
 
 -- =====================================================
 -- TESTIMONIALS
