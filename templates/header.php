@@ -11,6 +11,17 @@ $meta_description = $page['meta_description'] ?? setting('meta_description_home'
 $og_image = $page['og_image'] ?? setting('og_image_home', '');
 $canonical = url($page['slug'] === 'home' ? '' : trim($page['slug'] ?? '', '/'));
 $current_slug = $page['slug'] ?? current_slug();
+
+// page_seo — only emitted if row exists for this page_id (no phantom meta)
+$pageSeo = null;
+if (!empty($page['id'])) {
+    try {
+        $db = Database::get();
+        $stmt = $db->prepare('SELECT schema_type, schema_json, additional_meta FROM page_seo WHERE page_id = :id LIMIT 1');
+        $stmt->execute(['id' => $page['id']]);
+        $pageSeo = $stmt->fetch();
+    } catch (Throwable $e) { $pageSeo = null; }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,6 +33,9 @@ $current_slug = $page['slug'] ?? current_slug();
     <title><?= e($meta_title) ?></title>
     <meta name="description" content="<?= e($meta_description) ?>">
     <link rel="canonical" href="<?= e($canonical) ?>">
+    <?php if ($pageSeo && !empty($pageSeo['schema_json'])): ?>
+    <script type="application/ld+json"><?= $pageSeo['schema_json'] ?></script>
+    <?php endif; ?>
 
     <!-- Open Graph -->
     <meta property="og:title" content="<?= e($meta_title) ?>">
