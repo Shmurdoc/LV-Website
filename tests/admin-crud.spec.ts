@@ -30,9 +30,9 @@ test.describe('Admin backend — CRUD round-trip against real DB', () => {
 
     // Create via API (share browser session cookies via context.request)
     const ctx = page.context();
-    // Grab CSRF from an admin page that renders csrf_field()
-    await page.goto('/admin/pages');
-    const csrf = await page.evaluate(() => document.querySelector('input[name="csrf_token"]')?.value || '');
+    // Stable CSRF token from the layout <meta> tag (survives SPA content swaps)
+    await page.goto('/admin/dashboard');
+    const csrf = await page.evaluate(() => document.querySelector('meta[name="csrf_token"]')?.getAttribute('content') || '');
 
     const create = await ctx.request.post('/admin/api/crud.php', {
       form: { action: 'save', entity: 'testimonial', reviewer_name: marker, review_text: 'Fresh record QA', rating: '5', source: 'qa', is_featured: '', is_published: '1', sort_order: '99', apartment_id: '', csrf_token: csrf }

@@ -44,6 +44,7 @@ $contact = $contact ?? settings_group('contact');
         <div class="footer__legal">
             <span><?= e(setting('footer_copyright', '© 2026 Viata Luxe Guesthouse. All rights reserved.')) ?></span>
             <span><?= e(setting('footer_credit', 'Built with pride by Recast Media')) ?></span>
+            <span class="footer__admin-link" style="opacity:.55"><a href="<?= e(url('/admin/login')) ?>" rel="nofollow" aria-label="Admin login">Admin</a></span>
         </div>
         <div class="footer__logos" aria-label="Trusted partners">
             <img src="<?= url('/Luxury Images/logos/logo-kruger-national-park.png') ?>" alt="Kruger National Park" loading="lazy" width="120" height="48">

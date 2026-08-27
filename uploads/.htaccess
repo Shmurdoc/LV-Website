@@ -1,0 +1,6 @@
+# Viata Luxe — harden uploads/ (served images only, no execution)
+Options -Indexes
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi)$">
+    Require all denied
+</FilesMatch>
+Header set X-Content-Type-Options "nosniff"
