@@ -3,12 +3,24 @@
  * Application Configuration — Viata Luxe Guesthouse
  */
 
-// Environment
-define('APP_ENV', 'development');
-define('APP_DEBUG', true);
+// Environment — loaded from .env (never commit .env with real secrets)
+if (file_exists(dirname(__DIR__) . '/.env')) {
+    $env = parse_ini_file(dirname(__DIR__) . '/.env', false, INI_SCANNER_RAW);
+    foreach ($env as $k => $v) {
+        $v = trim($v);
+        if (!getenv($k)) putenv("$k=$v");
+        $_ENV[$k] = $v;
+        $_SERVER[$k] = $v;
+    }
+}
+function env(string $key, $default = null) {
+    return $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key) ?: $default;
+}
+define('APP_ENV', env('APP_ENV', 'production'));
+define('APP_DEBUG', filter_var(env('APP_DEBUG', 'false'), FILTER_VALIDATE_BOOLEAN));
 
 // Base URL (no trailing slash)
-define('BASE_URL', 'http://localhost/viata-luxe');
+define('BASE_URL', rtrim(env('BASE_URL', 'https://viataluxe.com'), '/'));
 
 // Paths
 define('ROOT_PATH', dirname(__DIR__));
@@ -28,8 +40,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Admin session timeout (30 minutes)
-define('ADMIN_TIMEOUT', 1800);
+// Admin session timeout (from .env, default 30m)
+define('ADMIN_TIMEOUT', (int)env('ADMIN_TIMEOUT', 1800));
 
 // Upload limits
 define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB
