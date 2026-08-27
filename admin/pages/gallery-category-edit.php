@@ -1,5 +1,59 @@
 <?php
-// Stub — prevents admin 404. DB table exists and frontend reads it.
-// Implement CRUD incrementally using api/contact.php pattern (CSRF + validation + INSERT).
+// Gallery Category Edit â€” Viata Luxe Guesthouse
+$db = Database::get();
+$category = null;
+$id = (int)($_GET['id'] ?? 0);
+if ($id) {
+    $stmt = $db->prepare('SELECT * FROM gallery_categories WHERE id = :id');
+    $stmt->execute(['id' => $id]);
+    $category = $stmt->fetch() ?: null;
+}
+if (!$id) {
+    $category = ['is_published' => 1];
+}
+$isNew = $category === null || (int)($_GET['id'] ?? 0) === 0;
+$c = $category ?? [];
 ?>
-<div class="admin-page"><div class="page-header"><h2>Admin</h2><p class="muted">CRUD scaffold — table exists, frontend reads it. Build form + POST next.</p></div><p class="card" style="padding:18px">Routes: pages/sections/settings/navigation/safari/gallery/testimonials/faqs/contact — all backed by sql/schema.sql + includes/functions.php.</p></div>
+<div class="admin-page">
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+    <div><h2><?= $isNew ? 'New Gallery Category' : 'Edit Gallery Category' ?></h2><p class="muted small"><?= $isNew ? 'Create a new category' : 'Editing "' . e($c['name'] ?? '') . '"' ?></p></div>
+    <a href="/admin/gallery" class="btn btn-outline">&larr; Back</a>
+  </div>
+  <div class="card" style="padding:20px;max-width:760px">
+    <form method="POST" action="/admin/api/crud.php" data-ajax>
+      <?= csrf_field() ?>
+      <input type="hidden" name="entity" value="gallery_category">
+      <input type="hidden" name="action" value="save">
+      <input type="hidden" name="id" value="<?= (int)($c['id'] ?? 0) ?>">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" name="name" value="<?= e($c['name'] ?? '') ?>" required>
+        </div>
+        <div class="form-group">
+          <label>Slug *</label>
+          <input type="text" name="slug" value="<?= e($c['slug'] ?? '') ?>" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description"><?= e($c['description'] ?? '') ?></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Sort Order</label>
+          <input type="number" name="sort_order" value="<?= (int)($c['sort_order'] ?? 0) ?>">
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:6px">
+          <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="is_published" value="1" <?= isset($c['is_published']) && $c['is_published'] ? 'checked' : '' ?>> Published</label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Category</button>
+        <a href="/admin/gallery" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>

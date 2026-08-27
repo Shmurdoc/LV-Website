@@ -9,4 +9,6 @@ assets/uploads/*
 !assets/uploads/.htaccess
 Luxury Images/
 Luxury_Images/
+uploads/
 .env.backup
+tests/*.png

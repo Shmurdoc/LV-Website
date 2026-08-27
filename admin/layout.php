@@ -64,6 +64,7 @@ $adminName = $_SESSION['admin_name'] ?? $_SESSION['admin_username'] ?? 'Admin';
         <div class="admin-content" id="adminContent">
             <!-- Page content loaded here -->
             <div class="loading">Loading...</div>
+            <?= csrf_field() ?>
         </div>
     </main>
 

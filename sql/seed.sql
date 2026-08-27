@@ -9,26 +9,36 @@ USE viata_luxe;
 INSERT INTO global_settings (setting_key, setting_value, setting_type, setting_group, sort_order) VALUES
 -- General
 ('site_name', 'Viata Luxe Guesthouse', 'text', 'general', 1),
-('site_tagline', 'Luxury Self-Catering Accommodation · Limpopo', 'text', 'general', 2),
-('site_description', 'Award-winning luxury self-catering guesthouse in Limpopo, South Africa. 4-star rated with secure parking, jacuzzi, and bushveld views.', 'textarea', 'general', 3),
-('logo', 'assets/images/logo.png', 'image', 'general', 4),
-('favicon', 'assets/images/favicon.png', 'image', 'general', 5),
-('contact_email', 'reservations@vialuxe.co.za', 'email', 'general', 6),
-('contact_phone', '+27 82 000 0000', 'phone', 'general', 7),
-('whatsapp_number', '27820000000', 'phone', 'general', 8),
-('address', 'Limpopo, South Africa', 'text', 'general', 9),
+('site_tagline', 'Luxury self-catering guesthouse in Phalaborwa, minutes from Kruger National Park. 4 curated apartments. From R950/night.', 'text', 'general', 2),
+('site_description', 'Discover Viata Luxe Guesthouse in Phalaborwa — your elegant home away from home just minutes from Kruger National Park. Book luxury accommodation with comfort, style, and top-tier service.', 'textarea', 'general', 3),
+('logo', '/Luxury Images/logos/logo-viata-full-dark.png', 'image', 'general', 4),
+('favicon', '/Luxury Images/logos/logo-viata-monogram-gold.png', 'image', 'general', 5),
+('contact_email', 'info@viataluxe.com', 'email', 'general', 6),
+('contact_phone', '015 781 0518 / 079 418 2077', 'phone', 'general', 7),
+('whatsapp_number', '27794182077', 'phone', 'general', 8),
+('address', '86 Nollie Bosman Street, Phalaborwa, 1390', 'text', 'general', 9),
 
--- Social
-('facebook_url', 'https://facebook.com/vialuxe', 'url', 'social', 1),
-('instagram_url', 'https://instagram.com/vialuxe', 'url', 'social', 2),
-('youtube_url', 'https://youtube.com/@vialuxe', 'url', 'social', 3),
+-- Social (empty by default — set real handles in admin)
+('facebook_url', '', 'url', 'social', 1),
+('instagram_url', '', 'url', 'social', 2),
+('youtube_url', '', 'url', 'social', 3),
 ('tiktok_url', '', 'url', 'social', 4),
-('tripadvisor_url', 'https://tripadvisor.com/vialuxe', 'url', 'social', 5),
+('tripadvisor_url', '', 'url', 'social', 5),
 
 -- Booking
 ('booking_url', 'https://book.nightsbridge.com/38331', 'url', 'booking', 1),
 ('booking_cta_text', 'Check Availability — NightsBridge', 'text', 'booking', 2),
 ('booking_button_text', 'Book Now', 'text', 'booking', 3),
+
+-- Contact (used by header + footer + floating actions)
+('email', 'info@viataluxe.com', 'email', 'contact', 1),
+('phone_tel', '+27157810518', 'phone', 'contact', 2),
+('phone_tel_display', '015 781 0518', 'phone', 'contact', 3),
+('phone_mobile', '+27794182077', 'phone', 'contact', 4),
+('phone_mobile_display', '079 418 2077', 'phone', 'contact', 5),
+('whatsapp', '27794182077', 'phone', 'contact', 6),
+('address_full', '86 Nollie Bosman Street, Phalaborwa, 1390', 'text', 'contact', 7),
+('meta_description_home', 'Discover Viata Luxe Guesthouse in Phalaborwa — elegant accommodation minutes from Kruger National Park. Book luxury self-catering with comfort, style, and top-tier service.', 'textarea', 'general', 10),
 
 -- Hero
 ('hero_title', 'The Bush is Calling', 'text', 'hero', 1),
@@ -54,18 +64,18 @@ INSERT INTO pages (id, slug, title, subtitle, meta_title, meta_description, temp
 -- APARTMENTS
 -- =====================================================
 INSERT INTO apartments (id, page_id, name, slug, subtitle, description, price_per_night, max_guests, room_size_m2, bedrooms, beds_description, hero_image, sort_order) VALUES
-(1, 2, 'Bilateral', 'bilateral', 'Symmetry & Serenity',
- 'A beautifully appointed 2 sleeper apartment with modern finishes, queen bed, full kitchen, and private balcony overlooking the bushveld. Perfect for couples seeking a romantic escape.',
- 1800.00, 2, 45.0, 1, 'Queen bed 157cm', 'uploads/apartments/bilateral-hero.jpg', 1),
-(2, 2, 'Classic', 'classic', 'Timeless Elegance',
- 'Our Classic apartment offers sophisticated comfort with a queen bed, ensuite bathroom, fully equipped kitchen, and stunning bushveld views. Ideal for business travelers.',
- 2200.00, 2, 55.0, 1, 'Queen bed 157cm', 'uploads/apartments/classic-hero.jpg', 2),
-(3, 2, 'Comfort', 'comfort', 'Relaxed Luxury',
- 'Spacious 2 sleeper with separate living area, queen bed, full kitchen with dishwasher, and private patio. The perfect blend of comfort and style.',
- 2500.00, 2, 65.0, 1, 'Queen bed 157cm', 'uploads/apartments/comfort-hero.jpg', 3),
-(4, 2, 'Deluxe', 'deluxe', 'Premium Experience',
- 'Our finest apartment featuring premium finishes, king bed, luxury bathroom with soaking tub, gourmet kitchen, and panoramic bushveld views. The ultimate Limpopo experience.',
- 3200.00, 2, 80.0, 1, 'King bed 183cm', 'uploads/apartments/deluxe-hero.jpg', 4);
+(1, 2, 'Classic Apartment 1 (Bachelor)', 'bachelor-apartment', 'One Bedroom Apartment',
+ 'One Bedroom Apartment. The Deluxe Room at Viata Luxe offers breathtaking views of Phalaborwa, especially enchanting at night. Explore Phalaborwa with curated tours. Self-catering, 13 m², queen bed, en-suite.',
+ 950.00, 2, 13.0, 1, 'Queen 157cm', 'uploads/apartments/bilateral-hero.jpg', 1),
+(2, 2, 'Classic Apartment 2', 'classic-apartment-2', 'Classic Suite',
+ 'Sophisticated classic suite with city views, self-catering kitchen, en-suite bathroom and free WiFi. 13 m² queen apartment with DSTV.',
+ 950.00, 2, 13.0, 1, 'Queen 157cm', 'uploads/apartments/classic-hero.jpg', 2),
+(3, 2, 'Comfort Apartment 3', 'comfort-apartment-3', 'Comfort Suite',
+ 'Spacious comfort apartment with queen bed, city views, self-catering kitchen, en-suite and free WiFi. 13 m².',
+ 950.00, 2, 13.0, 1, 'Queen 157cm', 'uploads/apartments/comfort-hero.jpg', 3),
+(4, 2, 'Deluxe Apartment 4', 'deluxe-apartment-4', 'Deluxe Suite',
+ 'Grand deluxe suite — super clean units, new amenities, premium linens. 13 m² with city views and self-catering.',
+ 950.00, 2, 13.0, 1, 'Queen 157cm', 'uploads/apartments/deluxe-hero.jpg', 4);
 
 -- =====================================================
 -- APARTMENT IMAGES
@@ -236,12 +246,10 @@ INSERT INTO section_orientation (section_id, layout, background_color, text_colo
 -- TESTIMONIALS
 -- =====================================================
 INSERT INTO testimonials (apartment_id, reviewer_name, review_text, rating, source, is_featured, sort_order) VALUES
-(NULL, 'Sarah M.', 'Absolutely stunning! The bushveld views from our balcony were breathtaking. The apartment was spotless and had everything we needed. Will definitely be back!', 5, 'google', 1, 1),
-(NULL, 'James K.', 'Perfect weekend getaway. The jacuzzi under the stars was magical. Staff went above and beyond to make our stay special.', 5, 'google', 1, 2),
-(NULL, 'Priya N.', 'Best accommodation in Limpopo! The kitchen was fully equipped, the bed was heavenly, and the views are unmatched. Highly recommend!', 5, 'tripadvisor', 1, 3),
-(NULL, 'David L.', 'We stayed in the Deluxe apartment for our anniversary. Worth every rand. The soaking tub, the views, the attention to detail — perfection.', 5, 'direct', 1, 4),
-(NULL, 'Michelle T.', 'Business trip made enjoyable. Fast WiFi, comfortable workspace, and the bushveld views helped me unwind after meetings. Excellent value.', 4, 'google', 1, 5),
-(NULL, 'Chen W.', 'A hidden gem! We''ve traveled extensively and Viata Luxe rivals any 5-star hotel. The self-catering setup is brilliant — all the convenience of home with luxury finishes.', 5, 'booking.com', 1, 6);
+(1, 'Kurhula Hlomane', 'I enjoyed every moment of my stay. What an ambience.', 5, 'booking.com', 1, 1),
+(2, 'Shawn Radov', 'First class services, friendly staff, amazing food my stay was a great working holiday experience', 5, 'google', 1, 2),
+(3, 'Ntsako Phoebe Mabunda', 'The service, the warmth and the beauty of this place was absolutely amazing. I will definitely be staying for longer next time. The host is an absolute professional and could easily be the kindest person I know.', 5, 'google', 1, 3),
+(4, 'Dylan Chapman', 'Amazing guesthouse! The units were super clean, amenities new, and the staff are really friendly. Will definitely be staying there again', 5, 'google', 1, 4);
 
 -- =====================================================
 -- GALLERY CATEGORIES
@@ -294,11 +302,11 @@ INSERT INTO navigation (label, url, page_id, parent_id, sort_order, open_in_new_
 -- =====================================================
 -- SAFARI ACTIVITIES
 -- =====================================================
-INSERT INTO safari_activities (title, content, image, video_urls, link_url, link_text, sort_order) VALUES
-('Game Drives', 'Experience the thrill of seeing the Big 5 in their natural habitat. Our guided game drives take you deep into the Limpopo bushveld for unforgettable wildlife encounters.', 'uploads/safari/game-drive.jpg', '["https://youtube.com/watch?v=example1"]', NULL, 'Book Drive', 1),
-('Bushveld Walks', 'Explore the Limpopo bushveld on foot with our expert guides. Discover hidden waterfalls, ancient trees, and incredible birdlife up close.', 'uploads/safari/bushwalk.jpg', '["https://youtube.com/watch?v=example2"]', NULL, 'Learn More', 2),
-('Cultural Tours', 'Immerse yourself in local culture with visits to nearby communities, craft markets, and historical sites. Learn about the rich heritage of Limpopo.', 'uploads/safari/cultural.jpg', NULL, NULL, 'Discover', 3),
-('Bird Watching', 'Limpopo is a birdwatcher''s paradise with over 500 species. Our guides know the best spots to spot rare and endemic species.', 'uploads/safari/birding.jpg', NULL, NULL, 'Start Birding', 4);
+INSERT INTO safari_activities (title, content, image, video_urls, link_text, sort_order) VALUES
+('Kedibone Safari — Daily Safaris', 'Daily Kruger Safaris from the Phalaborwa Gate — an immersive day in the wild — and Exclusive Private Overnight Kruger Tours for a more intimate, luxurious safari.', 'uploads/safari/game-drive.jpg', '["https://youtu.be/QSGZBKwRycw"]', 'Watch Safari Video', 1),
+('Classic Safari — Photographic', 'Wildlife photographic safaris and Lightroom training with professional guidance.', 'uploads/safari/bushwalk.jpg', '["https://youtu.be/UHpP4w8cBlI"]', 'Watch Video', 2),
+('Boat Safaris — Olifants River', 'Scenic boat safaris on the Olifants River — hippos, crocodiles, diverse birdlife. Visit Foskor Mine Museum and Masorini Archaeological Site.', 'uploads/safari/cultural.jpg', '["https://youtu.be/aZXatNfE3Ww"]', 'Watch Video', 3),
+('Adventure — Blyde & Amarula', 'Blyde River Canyon, one of the largest canyons in the world — hiking and boat trips. Visit the Amarula Lapa for a tasting.', 'uploads/safari/birding.jpg', '["https://youtu.be/sz-FMRRfpIk"]', 'Watch Video', 4);
 
 -- =====================================================
 -- FAQS

@@ -136,7 +136,7 @@ function handle_upload(string $fieldName, string $subDir = ''): ?string
         json_error('Failed to save uploaded file');
     }
 
-    return 'assets/uploads' . ($subDir ? '/' . $subDir : '') . '/' . $filename;
+    return 'uploads' . ($subDir ? '/' . $subDir : '') . '/' . $filename;
 }
 
 /**

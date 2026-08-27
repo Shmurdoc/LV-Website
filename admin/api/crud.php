@@ -3,9 +3,9 @@
  * Admin CRUD API — Viata Luxe Guesthouse
  * Handles all admin create/update/delete operations.
  */
-require_once __DIR__ . '/../config/app.php';
-require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/includes/admin-functions.php';
+require_once __DIR__ . '/../../config/app.php';
+require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../includes/admin-functions.php';
 
 header('Content-Type: application/json');
 
@@ -271,7 +271,7 @@ function handleTestimonial(string $action): void {
             $id = (int)$db->lastInsertId();
             log_activity('create', 'testimonial', $id);
         }
-        json_response(['success' => true, 'redirect' => '/admin/testimonials']);
+        json_response(['success' => true, 'id' => $id, 'redirect' => '/admin/testimonials']);
     }
     json_error('Invalid action');
 }

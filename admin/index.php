@@ -51,7 +51,11 @@ try {
 
 // API routes
 if (strpos($path, '/api/') === 0) {
-    $apiFile = __DIR__ . $path . '.php';
+    // Path may already carry .php (e.g. /api/crud.php) or not (/api/crud)
+    $apiFile = __DIR__ . $path;
+    if (substr($apiFile, -4) !== '.php') {
+        $apiFile .= '.php';
+    }
     if (file_exists($apiFile)) {
         header('Content-Type: application/json');
         require $apiFile;

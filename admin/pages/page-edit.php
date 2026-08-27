@@ -1,5 +1,71 @@
 <?php
-// Stub — prevents admin 404. DB table exists and frontend reads it.
-// Implement CRUD incrementally using api/contact.php pattern (CSRF + validation + INSERT).
+// Page Edit â€” Viata Luxe Guesthouse
+$db = Database::get();
+$page = null;
+$id = (int)($_GET['id'] ?? 0);
+if ($id) {
+    $stmt = $db->prepare('SELECT * FROM pages WHERE id = :id');
+    $stmt->execute(['id' => $id]);
+    $page = $stmt->fetch() ?: null;
+}
+$isNew = $page === null;
+$p = $page ?? [];
 ?>
-<div class="admin-page"><div class="page-header"><h2>Admin</h2><p class="muted">CRUD scaffold — table exists, frontend reads it. Build form + POST next.</p></div><p class="card" style="padding:18px">Routes: pages/sections/settings/navigation/safari/gallery/testimonials/faqs/contact — all backed by sql/schema.sql + includes/functions.php.</p></div>
+<div class="admin-page">
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+    <div><h2><?= $isNew ? 'New Page' : 'Edit Page' ?></h2><p class="muted small"><?= $isNew ? 'Create a new page' : 'Editing "' . e($p['title'] ?? '') . '"' ?></p></div>
+    <a href="/admin/pages" class="btn btn-outline">&larr; Back</a>
+  </div>
+  <div class="card" style="padding:20px;max-width:760px">
+    <form method="POST" action="/admin/api/crud.php" data-ajax>
+      <?= csrf_field() ?>
+      <input type="hidden" name="entity" value="page">
+      <input type="hidden" name="action" value="save">
+      <input type="hidden" name="id" value="<?= (int)($p['id'] ?? 0) ?>">
+
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" name="title" value="<?= e($p['title'] ?? '') ?>" required>
+      </div>
+      <div class="form-group">
+        <label>Slug *</label>
+        <input type="text" name="slug" value="<?= e($p['slug'] ?? '') ?>" required>
+      </div>
+      <div class="form-group">
+        <label>Subtitle</label>
+        <input type="text" name="subtitle" value="<?= e($p['subtitle'] ?? '') ?>">
+      </div>
+      <div class="form-group">
+        <label>Template</label>
+        <select name="template">
+          <?php foreach (['default','homepage','about','apartments','contact','gallery','safari','faq'] as $t): ?>
+            <option value="<?= e($t) ?>" <?= ($p['template'] ?? 'default') === $t ? 'selected' : '' ?>><?= e(ucfirst($t)) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Meta Title</label>
+        <input type="text" name="meta_title" value="<?= e($p['meta_title'] ?? '') ?>">
+      </div>
+      <div class="form-group">
+        <label>Meta Description</label>
+        <textarea name="meta_description"><?= e($p['meta_description'] ?? '') ?></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Sort Order</label>
+          <input type="number" name="sort_order" value="<?= (int)($p['sort_order'] ?? 0) ?>">
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-end;gap:20px;padding-bottom:6px">
+          <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="is_published" value="1" <?= isset($p['is_published']) && $p['is_published'] ? 'checked' : '' ?>> Published</label>
+          <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="is_homepage" value="1" <?= isset($p['is_homepage']) && $p['is_homepage'] ? 'checked' : '' ?>> Homepage</label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Page</button>
+        <a href="/admin/pages" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
