@@ -25,7 +25,7 @@ $pages = $db->query('SELECT * FROM pages ORDER BY sort_order ASC, title ASC')->f
           <td>
             <div class="btn-group">
               <a href="/admin/pages/edit?id=<?= $p['id'] ?>" class="btn btn-sm btn-outline"><?= admin_icon('edit', 13) ?> Edit</a>
-              <form method="POST" action="/admin/api/crud.php" data-ajax style="display:inline">
+              <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
                 <?= csrf_field() ?>
                 <input type="hidden" name="entity" value="page">
                 <input type="hidden" name="action" value="delete">

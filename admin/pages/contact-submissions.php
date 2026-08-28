@@ -25,7 +25,7 @@ $unread = count(array_filter($submissions, fn($s) => !$s['is_read']));
           <td>
             <div class="btn-group">
               <?php if (!$s['is_read']): ?>
-                <form method="POST" action="/admin/api/crud.php" data-ajax style="display:inline">
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
                   <?= csrf_field() ?>
                   <input type="hidden" name="entity" value="contact_submission">
                   <input type="hidden" name="action" value="mark_read">
@@ -33,7 +33,7 @@ $unread = count(array_filter($submissions, fn($s) => !$s['is_read']));
                   <button type="submit" class="btn btn-sm btn-outline"><?= admin_icon('check', 13) ?> Read</button>
                 </form>
               <?php endif; ?>
-              <form method="POST" action="/admin/api/crud.php" data-ajax style="display:inline">
+              <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
                 <?= csrf_field() ?>
                 <input type="hidden" name="entity" value="contact_submission">
                 <input type="hidden" name="action" value="delete">

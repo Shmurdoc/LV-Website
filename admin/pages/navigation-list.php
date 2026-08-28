@@ -31,7 +31,7 @@ $items = $db->query('
           <td>
             <div class="btn-group">
               <a href="/admin/navigation/edit?id=<?= $n['id'] ?>" class="btn btn-sm btn-outline"><?= admin_icon('edit', 13) ?> Edit</a>
-              <form method="POST" action="/admin/api/crud.php" data-ajax style="display:inline">
+              <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
                 <?= csrf_field() ?>
                 <input type="hidden" name="entity" value="navigation">
                 <input type="hidden" name="action" value="delete">

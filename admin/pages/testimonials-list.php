@@ -9,7 +9,7 @@ $testimonials = $db->query('
 ')->fetchAll();
 ?>
 <div class="admin-page">
-  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+  <div class="page-header page-header--spread">
     <div><h2>Testimonials</h2><p class="muted small"><?= count($testimonials) ?> review(s)</p></div>
     <a href="/admin/testimonials/edit" class="btn btn-primary">+ New Testimonial</a>
   </div>
@@ -28,7 +28,7 @@ $testimonials = $db->query('
           <td>
             <div class="btn-group">
               <a href="/admin/testimonials/edit?id=<?= $t['id'] ?>" class="btn btn-sm btn-outline">Edit</a>
-              <form method="POST" action="/admin/api/crud.php" data-ajax style="display:inline">
+              <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
                 <?= csrf_field() ?>
                 <input type="hidden" name="entity" value="testimonial">
                 <input type="hidden" name="action" value="delete">

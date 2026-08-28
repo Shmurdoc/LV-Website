@@ -19,7 +19,7 @@ $s = $activity ?? [];
     <div><h2><?= $isNew ? 'New Safari Activity' : 'Edit Safari Activity' ?></h2><p class="muted small"><?= $isNew ? 'Create a new activity' : 'Editing "' . e($s['title'] ?? '') . '"' ?></p></div>
     <a href="/admin/safari" class="btn btn-outline">&larr; Back</a>
   </div>
-  <div class="form-card"><div class="form-card__body" style="max-width:760px">
+  <div class="form-card"><div class="form-card__body form-card__body--narrow">
     <form method="POST" action="/admin/api/crud.php" data-ajax>
       <?= csrf_field() ?>
       <input type="hidden" name="entity" value="safari">
@@ -53,8 +53,8 @@ $s = $activity ?? [];
           <label>Sort Order</label>
           <input type="number" name="sort_order" value="<?= (int)($s['sort_order'] ?? 0) ?>">
         </div>
-        <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:6px">
-          <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="is_published" value="1" <?= isset($s['is_published']) && $s['is_published'] ? 'checked' : '' ?>> Published</label>
+        <div class="form-group form-row--bottom">
+          <label class="checkbox-label"><input type="checkbox" name="is_published" value="1" <?= isset($s['is_published']) && $s['is_published'] ? 'checked' : '' ?>> Published</label>
         </div>
       </div>
 

@@ -21,7 +21,7 @@ $n = $item ?? [];
     <div><h2><?= $isNew ? 'New Navigation Item' : 'Edit Navigation Item' ?></h2><p class="muted small"><?= $isNew ? 'Create a new menu item' : 'Editing "' . e($n['label'] ?? '') . '"' ?></p></div>
     <a href="/admin/navigation" class="btn btn-outline">&larr; Back</a>
   </div>
-  <div class="form-card"><div class="form-card__body" style="max-width:760px">
+  <div class="form-card"><div class="form-card__body form-card__body--narrow">
     <form method="POST" action="/admin/api/crud.php" data-ajax>
       <?= csrf_field() ?>
       <input type="hidden" name="entity" value="navigation">
@@ -68,9 +68,9 @@ $n = $item ?? [];
           <input type="text" name="css_class" value="<?= e($n['css_class'] ?? '') ?>">
         </div>
       </div>
-      <div class="form-group" style="display:flex;gap:20px">
-        <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="is_published" value="1" <?= isset($n['is_published']) && $n['is_published'] ? 'checked' : '' ?>> Published</label>
-        <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="open_in_new_tab" value="1" <?= isset($n['open_in_new_tab']) && $n['open_in_new_tab'] ? 'checked' : '' ?>> Open in new tab</label>
+      <div class="form-group form-row--gap">
+        <label class="checkbox-label"><input type="checkbox" name="is_published" value="1" <?= isset($n['is_published']) && $n['is_published'] ? 'checked' : '' ?>> Published</label>
+        <label class="checkbox-label"><input type="checkbox" name="open_in_new_tab" value="1" <?= isset($n['open_in_new_tab']) && $n['open_in_new_tab'] ? 'checked' : '' ?>> Open in new tab</label>
       </div>
 
       <div class="form-actions">

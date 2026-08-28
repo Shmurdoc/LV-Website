@@ -31,7 +31,7 @@ $categories = $db->query('
             <div class="btn-group">
               <a href="/admin/gallery/images?category_id=<?= $c['id'] ?>" class="btn btn-sm btn-outline"><?= admin_icon('gallery', 13) ?> Images</a>
               <a href="/admin/gallery/edit?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline"><?= admin_icon('edit', 13) ?> Edit</a>
-              <form method="POST" action="/admin/api/crud.php" data-ajax style="display:inline">
+              <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
                 <?= csrf_field() ?>
                 <input type="hidden" name="entity" value="gallery_category">
                 <input type="hidden" name="action" value="delete">

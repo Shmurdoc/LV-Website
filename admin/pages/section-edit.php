@@ -23,7 +23,7 @@ $sectionTypes = ['hero','about','services','features','text-left','text-right','
     <div><h2><?= $isNew ? 'New Section' : 'Edit Section' ?></h2><p class="muted small"><?= $isNew ? 'Create a new section' : 'Editing "' . e($s['title'] ?? '') . '"' ?></p></div>
     <a href="/admin/sections" class="btn btn-outline">&larr; Back</a>
   </div>
-  <div class="form-card"><div class="form-card__body" style="max-width:760px">
+  <div class="form-card"><div class="form-card__body form-card__body--narrow">
     <form method="POST" action="/admin/api/crud.php" data-ajax>
       <?= csrf_field() ?>
       <input type="hidden" name="entity" value="section">
@@ -76,7 +76,7 @@ $sectionTypes = ['hero','about','services','features','text-left','text-right','
         </div>
       </div>
 
-      <h3 style="margin:20px 0 12px;font-size:1rem">Orientation</h3>
+      <h3 class="section-heading--sm">Orientation</h3>
       <div class="form-row">
         <div class="form-group">
           <label>Layout</label>
@@ -122,8 +122,8 @@ $sectionTypes = ['hero','about','services','features','text-left','text-right','
           <label>Sort Order</label>
           <input type="number" name="sort_order" value="<?= (int)($s['sort_order'] ?? 0) ?>">
         </div>
-        <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:6px">
-          <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="is_visible" value="1" <?= !$isNew && !isset($s['is_visible']) || (isset($s['is_visible']) && $s['is_visible']) ? 'checked' : '' ?>> Visible</label>
+        <div class="form-group form-row--bottom">
+          <label class="checkbox-label"><input type="checkbox" name="is_visible" value="1" <?= !$isNew && !isset($s['is_visible']) || (isset($s['is_visible']) && $s['is_visible']) ? 'checked' : '' ?>> Visible</label>
         </div>
       </div>
 

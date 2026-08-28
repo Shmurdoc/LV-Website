@@ -16,7 +16,7 @@ $p = $page ?? [];
     <div><h2><?= $isNew ? 'New Page' : 'Edit Page' ?></h2><p class="muted small"><?= $isNew ? 'Create a new page' : 'Editing "' . e($p['title'] ?? '') . '"' ?></p></div>
     <a href="/admin/pages" class="btn btn-outline">&larr; Back</a>
   </div>
-  <div class="form-card"><div class="form-card__body" style="max-width:760px">
+  <div class="form-card"><div class="form-card__body form-card__body--narrow">
     <form method="POST" action="/admin/api/crud.php" data-ajax>
       <?= csrf_field() ?>
       <input type="hidden" name="entity" value="page">
@@ -56,9 +56,9 @@ $p = $page ?? [];
           <label>Sort Order</label>
           <input type="number" name="sort_order" value="<?= (int)($p['sort_order'] ?? 0) ?>">
         </div>
-        <div class="form-group" style="display:flex;align-items:flex-end;gap:20px;padding-bottom:6px">
-          <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="is_published" value="1" <?= isset($p['is_published']) && $p['is_published'] ? 'checked' : '' ?>> Published</label>
-          <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" name="is_homepage" value="1" <?= isset($p['is_homepage']) && $p['is_homepage'] ? 'checked' : '' ?>> Homepage</label>
+        <div class="form-group form-row--gap form-row--bottom">
+          <label class="checkbox-label"><input type="checkbox" name="is_published" value="1" <?= isset($p['is_published']) && $p['is_published'] ? 'checked' : '' ?>> Published</label>
+          <label class="checkbox-label"><input type="checkbox" name="is_homepage" value="1" <?= isset($p['is_homepage']) && $p['is_homepage'] ? 'checked' : '' ?>> Homepage</label>
         </div>
       </div>
 
