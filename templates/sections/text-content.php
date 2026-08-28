@@ -7,7 +7,7 @@
 ?>
 
 <?php if (!empty($section['title'])): ?>
-<h2 class="section-heading reveal"><?= $section['title'] ?></h2>
+<h2 class="section-heading reveal"><?= e($section['title']) ?></h2>
 <?php endif; ?>
 
 <?php if (!empty($section['subtitle'])): ?>
@@ -15,5 +15,5 @@
 <?php endif; ?>
 
 <?php if (!empty($section['content'])): ?>
-<div class="section-content prose reveal"><?= $section['content'] ?></div>
+<div class="section-content prose reveal"><?= e($section['content']) ?></div>
 <?php endif; ?>

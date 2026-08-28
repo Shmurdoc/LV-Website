@@ -13,6 +13,21 @@ RewriteEngine On
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
 </IfModule>
 
+# =====================================================
+# BLOCK SENSITIVE FILES
+# =====================================================
+<FilesMatch "^(composer\.(json|lock)|package\.json|\.env.*|README\.md|CHANGELOG\.md)$">
+    Require all denied
+</FilesMatch>
+
+# Block access to hidden files (.git, .env, etc.)
+<IfModule mod_rewrite.c>
+    RewriteRule (^\.|/\.) - [F,L]
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
+
 # Force HTTPS in production (APP_ENV=production)
 <IfModule mod_rewrite.c>
     RewriteCond %{HTTPS} off

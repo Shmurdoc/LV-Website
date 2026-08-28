@@ -26,7 +26,7 @@ if (!$apartment) {
 $images = get_apartment_images($apartment['id']);
 $amenities = get_apartment_amenities($apartment['id']);
 $testimonials = get_apartment_testimonials($apartment['id']);
-$allTestimonial = $featured ?? get_featured_testimonials();
+$allTestimonial = get_featured_testimonials();
 
 // Build a page object for header (SEO)
 $page = [
@@ -64,7 +64,7 @@ require __DIR__ . '/../templates/header.php';
                 <span class="chip">From <?= format_price((float)$apartment['price_per_night']) ?></span>
             </div>
         </div>
-    </header>
+    </section>
 
     <!-- Photo gallery -->
     <?php if (!empty($images)): ?>

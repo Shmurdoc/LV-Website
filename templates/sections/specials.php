@@ -12,7 +12,7 @@
         <span class="specials__label"><?= e($section['subtitle']) ?></span>
         <?php endif; ?>
         <?php if (!empty($section['title'])): ?>
-        <h2 class="specials__title"><?= $section['title'] ?></h2>
+        <h2 class="specials__title"><?= e($section['title']) ?></h2>
         <?php endif; ?>
         <?php if (!empty($section['content'])): ?>
         <p class="specials__detail"><?= e($section['content']) ?></p>

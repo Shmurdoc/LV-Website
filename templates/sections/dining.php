@@ -33,7 +33,7 @@ if (!empty($section['content'])) {
         <span class="kicker"><?= e($section['subtitle']) ?></span>
         <?php endif; ?>
         <?php if (!empty($section['title'])): ?>
-        <h2 class="section-heading"><?= $section['title'] ?></h2>
+        <h2 class="section-heading"><?= e($section['title']) ?></h2>
         <?php endif; ?>
         <div class="dining__grid" style="margin-top:16px">
         <?php foreach ($dining_items as $item): ?>

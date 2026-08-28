@@ -52,7 +52,7 @@ $imageFirst  = ($layout === 'text-right' || $layout === 'image-top');
         <p class="subhead reveal"><?= e($section['subtitle']) ?></p>
         <?php endif; ?>
         <?php if (!empty($section['content'])): ?>
-        <div class="prose reveal"><?= $section['content'] ?></div>
+        <div class="prose reveal"><?= sanitize_html($section['content']) ?></div>
         <?php endif; ?>
         <?php if (!empty($section['link_url']) && !empty($section['link_text'])): ?>
         <div style="margin-top:16px" class="reveal">
@@ -81,7 +81,7 @@ $imageFirst  = ($layout === 'text-right' || $layout === 'image-top');
         <p class="subhead reveal"><?= e($section['subtitle']) ?></p>
         <?php endif; ?>
         <?php if (!empty($section['content'])): ?>
-        <div class="prose reveal" style="margin-top:12px"><?= $section['content'] ?></div>
+<div class="prose reveal" style="margin-top:12px"><?= sanitize_html($section['content']) ?></div>
         <?php endif; ?>
         <?php if (!empty($section['link_url']) && !empty($section['link_text'])): ?>
         <div style="margin-top:16px" class="reveal">

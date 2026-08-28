@@ -11,7 +11,7 @@ $booking = $booking ?? settings_group('booking');
 <div class="book__inner reveal">
     <div>
         <?php if (!empty($section['title'])): ?>
-        <h2 class="book__title"><?= $section['title'] ?></h2>
+        <h2 class="book__title"><?= e($section['title']) ?></h2>
         <?php endif; ?>
         <?php if (!empty($section['content'])): ?>
         <p class="book__text" style="margin-top:12px"><?= e($section['content']) ?></p>

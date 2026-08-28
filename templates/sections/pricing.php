@@ -13,7 +13,7 @@ $apartments = get_apartments();
     <?php if (!empty($section['subtitle'])): ?>
     <span class="kicker"><?= e($section['subtitle']) ?></span>
     <?php endif; ?>
-    <h2 class="section-heading"><?= $section['title'] ?></h2>
+    <h2 class="section-heading"><?= e($section['title']) ?></h2>
     <?php if (!empty($section['content'])): ?>
     <p class="subhead"><?= e($section['content']) ?></p>
     <?php endif; ?>

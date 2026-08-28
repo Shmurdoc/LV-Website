@@ -364,6 +364,23 @@ function e(?string $value): string
 }
 
 /**
+ * Sanitize HTML content — strip dangerous tags/attributes while allowing safe formatting
+ * Used for CMS content fields that contain rich HTML (paragraphs, links, etc.)
+ */
+function sanitize_html(string $html): string
+{
+    $allowed = '<p><br><strong><em><b><i><a><ul><ol><li><h2><h3><h4><h5><h6><img><blockquote><hr>';
+    $html = strip_tags($html, $allowed);
+    // Remove event handlers from all tags
+    $html = preg_replace('/\s+on\w+\s*=\s*(["\'][^"\']*["\']|\S+)/i', '', $html);
+    // Remove javascript: protocol from href/src
+    $html = preg_replace('/(href|src)\s*=\s*["\']?\s*javascript\s*:/i', '$1="#"', $html);
+    // Remove data: protocol from src
+    $html = preg_replace('/src\s*=\s*["\']?\s*data\s*:/i', 'src="#"', $html);
+    return $html;
+}
+
+/**
  * Escape and echo
  */
 function ee(?string $value): void
@@ -381,6 +398,21 @@ function ee(?string $value): void
 function url(string $path = ''): string
 {
     return rtrim(BASE_URL, '/') . '/' . ltrim($path, '/');
+}
+
+/**
+ * Validate URL scheme — only allow http, https, mailto, tel
+ * Prevents javascript:, data:, vbscript: XSS injection in href attributes
+ */
+function safe_url(string $url): string
+{
+    $url = trim($url);
+    if ($url === '') return '';
+    $scheme = parse_url($url, PHP_URL_SCHEME);
+    if ($scheme === null || in_array(strtolower($scheme), ['http', 'https', 'mailto', 'tel', ''], true)) {
+        return htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+    }
+    return '#';
 }
 
 /**

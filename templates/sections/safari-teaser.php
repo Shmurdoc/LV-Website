@@ -14,7 +14,7 @@ $activities = get_safari_activities();
         <div class="kicker"><?= e($section['subtitle']) ?></div>
         <?php endif; ?>
         <?php if (!empty($section['title'])): ?>
-        <h2 class="section-heading"><?= $section['title'] ?></h2>
+        <h2 class="section-heading"><?= e($section['title']) ?></h2>
         <?php endif; ?>
         <?php if (!empty($section['content'])): ?>
         <p class="subhead" style="margin-top:10px"><?= e($section['content']) ?></p>

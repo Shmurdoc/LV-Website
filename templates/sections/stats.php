@@ -15,7 +15,7 @@ if (!empty($section['content'])) {
 ?>
 
 <?php if (!empty($section['title'])): ?>
-<h2 class="section-heading center reveal"><?= $section['title'] ?></h2>
+<h2 class="section-heading center reveal"><?= e($section['title']) ?></h2>
 <?php endif; ?>
 
 <div class="stats-bar__inner" style="margin-top:24px">

@@ -82,7 +82,7 @@ if (!empty($section['background_image']) && !empty($heroImg)) {
             <p class="section-subtitle"><?= e($section['subtitle']) ?></p>
         <?php endif;
         if (!empty($section['content'])): ?>
-            <div class="section-content"><?= $section['content'] ?></div>
+            <div class="section-content"><?= e($section['content']) ?></div>
         <?php endif;
     }
     ?>

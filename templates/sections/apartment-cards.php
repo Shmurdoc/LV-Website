@@ -9,7 +9,7 @@ $apartments = $apartments ?? get_apartments();
 ?>
 
 <?php if (!empty($section['title'])): ?>
-<h2 class="section-heading reveal"><?= $section['title'] ?></h2>
+<h2 class="section-heading reveal"><?= e($section['title']) ?></h2>
 <?php endif; ?>
 
 <section class="rooms" style="margin-top:14px">
