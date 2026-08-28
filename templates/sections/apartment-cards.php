@@ -12,7 +12,7 @@ $apartments = $apartments ?? get_apartments();
 <h2 class="section-heading reveal"><?= e($section['title']) ?></h2>
 <?php endif; ?>
 
-<section class="rooms" style="margin-top:14px">
+<section class="rooms mt-14">
 <?php foreach ($apartments as $i => $apt): ?>
     <article class="room reveal<?= $i % 2 === 1 ? ' room--reverse' : '' ?>" data-grade="<?= $i + 1 ?>">
         <?php

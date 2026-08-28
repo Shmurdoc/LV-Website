@@ -18,7 +18,7 @@ if (!empty($section['content'])) {
 <h2 class="section-heading center reveal"><?= e($section['title']) ?></h2>
 <?php endif; ?>
 
-<div class="stats-bar__inner" style="margin-top:24px">
+<div class="stats-bar__inner mt-24">
 <?php foreach ($stats as $i => $stat): ?>
     <div class="stat-item reveal reveal--delay-<?= $i ?>">
         <span class="stat-item__number counter" data-target="<?= e($stat['value'] ?? '0') ?>"><?= e($stat['value'] ?? '0') ?></span>

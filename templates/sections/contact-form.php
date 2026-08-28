@@ -12,10 +12,10 @@
 <p class="subhead reveal"><?= e($section['subtitle']) ?></p>
 <?php endif; ?>
 
-<form id="contactForm" method="POST" action="<?= url('/api/contact.php') ?>" class="reveal" style="display:grid;gap:16px;max-width:640px;margin-top:18px">
+<form id="contactForm" method="POST" action="<?= url('/api/contact.php') ?>" class="contact-form reveal">
     <?= csrf_field() ?>
     <!-- Honeypot (security) -->
-    <input type="text" name="website" value="" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <input type="text" name="website" value="" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
     <div class="field">
         <label class="field__label" for="cName">Name *</label>
         <input class="field__input" id="cName" name="name" required autocomplete="name" maxlength="255">
@@ -29,7 +29,7 @@
         <textarea class="field__input" id="cMsg" name="message" rows="5" required maxlength="5000" placeholder="How can we help?"></textarea>
     </div>
     <div id="contactMsg" class="field__hint" role="status" aria-live="polite" hidden></div>
-    <button type="submit" class="btn btn--navy" style="justify-self:start">Send Message</button>
+    <button type="submit" class="btn btn--navy">Send Message</button>
 </form>
 <script>
 document.getElementById('contactForm')?.addEventListener('submit', async (e)=>{

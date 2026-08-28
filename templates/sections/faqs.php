@@ -19,7 +19,7 @@ if (empty($faqs) && empty($section['title'])) return;
 ?>
 
 <?php if (!empty($section['title'])): ?>
-<div class="reveal" style="display:grid;gap:8px;max-width:68ch">
+<div class="faqs__head reveal">
     <?php if (!empty($section['subtitle'])): ?>
     <span class="kicker"><?= e($section['subtitle']) ?></span>
     <?php endif; ?>
@@ -31,14 +31,14 @@ if (empty($faqs) && empty($section['title'])) return;
 <?php endif; ?>
 
 <?php if (!empty($faqs)): ?>
-<div class="reveal" style="display:grid;gap:12px;margin-top:24px;max-width:68ch" role="list">
+<div class="faqs__list reveal" role="list">
 <?php foreach ($faqs as $faq): ?>
-    <details class="card" style="padding:16px 18px" role="listitem">
-        <summary style="cursor:pointer;font-weight:700;color:var(--navy);list-style:none;display:flex;justify-content:space-between;gap:16px">
+    <details class="faqs__item card" role="listitem">
+        <summary class="faqs__summary">
             <span><?= e($faq['question']) ?></span>
-            <span aria-hidden="true" style="color:var(--gold)">+</span>
+            <span class="faqs__toggle" aria-hidden="true">+</span>
         </summary>
-        <div class="prose" style="margin-top:10px;color:var(--ink-70)"><?= nl2br(e($faq['answer'])) ?></div>
+        <div class="faqs__answer prose"><?= nl2br(e($faq['answer'])) ?></div>
     </details>
 <?php endforeach; ?>
 </div>

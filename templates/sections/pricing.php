@@ -20,9 +20,9 @@ $apartments = get_apartments();
 </div>
 <?php endif; ?>
 
-<div class="pricing__cards" style="margin-top:32px">
+<div class="pricing__cards mt-32">
 <?php foreach ($apartments as $i => $apt): ?>
-    <article class="price-card reveal reveal--delay-<?= min($i, 3) ?>"<?= $i === 2 ? ' style="border-color:var(--gold)"' : '' ?>>
+    <article class="price-card reveal reveal--delay-<?= min($i, 3) ?><?= $i === 2 ? ' price-card--featured' : '' ?>">
         <?php
         $img = $apt['hero_image'] ?? $apt['image'] ?? null;
         $roomSize = $apt['room_size_m2'] ?? $apt['room_size'] ?? null;

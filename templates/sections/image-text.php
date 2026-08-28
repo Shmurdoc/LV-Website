@@ -25,22 +25,22 @@ $imageFirst  = ($layout === 'text-right' || $layout === 'image-top');
     <p class="subhead reveal"><?= e($section['subtitle']) ?></p>
     <?php endif; ?>
     <?php if (!empty($section['content'])): ?>
-    <div class="prose reveal" style="margin-top:12px"><?= $section['content'] ?></div>
+    <div class="prose reveal mt-12"><?= $section['content'] ?></div>
     <?php endif; ?>
     <?php if (!empty($section['link_url']) && !empty($section['link_text'])): ?>
-    <div style="margin-top:16px" class="reveal">
+    <div class="mt-16 reveal">
         <a class="btn btn--navy" href="<?= e($section['link_url']) ?>"><?= e($section['link_text']) ?></a>
     </div>
     <?php endif; ?>
 </div>
 <?php elseif ($isImageOnly && !empty($section['image'])): ?>
-<div class="card__media reveal" style="border-radius:var(--radius-lg); overflow:hidden">
-    <img src="<?= e(image_url($section['image'])) ?>" alt="<?= e($section['title'] ?? '') ?>" loading="lazy" decoding="async" style="width:100%;height:auto">
+<div class="img-text-media card__media reveal">
+    <img src="<?= e(image_url($section['image'])) ?>" alt="<?= e($section['title'] ?? '') ?>" loading="lazy" decoding="async">
 </div>
 <?php elseif ($isVertical): ?>
-<div style="display:grid; gap:24px; align-items:center">
+<div class="layout-stacked">
     <?php if ($layout === 'image-top' && !empty($section['image'])): ?>
-    <div class="card__media" style="border-radius:var(--radius-lg); overflow:hidden">
+    <div class="img-text-media card__media">
         <img src="<?= e(image_url($section['image'])) ?>" alt="<?= e($section['title'] ?? '') ?>" loading="lazy" decoding="async">
     </div>
     <?php endif; ?>
@@ -55,22 +55,22 @@ $imageFirst  = ($layout === 'text-right' || $layout === 'image-top');
         <div class="prose reveal"><?= sanitize_html($section['content']) ?></div>
         <?php endif; ?>
         <?php if (!empty($section['link_url']) && !empty($section['link_text'])): ?>
-        <div style="margin-top:16px" class="reveal">
+        <div class="mt-16 reveal">
             <a class="btn btn--navy" href="<?= e($section['link_url']) ?>"><?= e($section['link_text']) ?></a>
         </div>
         <?php endif; ?>
     </div>
     <?php if ($layout === 'text-top' && !empty($section['image'])): ?>
-    <div class="card__media" style="border-radius:var(--radius-lg); overflow:hidden">
+    <div class="img-text-media card__media">
         <img src="<?= e(image_url($section['image'])) ?>" alt="<?= e($section['title'] ?? '') ?>" loading="lazy" decoding="async">
     </div>
     <?php endif; ?>
 </div>
 <?php else: ?>
-<div style="display:grid; grid-template-columns:1.08fr 0.92fr; gap:32px; align-items:center">
+<div class="layout-2col">
     <?php if ($imageFirst && !empty($section['image'])): ?>
-    <div class="card__media reveal" style="border-radius:var(--radius-lg); overflow:hidden; min-height:420px">
-        <img src="<?= e(image_url($section['image'])) ?>" alt="<?= e($section['title'] ?? '') ?>" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">
+    <div class="img-text-media--tall card__media reveal">
+        <img src="<?= e(image_url($section['image'])) ?>" alt="<?= e($section['title'] ?? '') ?>" loading="lazy" decoding="async">
     </div>
     <?php endif; ?>
     <div>
@@ -81,17 +81,17 @@ $imageFirst  = ($layout === 'text-right' || $layout === 'image-top');
         <p class="subhead reveal"><?= e($section['subtitle']) ?></p>
         <?php endif; ?>
         <?php if (!empty($section['content'])): ?>
-<div class="prose reveal" style="margin-top:12px"><?= sanitize_html($section['content']) ?></div>
+<div class="prose reveal mt-12"><?= sanitize_html($section['content']) ?></div>
         <?php endif; ?>
         <?php if (!empty($section['link_url']) && !empty($section['link_text'])): ?>
-        <div style="margin-top:16px" class="reveal">
+        <div class="mt-16 reveal">
             <a class="btn btn--navy" href="<?= e($section['link_url']) ?>"><?= e($section['link_text']) ?></a>
         </div>
         <?php endif; ?>
     </div>
     <?php if (!$imageFirst && !empty($section['image'])): ?>
-    <div class="card__media reveal" style="border-radius:var(--radius-lg); overflow:hidden; min-height:420px">
-        <img src="<?= e(image_url($section['image'])) ?>" alt="<?= e($section['title'] ?? '') ?>" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">
+    <div class="img-text-media--tall card__media reveal">
+        <img src="<?= e(image_url($section['image'])) ?>" alt="<?= e($section['title'] ?? '') ?>" loading="lazy" decoding="async">
     </div>
     <?php endif; ?>
 </div>

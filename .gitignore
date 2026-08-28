@@ -12,3 +12,8 @@ Luxury_Images/
 uploads/
 .env.backup
 tests/*.png
+DATABASE_ARCHITECTURE.md
+Documentation.md
+IMPLEMENTATION_PLAN.md
+PLAN.md
+index.html

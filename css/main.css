@@ -1615,6 +1615,9 @@ a:focus-visible, button:focus-visible, .btn:focus-visible{outline:2px solid var(
 .grid-2col{display:grid; grid-template-columns:1.08fr 0.92fr; gap:32px; align-items:center}
 .grid-2col-even{display:grid; grid-template-columns:1fr 1fr; gap:24px}
 @media (max-width:880px){ .grid-2col{grid-template-columns:1fr} }
+@media (max-width:880px){ .layout-2col{grid-template-columns:1fr} }
+@media (max-width:880px){ .layout-2col-wide{grid-template-columns:1fr} }
+@media (max-width:640px){ .contact-form{max-width:100%} }
 @media (max-width:640px){ .grid-2col-even{grid-template-columns:1fr} }
 
 /* ——— Inline style helpers (extracted from section templates) ——— */
@@ -1622,7 +1625,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible{outline:2px solid var(
 .form-grid label{display:grid; gap:6px}
 .form-grid input,.form-grid textarea{padding:clamp(10px,1.8vw,14px) clamp(12px,2vw,16px); border:1px solid var(--line); border-radius:var(--radius-md); background:var(--white); font-size:15px; transition:border-color var(--dur) var(--ease-out)}
 .form-grid input:focus,.form-grid textarea:focus{outline:none; border-color:var(--gold)}
-.form-grid button{justify-self:start}
+.form-grid button,.contact-form button{justify-self:start}
 .honeypot{display:none}
 
 .activity-grid{display:grid; gap:26px; margin-top:26px}
@@ -1641,11 +1644,95 @@ a:focus-visible, button:focus-visible, .btn:focus-visible{outline:2px solid var(
 .section-gap-sm{margin-top:14px}
 .section-gap-md{margin-top:18px}
 .section-gap-lg{margin-top:26px}
+
+/* Spacing utilities */
+.mt-6{margin-top:6px}
+.mt-8{margin-top:8px}
+.mt-10{margin-top:10px}
 .mt-12{margin-top:12px}
+.mt-14{margin-top:14px}
 .mt-16{margin-top:16px}
+.mt-18{margin-top:18px}
 .mt-22{margin-top:22px}
 .mt-24{margin-top:24px}
+.mt-26{margin-top:26px}
 .mt-28{margin-top:28px}
 .mt-32{margin-top:32px}
 .mt-44{margin-top:44px}
+
+/* Grid utilities */
+.layout-stacked{display:grid; gap:24px; align-items:center}
+.layout-2col{display:grid; grid-template-columns:1.08fr 0.92fr; gap:32px; align-items:center}
+.layout-2col-wide{display:grid; grid-template-columns:1.1fr 0.9fr; gap:28px; align-items:center}
+
+/* Flex utilities */
+.flex-row-wrap{display:flex; gap:10px; flex-wrap:wrap}
+.flex-between-end{display:flex; justify-content:space-between; align-items:end; gap:24px; flex-wrap:wrap}
+.flex-center{display:flex; justify-content:center}
+
+/* Media containers */
+.activity-media{position:relative; border-radius:var(--radius-lg); overflow:hidden; height:300px}
+.activity-media img{width:100%; height:100%; object-fit:cover}
+.activity-overlay{position:absolute; inset:0; display:grid; place-items:center; background:rgba(11,26,46,0.30)}
+.activity-play{width:56px; height:56px; border-radius:999px; background:rgba(248,246,241,0.92); display:grid; place-items:center; font-size:20px; color:var(--navy)}
+
+/* Image-text containers */
+.img-text-media{border-radius:var(--radius-lg); overflow:hidden}
+.img-text-media--tall{border-radius:var(--radius-lg); overflow:hidden; min-height:420px}
+.img-text-media img{width:100%; height:100%; object-fit:cover}
+
+/* Gallery */
+.gallery-section{margin-top:44px}
+.gallery-section .kicker{display:flex; align-items:center; gap:10px}
+.gallery-section .kicker .small{color:var(--ink-55)}
+.gallery-section .section-heading{font-size:clamp(24px,3vw,34px)}
+.gallery-section .preview-grid{margin-top:18px}
+.gallery-header .preview-grid{margin-top:22px}
+.gallery-empty{grid-column:1/-1}
+
+/* FAQs */
+.faqs__head{display:grid; gap:8px; max-width:68ch}
+.faqs__list{display:grid; gap:12px; margin-top:24px; max-width:68ch}
+.faqs__item{padding:16px 18px}
+.faqs__summary{cursor:pointer; font-weight:700; color:var(--navy); list-style:none; display:flex; justify-content:space-between; gap:16px}
+.faqs__toggle{color:var(--gold)}
+.faqs__answer{margin-top:10px; color:var(--ink-70)}
+
+/* Safari teaser */
+.safari-teaser__body-title{font-family:var(--font-display); font-weight:300; font-size:22px}
+.safari-teaser__body-sub{font-size:13px; color:rgba(248,246,241,0.7)}
+.safari-teaser__links{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
+
+/* Booking CTA */
+.book__text{margin-top:12px}
+.book__label{color:var(--gold-300); margin-bottom:10px}
+.book__cta-btn{width:100%; justify-content:center}
+.book__fine-print{color:rgba(248,246,241,0.6); margin-top:10px; text-align:center}
+
+/* Contact form */
+.contact-form{display:grid; gap:16px; max-width:640px; margin-top:18px}
+
+/* Pricing */
+.price-card--featured{border-color:var(--gold)}
+
+/* Dining */
+.dining__grid{margin-top:16px}
+
+/* Stats */
+.stats-bar__inner{margin-top:24px}
+
+/* Text alignment */
+.text-center{text-align:center}
+
+/* Opacity */
+.opacity-80{opacity:0.8}
+
+/* Hero link color */
+.hero__link{color:rgba(248,246,241,0.8)}
+
+/* Section headings */
+.section-heading.center{text-align:center}
+
+/* Max-width constraint */
+.constrain-68ch{max-width:68ch}
 

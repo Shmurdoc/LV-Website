@@ -35,7 +35,7 @@ if (!empty($section['content'])) {
         <?php if (!empty($section['title'])): ?>
         <h2 class="section-heading"><?= e($section['title']) ?></h2>
         <?php endif; ?>
-        <div class="dining__grid" style="margin-top:16px">
+        <div class="dining__grid mt-16">
         <?php foreach ($dining_items as $item): ?>
             <div class="dining-item">
                 <h3 class="dining-item__title"><?= e($item['title'] ?? '') ?></h3>

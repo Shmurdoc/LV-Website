@@ -21,7 +21,7 @@ $reviews = get_featured_testimonials();
 <?php if (empty($reviews)): ?>
 <p class="muted small" role="status">No testimonials yet — feature reviews in admin to display here.</p>
 <?php else: ?>
-<div class="reviews__grid" style="margin-top:28px">
+<div class="reviews__grid mt-28">
 <?php foreach ($reviews as $i => $review): ?>
     <article class="review reveal reveal--delay-<?= min($i, 3) ?>">
         <div class="review__stars" aria-label="<?= (int)$review['rating'] ?> out of 5 stars">

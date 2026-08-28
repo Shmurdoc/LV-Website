@@ -30,7 +30,7 @@ if (!empty($section['content'])) {
     </div>
     <?php elseif (!empty($section['link_text'])): ?>
     <div class="hero__actions reveal reveal--delay-2">
-        <span class="kicker" style="color:rgba(248,246,241,0.8)"><?= e($section['link_text']) ?></span>
+        <span class="hero__link kicker"><?= e($section['link_text']) ?></span>
     </div>
     <?php endif; ?>
 <?php endif; ?>

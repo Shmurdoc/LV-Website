@@ -24,16 +24,16 @@ if ($isGalleryPage):
 <?php foreach ($categories as $cat): ?>
     <?php $catImages = get_gallery_images((int)$cat['id']); ?>
     <?php if (empty($catImages)) continue; ?>
-    <section class="reveal" style="margin-top:44px">
-        <div class="kicker" style="display:flex;align-items:center;gap:10px">
+    <section class="gallery-section reveal">
+        <div class="kicker flex-row-wrap">
             <?= e($cat['name']) ?>
-            <span class="small muted" style="color:var(--ink-55)"><?= count($catImages) ?> frames</span>
+            <span class="small muted"><?= count($catImages) ?> frames</span>
         </div>
-        <h3 class="section-heading" style="font-size:clamp(24px,3vw,34px)"><?= e($cat['name']) ?></h3>
+        <h3 class="section-heading"><?= e($cat['name']) ?></h3>
         <?php if (!empty($cat['description'])): ?>
         <p class="subhead"><?= e($cat['description']) ?></p>
         <?php endif; ?>
-        <div class="preview-grid" style="margin-top:18px" role="list">
+        <div class="preview-grid" role="list">
         <?php foreach ($catImages as $img): ?>
             <img src="<?= e(image_url($img['image_path'])) ?>" alt="<?= e($img['alt_text'] ?? $cat['name'] . ' image') ?>" width="400" height="300" loading="lazy" decoding="async" role="listitem">
         <?php endforeach; ?>
@@ -45,7 +45,7 @@ if ($isGalleryPage):
 <?php else: ?>
 <?php $gallery_images = get_featured_gallery(12); ?>
 <?php if (!empty($section['title'])): ?>
-<div class="reveal" style="display:flex; justify-content:space-between; align-items:end; gap:24px; flex-wrap:wrap">
+<div class="flex-between-end reveal">
     <div>
         <div class="kicker"><?= e($section['subtitle'] ?? 'Gallery') ?></div>
         <h2 class="section-heading"><?= e($section['title']) ?></h2>
@@ -56,9 +56,9 @@ if ($isGalleryPage):
 </div>
 <?php endif; ?>
 
-<div class="preview-grid reveal" style="margin-top:22px" role="list">
+<div class="gallery-header preview-grid reveal" role="list">
 <?php if (empty($gallery_images)): ?>
-    <p class="muted small" role="status" style="grid-column:1/-1">No images yet — add photos in Gallery Categories.</p>
+    <p class="gallery-empty muted small" role="status">No images yet — add photos in Gallery Categories.</p>
 <?php else: ?>
 <?php foreach ($gallery_images as $img): ?>
     <img src="<?= e(image_url($img['image_path'])) ?>" alt="<?= e($img['alt_text'] ?? $img['category_name'] ?? 'Gallery image') ?>" loading="lazy" decoding="async" width="400" height="300" role="listitem">
