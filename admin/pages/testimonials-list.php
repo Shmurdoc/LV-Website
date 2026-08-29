@@ -1,45 +1,84 @@
 <?php
 // Testimonials List — Viata Luxe Guesthouse
 $db = Database::get();
-$testimonials = $db->query('
+$trash = !empty($_GET['trash']);
+$params = [];
+$where = active_where($params, 't', include_deleted: $trash);
+$testimonials = $db->prepare("
     SELECT t.*, a.slug AS apartment_slug, a.name AS apartment_name
     FROM testimonials t
     LEFT JOIN apartments a ON a.id = t.apartment_id
-    ORDER BY t.sort_order ASC, t.id DESC
-')->fetchAll();
+    $where
+    ORDER BY t.deleted_at IS NULL DESC, t.sort_order ASC, t.id DESC
+");
+$testimonials->execute($params);
+$testimonials = $testimonials->fetchAll();
+
+function testimonial_status_badge(array $row): string {
+    if (!empty($row['deleted_at'])) return '<span class="badge badge-trashed">Trashed</span>';
+    if (!empty($row['visible_from']) && $row['visible_from'] > date('Y-m-d H:i:s')) return '<span class="badge badge-scheduled">Scheduled</span>';
+    if (!empty($row['visible_until']) && $row['visible_until'] < date('Y-m-d H:i:s')) return '<span class="badge badge-expired">Expired</span>';
+    return $row['is_published'] ? '<span class="badge badge-published">Published</span>' : '<span class="badge badge-draft">Draft</span>';
+}
 ?>
 <div class="admin-page">
-  <div class="page-header page-header--spread">
-    <div><h2>Testimonials</h2><p class="muted small"><?= count($testimonials) ?> review(s)</p></div>
-    <a href="/admin/testimonials/edit" class="btn btn-primary">+ New Testimonial</a>
+  <div class="page-header page-header-inline">
+    <div><h2><?= $trash ? 'Trashed Testimonials' : 'Testimonials' ?></h2><p class="muted small"><?= count($testimonials) ?> review(s)</p></div>
+    <div class="btn-group">
+      <?php if ($trash): ?>
+        <a href="/admin/testimonials" class="btn btn-outline"><?= admin_icon('list', 14) ?> Active</a>
+      <?php else: ?>
+        <a href="/admin/testimonials?trash=1" class="btn btn-outline"><?= admin_icon('trash', 14) ?> Trash</a>
+        <a href="/admin/testimonials/edit" class="btn btn-primary"><?= admin_icon('plus', 14) ?> New Testimonial</a>
+      <?php endif; ?>
+    </div>
   </div>
   <?php if (empty($testimonials)): ?>
-    <div class="empty-state"><p>No testimonials yet.</p></div>
+    <div class="empty-state"><p><?= $trash ? 'Trash is empty.' : 'No testimonials yet.' ?></p></div>
   <?php else: ?>
+    <div class="data-table-wrap">
     <table class="data-table">
       <thead><tr><th>Reviewer</th><th>Rating</th><th>Apartment</th><th>Status</th><th>Actions</th></tr></thead>
       <tbody>
       <?php foreach ($testimonials as $t): ?>
-        <tr>
-          <td><strong><?= e($t['reviewer_name']) ?></strong><?php if ($t['is_featured']) echo ' <span class="badge-published">Featured</span>'; ?></td>
+        <tr class="<?= !empty($t['deleted_at']) ? 'row-trashed' : '' ?>">
+          <td><strong><?= e($t['reviewer_name']) ?></strong><?php if ($t['is_featured']) echo ' <span class="badge badge-published">Featured</span>'; ?></td>
           <td><span class="rating-stars" title="<?= (int)$t['rating'] ?>/5"><?= str_repeat('★', (int)$t['rating']) ?></span></td>
           <td><?= e($t['apartment_name'] ?? '—') ?></td>
-          <td><span class="<?= $t['is_published'] ? 'badge-published' : 'badge-draft' ?>"><?= $t['is_published'] ? 'Published' : 'Draft' ?></span></td>
+          <td><?= testimonial_status_badge($t) ?></td>
           <td>
             <div class="btn-group">
-              <a href="/admin/testimonials/edit?id=<?= $t['id'] ?>" class="btn btn-sm btn-outline">Edit</a>
-              <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
-                <?= csrf_field() ?>
-                <input type="hidden" name="entity" value="testimonial">
-                <input type="hidden" name="action" value="delete">
-                <input type="hidden" name="id" value="<?= $t['id'] ?>">
-                <button type="submit" class="btn btn-sm btn-danger" data-confirm="Delete this testimonial?">Delete</button>
-              </form>
+              <?php if ($trash): ?>
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="entity" value="testimonial">
+                  <input type="hidden" name="action" value="restore">
+                  <input type="hidden" name="id" value="<?= $t['id'] ?>">
+                  <button type="submit" class="btn btn-sm btn-outline" data-confirm="Restore?">Restore</button>
+                </form>
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="entity" value="testimonial">
+                  <input type="hidden" name="action" value="permanent_delete">
+                  <input type="hidden" name="id" value="<?= $t['id'] ?>">
+                  <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Permanently delete?">Delete Forever</button>
+                </form>
+              <?php else: ?>
+                <a href="/admin/testimonials/edit?id=<?= $t['id'] ?>" class="btn btn-sm btn-outline">Edit</a>
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="entity" value="testimonial">
+                  <input type="hidden" name="action" value="delete">
+                  <input type="hidden" name="id" value="<?= $t['id'] ?>">
+                  <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Move to trash?">Delete</button>
+                </form>
+              <?php endif; ?>
             </div>
           </td>
         </tr>
       <?php endforeach; ?>
       </tbody>
     </table>
+    </div>
   <?php endif; ?>
 </div>

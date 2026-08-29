@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     error_log('Login post-auth warning: ' . $e->getMessage());
                 }
 
-                header('Location: /admin/dashboard');
+                header('Location: ' . url('/admin/dashboard'));
                 exit;
             }
             $error = 'Invalid username or password.';
@@ -181,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span><?= e($error) ?></span>
             </div>
         <?php endif; ?>
-        <form method="POST" action="/admin/login">
+        <form method="POST" action="<?= e(url('/admin/login')) ?>">
             <?= csrf_field() ?>
             <div class="form-group">
                 <label for="username">Username or email</label>

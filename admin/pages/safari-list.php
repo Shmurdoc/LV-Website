@@ -1,15 +1,36 @@
 <?php
 // Safari Activities List — Viata Luxe Guesthouse
 $db = Database::get();
-$activities = $db->query('SELECT * FROM safari_activities ORDER BY sort_order ASC, id DESC')->fetchAll();
+$trash = !empty($_GET['trash']);
+$params = [];
+$where = active_where($params, 's', include_deleted: $trash);
+$activities = $db->prepare("SELECT * FROM safari_activities s $where ORDER BY s.deleted_at IS NULL DESC, s.sort_order ASC, s.id DESC");
+$activities->execute($params);
+$activities = $activities->fetchAll();
+
+function safari_status_badge(array $row): string {
+    if (!empty($row['deleted_at'])) return '<span class="badge badge-trashed">Trashed</span>';
+    if (!empty($row['visible_from']) && $row['visible_from'] > date('Y-m-d H:i:s')) return '<span class="badge badge-scheduled">Scheduled</span>';
+    if (!empty($row['visible_until']) && $row['visible_until'] < date('Y-m-d H:i:s')) return '<span class="badge badge-expired">Expired</span>';
+    return $row['is_published'] ? '<span class="badge badge-published">Published</span>' : '<span class="badge badge-draft">Draft</span>';
+}
 ?>
 <div class="admin-page">
   <div class="page-header page-header-inline">
-    <div><h2>Safari Activities</h2><p class="muted small"><?= count($activities) ?> activit<?= count($activities) === 1 ? 'y' : 'ies' ?></p></div>
-    <a href="/admin/safari/edit" class="btn btn-primary"><?= admin_icon('plus', 14) ?> New Activity</a>
+    <div><h2><?= $trash ? 'Trashed Safari Activities' : 'Safari Activities' ?></h2><p class="muted small"><?= count($activities) ?> activit<?= count($activities) === 1 ? 'y' : 'ies' ?></p></div>
+    <div class="btn-group">
+      <?php if ($trash): ?>
+        <a href="/admin/safari" class="btn btn-outline"><?= admin_icon('list', 14) ?> Active</a>
+      <?php else: ?>
+        <a href="/admin/safari?trash=1" class="btn btn-outline"><?= admin_icon('trash', 14) ?> Trash</a>
+        <a href="/admin/safari/edit" class="btn btn-primary"><?= admin_icon('plus', 14) ?> New Activity</a>
+      <?php endif; ?>
+    </div>
   </div>
   <?php if (empty($activities)): ?>
-    <div class="empty-state"><div class="empty-icon"><?= admin_icon('safari', 24) ?></div><p>No safari activities yet.</p><a href="/admin/safari/edit" class="btn btn-primary btn-sm">Add an activity</a></div>
+    <div class="empty-state"><div class="empty-icon"><?= admin_icon('safari', 24) ?></div><p><?= $trash ? 'Trash is empty.' : 'No safari activities yet.' ?></p>
+      <?php if (!$trash): ?><a href="/admin/safari/edit" class="btn btn-primary btn-sm">Add an activity</a><?php endif; ?>
+    </div>
   <?php else: ?>
     <div class="data-table-wrap">
     <table class="data-table">
@@ -17,22 +38,39 @@ $activities = $db->query('SELECT * FROM safari_activities ORDER BY sort_order AS
       <tbody>
       <?php foreach ($activities as $s): ?>
         <?php $vids = json_decode($s['video_urls'] ?? '[]', true); $hasVid = is_array($vids) && array_filter($vids); ?>
-        <tr>
+        <tr class="<?= !empty($s['deleted_at']) ? 'row-trashed' : '' ?>">
           <td><strong><?= e($s['title']) ?></strong></td>
           <td><?= $s['image'] ? '<span class="badge badge-gold">Has image</span>' : '<span class="muted">—</span>' ?></td>
           <td><?= $hasVid ? '<span class="badge badge-info">' . sprintf('%d video(s)', count(array_filter($vids))) . '</span>' : '<span class="muted">—</span>' ?></td>
-          <td><span class="badge <?= $s['is_published'] ? 'badge-published' : 'badge-draft' ?>"><?= $s['is_published'] ? 'Published' : 'Draft' ?></span></td>
+          <td><?= safari_status_badge($s) ?></td>
           <td><?= (int)$s['sort_order'] ?></td>
           <td>
             <div class="btn-group">
-              <a href="/admin/safari/edit?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline"><?= admin_icon('edit', 13) ?> Edit</a>
-              <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
-                <?= csrf_field() ?>
-                <input type="hidden" name="entity" value="safari">
-                <input type="hidden" name="action" value="delete">
-                <input type="hidden" name="id" value="<?= $s['id'] ?>">
-                <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Delete this safari activity?"><?= admin_icon('trash', 13) ?></button>
-              </form>
+              <?php if ($trash): ?>
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="entity" value="safari">
+                  <input type="hidden" name="action" value="restore">
+                  <input type="hidden" name="id" value="<?= $s['id'] ?>">
+                  <button type="submit" class="btn btn-sm btn-outline" data-confirm="Restore?"><?= admin_icon('restore', 13) ?> Restore</button>
+                </form>
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="entity" value="safari">
+                  <input type="hidden" name="action" value="permanent_delete">
+                  <input type="hidden" name="id" value="<?= $s['id'] ?>">
+                  <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Permanently delete?"><?= admin_icon('trash', 13) ?> Delete Forever</button>
+                </form>
+              <?php else: ?>
+                <a href="/admin/safari/edit?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline"><?= admin_icon('edit', 13) ?> Edit</a>
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="entity" value="safari">
+                  <input type="hidden" name="action" value="delete">
+                  <input type="hidden" name="id" value="<?= $s['id'] ?>">
+                  <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Move to trash?"><?= admin_icon('trash', 13) ?></button>
+                </form>
+              <?php endif; ?>
             </div>
           </td>
         </tr>

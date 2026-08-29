@@ -26,7 +26,7 @@ $path = '/' . ltrim($path, '/');
 // Allow login/logout without auth
 if ($path === '/' || $path === '/login') {
     if (is_admin_logged_in()) {
-        header('Location: /admin/dashboard');
+        header('Location: ' . url('/admin/dashboard'));
         exit;
     }
     require __DIR__ . '/login.php';
@@ -36,7 +36,7 @@ if ($path === '/' || $path === '/login') {
 if ($path === '/logout') {
     session_unset();
     session_destroy();
-    header('Location: /admin/login');
+    header('Location: ' . url('/admin/login'));
     exit;
 }
 

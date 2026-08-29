@@ -3,8 +3,9 @@
  * SPA-style admin panel controller
  */
 const AdminApp = {
-    init(page) {
+    init(page, adminBase) {
         this.currentPage = page;
+        this.adminBase = adminBase || '/admin';
         this.contentEl = document.getElementById('adminContent');
         this.pageTitleEl = document.getElementById('pageTitle');
         this.sidebar = document.getElementById('sidebar');
@@ -21,13 +22,33 @@ const AdminApp = {
         if (page) {
             this.loadPage(page);
         }
+
+        // Intercept sidebar link clicks for SPA navigation
+        document.querySelectorAll('.sidebar-link[href]').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href.includes('/admin/')) {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const adminPath = href.replace(/^.*\/admin/, '') || '/dashboard';
+                    window.history.pushState({}, '', href);
+                    this.loadPage(adminPath);
+                    this.closeSidebar();
+                });
+            }
+        });
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', () => {
+            const path = window.location.pathname.replace(/^.*\/admin/, '') || '/dashboard';
+            this.loadPage(path);
+        });
     },
 
     loadPage(path) {
         if (!this.contentEl) return;
         this.contentEl.innerHTML = '<div class="loading">Loading...</div>';
 
-        fetch('/admin' + path, {
+        fetch(this.adminBase + path, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(r => {
@@ -74,6 +95,19 @@ const AdminApp = {
     },
 
     initPageForms() {
+        // Intercept links in AJAX-loaded content for SPA navigation
+        this.contentEl.querySelectorAll('a[href]').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href.includes('/admin/')) {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const fullHref = href.startsWith('http') ? new URL(href).pathname : href;
+                    const adminPath = fullHref.replace(/^.*\/admin/, '') || '/dashboard';
+                    window.history.pushState({}, '', fullHref);
+                    this.loadPage(adminPath);
+                });
+            }
+        });
         // Attach form handlers via event delegation
         this.contentEl.querySelectorAll('form[data-ajax]').forEach(form => {
             form.addEventListener('submit', e => {
@@ -90,7 +124,11 @@ const AdminApp = {
 
     submitForm(form) {
         const formData = new FormData(form);
-        const action = form.action || window.location.pathname;
+        let action = form.action || window.location.pathname;
+        // Fix hardcoded /admin/ paths for subdirectory installs
+        if (action.includes('/admin/') && !action.startsWith(this.adminBase)) {
+            action = action.replace(/.*\/admin/, this.adminBase);
+        }
         const method = form.method || 'POST';
 
         fetch(action, {

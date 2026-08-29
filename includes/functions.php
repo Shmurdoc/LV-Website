@@ -19,10 +19,14 @@ function setting(string $key, string $default = ''): string
         return $cache[$key];
     }
     $db = Database::get();
-    $stmt = $db->prepare('SELECT setting_value FROM global_settings WHERE setting_key = :key LIMIT 1');
-    $stmt->execute(['key' => $key]);
-    $result = $stmt->fetch();
-    $cache[$key] = $result ? $result['setting_value'] : $default;
+    try {
+        $stmt = $db->prepare('SELECT setting_value FROM site_settings WHERE setting_key = :key AND is_active = 1 LIMIT 1');
+        $stmt->execute(['key' => $key]);
+        $result = $stmt->fetch();
+        $cache[$key] = $result ? $result['setting_value'] : $default;
+    } catch (Throwable $e) {
+        $cache[$key] = $default;
+    }
     return $cache[$key];
 }
 
@@ -36,14 +40,89 @@ function settings_group(string $group): array
         return $cache[$group];
     }
     $db = Database::get();
-    $stmt = $db->prepare('SELECT setting_key, setting_value FROM global_settings WHERE setting_group = :group ORDER BY sort_order ASC');
-    $stmt->execute(['group' => $group]);
-    $rows = $stmt->fetchAll();
-    $cache[$group] = [];
-    foreach ($rows as $row) {
-        $cache[$group][$row['setting_key']] = $row['setting_value'];
+    try {
+        $stmt = $db->prepare('SELECT setting_key, setting_value FROM site_settings WHERE category = :group AND is_active = 1 ORDER BY sort_order ASC');
+        $stmt->execute(['group' => $group]);
+        $rows = $stmt->fetchAll();
+        $cache[$group] = [];
+        foreach ($rows as $row) {
+            $cache[$group][$row['setting_key']] = $row['setting_value'];
+        }
+    } catch (Throwable $e) {
+        $cache[$group] = [];
     }
     return $cache[$group];
+}
+
+// =====================================================
+// SOFT-DELETE & VISIBILITY FILTERING
+// =====================================================
+
+/**
+ * Filter a query result set to exclude soft-deleted rows
+ * and respect visibility windows (visible_from / visible_until).
+ *
+ * Usage in admin:
+ *   $results = active_only($results);  // normal list
+ *   $results = active_only($results, include_deleted: true);  // trash view
+ *   $results = active_only($results, include_scheduled: true); // all including scheduled
+ *
+ * Usage on frontend: always excludes deleted + future-scheduled + expired
+ */
+function active_only(
+    array $rows,
+    bool $include_deleted = false,
+    bool $include_scheduled = false
+): array {
+    $now = date('Y-m-d H:i:s');
+    return array_filter($rows, function ($row) use ($now, $include_deleted, $include_scheduled) {
+        // Soft-delete filter
+        if (!$include_deleted && !empty($row['deleted_at'])) {
+            return false;
+        }
+        // Visibility scheduling filter (only for rows that have the columns)
+        if (isset($row['visible_from']) || isset($row['visible_until'])) {
+            if (!$include_scheduled) {
+                if (!empty($row['visible_from']) && $row['visible_from'] > $now) {
+                    return false; // Not yet visible (scheduled)
+                }
+                if (!empty($row['visible_until']) && $row['visible_until'] < $now) {
+                    return false; // Expired
+                }
+            }
+        }
+        return true;
+    });
+}
+
+/**
+ * Build WHERE clause for soft-delete + visibility on raw SQL.
+ * Appends conditions to $params array by reference.
+ *
+ * Usage:
+ *   $where = active_where($params, 'pages');
+ *   $db->prepare("SELECT * FROM pages $where ORDER BY sort_order")->execute($params);
+ */
+function active_where(
+    array &$params,
+    string $table = 'p',
+    bool $include_deleted = false,
+    bool $include_scheduled = false
+): string {
+    $conditions = [];
+    if ($include_deleted) {
+        $conditions[] = "$table.deleted_at IS NOT NULL";
+    } else {
+        $conditions[] = "$table.deleted_at IS NULL";
+    }
+    if (!$include_scheduled) {
+        $now = date('Y-m-d H:i:s');
+        $conditions[] = "($table.visible_from IS NULL OR $table.visible_from <= :_vis_from)";
+        $conditions[] = "($table.visible_until IS NULL OR $table.visible_until >= :_vis_until)";
+        $params['_vis_from'] = $now;
+        $params['_vis_until'] = $now;
+    }
+    return $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
 }
 
 // =====================================================
@@ -56,18 +135,22 @@ function settings_group(string $group): array
 function get_page(string $slug): ?array
 {
     $db = Database::get();
-    $stmt = $db->prepare('SELECT * FROM pages WHERE slug = :slug AND is_published = 1 LIMIT 1');
-    $stmt->execute(['slug' => $slug]);
-    return $stmt->fetch() ?: null;
+    try {
+        $stmt = $db->prepare('SELECT * FROM pages WHERE slug = :slug AND is_published = 1 LIMIT 1');
+        $stmt->execute(['slug' => $slug]);
+        return $stmt->fetch() ?: null;
+    } catch (Throwable $e) {
+        return null;
+    }
 }
 
 /**
- * Get all published pages ordered by sort_order
+ * Get all pages ordered by id
  */
 function get_all_pages(): array
 {
     $db = Database::get();
-    $stmt = $db->query('SELECT * FROM pages WHERE is_published = 1 ORDER BY sort_order ASC');
+    $stmt = $db->query('SELECT * FROM pages ORDER BY id ASC');
     return $stmt->fetchAll();
 }
 
@@ -97,19 +180,23 @@ function get_page_seo(int $page_id): ?array
 function get_sections(int $page_id): array
 {
     $db = Database::get();
-    $stmt = $db->prepare('
-        SELECT s.id, s.section_type, s.title, s.subtitle, s.content, s.image,
-               s.link_url, s.link_text, s.css_class,
-               so.layout, so.background_color, so.background_image, so.text_color,
-               so.padding_top, so.padding_bottom, so.padding_left, so.padding_right,
-               so.max_width, so.alignment, so.vertical_alignment, so.animation, so.responsive_stack
-        FROM sections s
-        LEFT JOIN section_orientation so ON so.section_id = s.id
-        WHERE s.page_id = :page_id AND s.is_visible = 1
-        ORDER BY s.sort_order ASC
-    ');
-    $stmt->execute(['page_id' => $page_id]);
-    return $stmt->fetchAll();
+    try {
+        $stmt = $db->prepare('
+            SELECT s.id, s.section_type, s.title, s.subtitle, s.content, s.image,
+                   s.link_url, s.link_text, s.css_class,
+                   so.layout, so.background_color, so.background_image, so.text_color,
+                   so.padding_top, so.padding_bottom, so.padding_left, so.padding_right,
+                   so.max_width, so.alignment, so.vertical_alignment, so.animation, so.responsive_stack
+            FROM sections s
+            LEFT JOIN section_orientation so ON so.section_id = s.id
+            WHERE s.page_id = :page_id AND s.is_visible = 1
+            ORDER BY s.sort_order ASC
+        ');
+        $stmt->execute(['page_id' => $page_id]);
+        return $stmt->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
 }
 
 /**
@@ -118,16 +205,20 @@ function get_sections(int $page_id): array
 function get_section(int $section_id): ?array
 {
     $db = Database::get();
-    $stmt = $db->prepare('
-        SELECT s.*, so.layout, so.background_color, so.background_image, so.text_color,
-               so.padding_top, so.padding_bottom, so.padding_left, so.padding_right,
-               so.max_width, so.alignment, so.vertical_alignment, so.animation, so.responsive_stack
-        FROM sections s
-        LEFT JOIN section_orientation so ON so.section_id = s.id
-        WHERE s.id = :id
-    ');
-    $stmt->execute(['id' => $section_id]);
-    return $stmt->fetch() ?: null;
+    try {
+        $stmt = $db->prepare('
+            SELECT s.*, so.layout, so.background_color, so.background_image, so.text_color,
+                   so.padding_top, so.padding_bottom, so.padding_left, so.padding_right,
+                   so.max_width, so.alignment, so.vertical_alignment, so.animation, so.responsive_stack
+            FROM sections s
+            LEFT JOIN section_orientation so ON so.section_id = s.id
+            WHERE s.id = :id
+        ');
+        $stmt->execute(['id' => $section_id]);
+        return $stmt->fetch() ?: null;
+    } catch (Throwable $e) {
+        return null;
+    }
 }
 
 // =====================================================
@@ -140,16 +231,27 @@ function get_section(int $section_id): ?array
 function get_navigation(): array
 {
     $db = Database::get();
-    $stmt = $db->prepare('
-        SELECT n.id, n.label, n.url, n.page_id, n.parent_id, n.sort_order,
-               n.open_in_new_tab, n.css_class, p.slug AS page_slug
-        FROM navigation n
-        LEFT JOIN pages p ON p.id = n.page_id
-        WHERE n.is_published = 1
-        ORDER BY n.sort_order ASC
-    ');
-    $stmt->execute();
-    $rows = $stmt->fetchAll();
+    try {
+        $stmt = $db->prepare('
+            SELECT n.id, n.label, n.url, n.page_id, n.parent_id, n.sort_order,
+                   n.open_in_new_tab, n.css_class, p.page_slug
+            FROM navigation n
+            LEFT JOIN pages p ON p.id = n.page_id
+            WHERE n.is_published = 1
+            ORDER BY n.sort_order ASC
+        ');
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+    } catch (Throwable $e) {
+        // navigation table missing — provide hardcoded fallback
+        $rows = [
+            ['id' => 1, 'label' => 'Home',          'url' => '',          'page_id' => null, 'parent_id' => null, 'sort_order' => 1, 'open_in_new_tab' => 0, 'css_class' => '', 'page_slug' => 'home'],
+            ['id' => 2, 'label' => 'Accommodation',  'url' => null,       'page_id' => null, 'parent_id' => null, 'sort_order' => 2, 'open_in_new_tab' => 0, 'css_class' => '', 'page_slug' => 'accommodation'],
+            ['id' => 3, 'label' => 'Safari',          'url' => null,       'page_id' => null, 'parent_id' => null, 'sort_order' => 3, 'open_in_new_tab' => 0, 'css_class' => '', 'page_slug' => 'safari'],
+            ['id' => 4, 'label' => 'Gallery',         'url' => null,       'page_id' => null, 'parent_id' => null, 'sort_order' => 4, 'open_in_new_tab' => 0, 'css_class' => '', 'page_slug' => 'gallery'],
+            ['id' => 5, 'label' => 'Contact',         'url' => null,       'page_id' => null, 'parent_id' => null, 'sort_order' => 5, 'open_in_new_tab' => 0, 'css_class' => '', 'page_slug' => 'contact'],
+        ];
+    }
 
     // Build tree
     $top = [];
@@ -265,25 +367,29 @@ function get_apartment_testimonials(int $apartment_id): array
 function get_gallery_categories(): array
 {
     $db = Database::get();
-    $stmt = $db->query('
-        SELECT gc.*, COUNT(gi.id) AS image_count
-        FROM gallery_categories gc
-        LEFT JOIN gallery_images gi ON gi.category_id = gc.id
-        WHERE gc.is_published = 1
-        GROUP BY gc.id
-        ORDER BY gc.sort_order ASC
-    ');
-    return $stmt->fetchAll();
+    try {
+        $stmt = $db->query('
+            SELECT gc.*, COUNT(gi.id) AS image_count
+            FROM gallery_categories gc
+            LEFT JOIN gallery_images gi ON gi.category_id = gc.id AND gi.deleted_at IS NULL
+            WHERE gc.is_published = 1 AND gc.deleted_at IS NULL
+            GROUP BY gc.id
+            ORDER BY gc.sort_order ASC
+        ');
+        return $stmt->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
 }
 
 /**
- * Get images for a gallery category
+ * Get images for a gallery category (by category_id)
  */
 function get_gallery_images(int $category_id): array
 {
     $db = Database::get();
-    $stmt = $db->prepare('SELECT * FROM gallery_images WHERE category_id = :id ORDER BY sort_order ASC');
-    $stmt->execute(['id' => $category_id]);
+    $stmt = $db->prepare('SELECT * FROM gallery_images WHERE category_id = :cat AND deleted_at IS NULL ORDER BY sort_order ASC');
+    $stmt->execute(['cat' => $category_id]);
     return $stmt->fetchAll();
 }
 
@@ -294,10 +400,10 @@ function get_featured_gallery(int $limit = 6): array
 {
     $db = Database::get();
     $stmt = $db->prepare('
-        SELECT gi.image_path, gi.alt_text, gc.name AS category_name
+        SELECT gi.image_path, gi.alt_text, gi.caption, gc.name AS category_name
         FROM gallery_images gi
-        JOIN gallery_categories gc ON gc.id = gi.category_id
-        WHERE gc.is_published = 1
+        JOIN gallery_categories gc ON gi.category_id = gc.id
+        WHERE gi.deleted_at IS NULL
         ORDER BY gi.sort_order ASC
         LIMIT :limit
     ');
@@ -316,8 +422,12 @@ function get_featured_gallery(int $limit = 6): array
 function get_safari_activities(): array
 {
     $db = Database::get();
-    $stmt = $db->query('SELECT * FROM safari_activities WHERE is_published = 1 ORDER BY sort_order ASC');
-    return $stmt->fetchAll();
+    try {
+        $stmt = $db->query('SELECT * FROM safari_activities WHERE is_published = 1 ORDER BY sort_order ASC');
+        return $stmt->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
 }
 
 // =====================================================
@@ -330,13 +440,17 @@ function get_safari_activities(): array
 function get_faqs(?int $page_id = null): array
 {
     $db = Database::get();
-    if ($page_id) {
-        $stmt = $db->prepare('SELECT * FROM faqs WHERE page_id = :page_id AND is_published = 1 ORDER BY sort_order ASC');
-        $stmt->execute(['page_id' => $page_id]);
-    } else {
-        $stmt = $db->query('SELECT * FROM faqs WHERE is_published = 1 ORDER BY sort_order ASC');
+    try {
+        if ($page_id) {
+            $stmt = $db->prepare('SELECT * FROM faqs WHERE page_id = :page_id AND is_published = 1 ORDER BY sort_order ASC');
+            $stmt->execute(['page_id' => $page_id]);
+        } else {
+            $stmt = $db->query('SELECT * FROM faqs WHERE is_published = 1 ORDER BY sort_order ASC');
+        }
+        return $stmt->fetchAll();
+    } catch (Throwable $e) {
+        return [];
     }
-    return $stmt->fetchAll();
 }
 
 // =====================================================
@@ -417,6 +531,19 @@ function ee(?string $value): void
  */
 function url(string $path = ''): string
 {
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '';
+
+    if ($host) {
+        // Extract the subdirectory path from BASE_URL (e.g. /work/final%20website from http://localhost/work/final%20website)
+        $baseHost = parse_url(BASE_URL, PHP_URL_HOST) ?? '';
+        $basePath = parse_url(BASE_URL, PHP_URL_PATH) ?? '';
+        if ($host === $baseHost && $basePath) {
+            return rtrim($scheme . '://' . $host . $basePath, '/') . '/' . ltrim($path, '/');
+        }
+        return $scheme . '://' . $host . '/' . ltrim($path, '/');
+    }
+
     return rtrim(BASE_URL, '/') . '/' . ltrim($path, '/');
 }
 

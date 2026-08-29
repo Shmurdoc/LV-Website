@@ -1,42 +1,81 @@
 <?php
 // Sections List — Viata Luxe Guesthouse
 $db = Database::get();
-$sections = $db->query('
+$trash = !empty($_GET['trash']);
+$params = [];
+$where = active_where($params, 's', include_deleted: $trash);
+$sections = $db->prepare("
     SELECT s.*, p.title AS page_title
     FROM sections s
     LEFT JOIN pages p ON p.id = s.page_id
-    ORDER BY s.page_id ASC, s.sort_order ASC
-')->fetchAll();
+    $where
+    ORDER BY s.deleted_at IS NULL DESC, s.page_id ASC, s.sort_order ASC
+");
+$sections->execute($params);
+$sections = $sections->fetchAll();
+
+function section_status_badge(array $row): string {
+    if (!empty($row['deleted_at'])) return '<span class="badge badge-trashed">Trashed</span>';
+    if (!empty($row['visible_from']) && $row['visible_from'] > date('Y-m-d H:i:s')) return '<span class="badge badge-scheduled">Scheduled</span>';
+    if (!empty($row['visible_until']) && $row['visible_until'] < date('Y-m-d H:i:s')) return '<span class="badge badge-expired">Expired</span>';
+    return $row['is_visible'] ? '<span class="badge badge-published">Visible</span>' : '<span class="badge badge-draft">Hidden</span>';
+}
 ?>
 <div class="admin-page">
   <div class="page-header page-header-inline">
-    <div><h2>Sections</h2><p class="muted small"><?= count($sections) ?> section(s) &middot; building blocks of each page</p></div>
-    <a href="/admin/sections/edit" class="btn btn-primary"><?= admin_icon('plus', 14) ?> New Section</a>
+    <div><h2><?= $trash ? 'Trashed Sections' : 'Sections' ?></h2><p class="muted small"><?= count($sections) ?> section(s) &middot; building blocks of each page</p></div>
+    <div class="btn-group">
+      <?php if ($trash): ?>
+        <a href="/admin/sections" class="btn btn-outline"><?= admin_icon('list', 14) ?> Active</a>
+      <?php else: ?>
+        <a href="/admin/sections?trash=1" class="btn btn-outline"><?= admin_icon('trash', 14) ?> Trash</a>
+        <a href="/admin/sections/edit" class="btn btn-primary"><?= admin_icon('plus', 14) ?> New Section</a>
+      <?php endif; ?>
+    </div>
   </div>
   <?php if (empty($sections)): ?>
-    <div class="empty-state"><div class="empty-icon"><?= admin_icon('sections', 24) ?></div><p>No sections yet.</p><a href="/admin/sections/edit" class="btn btn-primary btn-sm">Add a section</a></div>
+    <div class="empty-state"><div class="empty-icon"><?= admin_icon('sections', 24) ?></div><p><?= $trash ? 'Trash is empty.' : 'No sections yet.' ?></p>
+      <?php if (!$trash): ?><a href="/admin/sections/edit" class="btn btn-primary btn-sm">Add a section</a><?php endif; ?>
+    </div>
   <?php else: ?>
     <div class="data-table-wrap">
     <table class="data-table">
-      <thead><tr><th>Type</th><th>Title</th><th>Page</th><th>Visible</th><th>Order</th><th>Actions</th></tr></thead>
+      <thead><tr><th>Type</th><th>Title</th><th>Page</th><th>Status</th><th>Order</th><th>Actions</th></tr></thead>
       <tbody>
       <?php foreach ($sections as $s): ?>
-        <tr>
+        <tr class="<?= !empty($s['deleted_at']) ? 'row-trashed' : '' ?>">
           <td><code class="slug"><?= e($s['section_type']) ?></code></td>
           <td><strong><?= e($s['title'] ?: '(untitled)') ?></strong></td>
           <td class="muted"><?= e($s['page_title'] ?? '—') ?></td>
-          <td><span class="badge <?= $s['is_visible'] ? 'badge-published' : 'badge-draft' ?>"><?= $s['is_visible'] ? 'Visible' : 'Hidden' ?></span></td>
+          <td><?= section_status_badge($s) ?></td>
           <td><?= (int)$s['sort_order'] ?></td>
           <td>
             <div class="btn-group">
-              <a href="/admin/sections/edit?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline"><?= admin_icon('edit', 13) ?> Edit</a>
-              <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
-                <?= csrf_field() ?>
-                <input type="hidden" name="entity" value="section">
-                <input type="hidden" name="action" value="delete">
-                <input type="hidden" name="id" value="<?= $s['id'] ?>">
-                <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Delete this section?"><?= admin_icon('trash', 13) ?></button>
-              </form>
+              <?php if ($trash): ?>
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="entity" value="section">
+                  <input type="hidden" name="action" value="restore">
+                  <input type="hidden" name="id" value="<?= $s['id'] ?>">
+                  <button type="submit" class="btn btn-sm btn-outline" data-confirm="Restore this section?"><?= admin_icon('restore', 13) ?> Restore</button>
+                </form>
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="entity" value="section">
+                  <input type="hidden" name="action" value="permanent_delete">
+                  <input type="hidden" name="id" value="<?= $s['id'] ?>">
+                  <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Permanently delete?"><?= admin_icon('trash', 13) ?> Delete Forever</button>
+                </form>
+              <?php else: ?>
+                <a href="/admin/sections/edit?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline"><?= admin_icon('edit', 13) ?> Edit</a>
+                <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <?= csrf_field() ?>
+                  <input type="hidden" name="entity" value="section">
+                  <input type="hidden" name="action" value="delete">
+                  <input type="hidden" name="id" value="<?= $s['id'] ?>">
+                  <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Move to trash?"><?= admin_icon('trash', 13) ?></button>
+                </form>
+              <?php endif; ?>
             </div>
           </td>
         </tr>

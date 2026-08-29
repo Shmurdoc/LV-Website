@@ -25,7 +25,7 @@ $initials = strtoupper(mb_substr($adminName, 0, 2));
 <body class="admin-body">
     <aside class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="/admin/dashboard" class="sidebar-brand">
+            <a href="<?= e(url('/admin/dashboard')) ?>" class="sidebar-brand">
                 Viata&nbsp;<span>Luxe</span>
                 <small>Guesthouse &middot; Admin</small>
             </a>
@@ -35,9 +35,8 @@ $initials = strtoupper(mb_substr($adminName, 0, 2));
             <div class="sidebar-label-head">Manage</div>
             <?php foreach ($adminNav as $i => $item): ?>
                 <?php
-                $isActive = strpos($currentPage, $item['url']) === 0
-                    || ($currentPage === '/dashboard' && $item['url'] === '/admin/dashboard');
-                if ($i === 8) echo '<div class="sidebar-label-head">System</div>';
+                $isActive = strpos($currentPage, $item['path']) === 0
+                    || ($currentPage === '/dashboard' && $item['path'] === '/dashboard');
                 ?>
                 <a href="<?= e($item['url']) ?>" class="sidebar-link <?= $isActive ? 'active' : '' ?>" aria-current="<?= $isActive ? 'page' : 'false' ?>">
                     <?= admin_icon($item['icon']) ?>
@@ -47,13 +46,18 @@ $initials = strtoupper(mb_substr($adminName, 0, 2));
                     <?php endif; ?>
                 </a>
             <?php endforeach; ?>
+            <div class="sidebar-label-head">System</div>
+            <a href="<?= e(url('/admin/pages?trash=1')) ?>" class="sidebar-link <?= ($currentPage === '/pages' && !empty($_GET['trash'])) ? 'active' : '' ?>">
+                <?= admin_icon('trash') ?>
+                <span class="sidebar-label">Trash</span>
+            </a>
         </nav>
         <div class="sidebar-footer">
             <a href="<?= e(url('/')) ?>" target="_blank" rel="noopener" class="sidebar-link">
                 <?= admin_icon('globe') ?>
                 <span class="sidebar-label">View Website</span>
             </a>
-            <a href="/admin/logout" class="sidebar-link">
+            <a href="<?= e(url('/admin/logout')) ?>" class="sidebar-link">
                 <?= admin_icon('logout') ?>
                 <span class="sidebar-label">Sign Out</span>
             </a>
@@ -85,7 +89,7 @@ $initials = strtoupper(mb_substr($adminName, 0, 2));
 
     <script src="<?= e(url('/admin/js/admin.js')) ?>"></script>
     <script>
-        AdminApp.init('<?= e($currentPage) ?>');
+        AdminApp.init('<?= e($currentPage) ?>', '<?= e(url('/admin')) ?>');
     </script>
 </body>
 </html>

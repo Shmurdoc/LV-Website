@@ -68,15 +68,53 @@ switch ($entity) {
         json_error('Unknown entity');
 }
 
+// ── SOFT-DELETE HELPERS ──
+function soft_delete(string $table, int $id): void {
+    $db = Database::get();
+    $db->prepare("UPDATE $table SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL")->execute([$id]);
+}
+
+function restore_entity(string $table, int $id): void {
+    $db = Database::get();
+    $db->prepare("UPDATE $table SET deleted_at = NULL WHERE id = ?")->execute([$id]);
+}
+
+function permanent_delete(string $table, int $id, string $entity_type): void {
+    $db = Database::get();
+    $db->prepare("DELETE FROM $table WHERE id = ?")->execute([$id]);
+    log_activity('permanent_delete', $entity_type, $id);
+}
+
+// Extract visible_from/visible_until from POST data
+function visibility_fields(): array {
+    return [
+        'visible_from' => !empty($_POST['visible_from']) ? trim($_POST['visible_from']) : null,
+        'visible_until' => !empty($_POST['visible_until']) ? trim($_POST['visible_until']) : null,
+    ];
+}
+
 // ── PAGES ──
 function handlePage(string $action): void {
     $db = Database::get();
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM pages WHERE id = ?')->execute([$id]);
+        soft_delete('pages', $id);
         log_activity('delete', 'page', $id);
         json_response(['success' => true, 'redirect' => '/admin/pages']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('pages', $id);
+        log_activity('restore', 'page', $id);
+        json_response(['success' => true, 'redirect' => '/admin/pages']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('pages', $id, 'page');
+        json_response(['success' => true, 'redirect' => '/admin/pages?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -88,10 +126,13 @@ function handlePage(string $action): void {
             'meta_title' => trim($_POST['meta_title'] ?? ''),
             'meta_description' => trim($_POST['meta_description'] ?? ''),
             'template' => trim($_POST['template'] ?? 'default'),
+            'hero_image' => trim($_POST['hero_image'] ?? ''),
+            'hero_kicker' => trim($_POST['hero_kicker'] ?? ''),
+            'hero_align' => trim($_POST['hero_align'] ?? 'center'),
             'is_published' => isset($_POST['is_published']) ? 1 : 0,
             'is_homepage' => isset($_POST['is_homepage']) ? 1 : 0,
             'sort_order' => (int)($_POST['sort_order'] ?? 0),
-        ];
+        ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
@@ -115,10 +156,23 @@ function handleSection(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM sections WHERE id = ?')->execute([$id]);
-        $db->prepare('DELETE FROM section_orientation WHERE section_id = ?')->execute([$id]);
+        soft_delete('sections', $id);
         log_activity('delete', 'section', $id);
         json_response(['success' => true, 'redirect' => '/admin/sections']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('sections', $id);
+        log_activity('restore', 'section', $id);
+        json_response(['success' => true, 'redirect' => '/admin/sections']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('sections', $id, 'section');
+        $db->prepare('DELETE FROM section_orientation WHERE section_id = ?')->execute([$id]);
+        json_response(['success' => true, 'redirect' => '/admin/sections?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -135,7 +189,7 @@ function handleSection(string $action): void {
             'css_class' => trim($_POST['css_class'] ?? ''),
             'is_visible' => isset($_POST['is_visible']) ? 1 : 0,
             'sort_order' => (int)($_POST['sort_order'] ?? 0),
-        ];
+        ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
@@ -178,9 +232,22 @@ function handleApartment(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM apartments WHERE id = ?')->execute([$id]);
+        soft_delete('apartments', $id);
         log_activity('delete', 'apartment', $id);
         json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('apartments', $id);
+        log_activity('restore', 'apartment', $id);
+        json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('apartments', $id, 'apartment');
+        json_response(['success' => true, 'redirect' => '/admin/apartments?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -201,7 +268,7 @@ function handleApartment(string $action): void {
             'meta_description' => trim($_POST['meta_description'] ?? ''),
             'is_published' => isset($_POST['is_published']) ? 1 : 0,
             'sort_order' => (int)($_POST['sort_order'] ?? 0),
-        ];
+        ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
@@ -225,9 +292,22 @@ function handleFaq(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM faqs WHERE id = ?')->execute([$id]);
+        soft_delete('faqs', $id);
         log_activity('delete', 'faq', $id);
         json_response(['success' => true, 'redirect' => '/admin/faqs']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('faqs', $id);
+        log_activity('restore', 'faq', $id);
+        json_response(['success' => true, 'redirect' => '/admin/faqs']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('faqs', $id, 'faq');
+        json_response(['success' => true, 'redirect' => '/admin/faqs?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -238,7 +318,7 @@ function handleFaq(string $action): void {
             'answer' => trim($_POST['answer']),
             'sort_order' => (int)($_POST['sort_order'] ?? 0),
             'is_published' => isset($_POST['is_published']) ? 1 : 0,
-        ];
+        ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
@@ -262,9 +342,22 @@ function handleTestimonial(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM testimonials WHERE id = ?')->execute([$id]);
+        soft_delete('testimonials', $id);
         log_activity('delete', 'testimonial', $id);
         json_response(['success' => true, 'redirect' => '/admin/testimonials']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('testimonials', $id);
+        log_activity('restore', 'testimonial', $id);
+        json_response(['success' => true, 'redirect' => '/admin/testimonials']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('testimonials', $id, 'testimonial');
+        json_response(['success' => true, 'redirect' => '/admin/testimonials?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -278,7 +371,7 @@ function handleTestimonial(string $action): void {
             'is_featured' => isset($_POST['is_featured']) ? 1 : 0,
             'is_published' => isset($_POST['is_published']) ? 1 : 0,
             'sort_order' => (int)($_POST['sort_order'] ?? 0),
-        ];
+        ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
@@ -302,9 +395,22 @@ function handleNavigation(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM navigation WHERE id = ?')->execute([$id]);
+        soft_delete('navigation', $id);
         log_activity('delete', 'navigation', $id);
         json_response(['success' => true, 'redirect' => '/admin/navigation']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('navigation', $id);
+        log_activity('restore', 'navigation', $id);
+        json_response(['success' => true, 'redirect' => '/admin/navigation']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('navigation', $id, 'navigation');
+        json_response(['success' => true, 'redirect' => '/admin/navigation?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -318,7 +424,7 @@ function handleNavigation(string $action): void {
             'is_published' => isset($_POST['is_published']) ? 1 : 0,
             'open_in_new_tab' => isset($_POST['open_in_new_tab']) ? 1 : 0,
             'css_class' => trim($_POST['css_class'] ?? ''),
-        ];
+        ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
@@ -342,9 +448,22 @@ function handleSafari(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM safari_activities WHERE id = ?')->execute([$id]);
+        soft_delete('safari_activities', $id);
         log_activity('delete', 'safari', $id);
         json_response(['success' => true, 'redirect' => '/admin/safari']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('safari_activities', $id);
+        log_activity('restore', 'safari', $id);
+        json_response(['success' => true, 'redirect' => '/admin/safari']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('safari_activities', $id, 'safari');
+        json_response(['success' => true, 'redirect' => '/admin/safari?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -357,7 +476,7 @@ function handleSafari(string $action): void {
             'link_text' => trim($_POST['link_text'] ?? ''),
             'sort_order' => (int)($_POST['sort_order'] ?? 0),
             'is_published' => isset($_POST['is_published']) ? 1 : 0,
-        ];
+        ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
@@ -381,9 +500,22 @@ function handleGalleryCategory(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM gallery_categories WHERE id = ?')->execute([$id]);
+        soft_delete('gallery_categories', $id);
         log_activity('delete', 'gallery_category', $id);
         json_response(['success' => true, 'redirect' => '/admin/gallery']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('gallery_categories', $id);
+        log_activity('restore', 'gallery_category', $id);
+        json_response(['success' => true, 'redirect' => '/admin/gallery']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('gallery_categories', $id, 'gallery_category');
+        json_response(['success' => true, 'redirect' => '/admin/gallery?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -418,9 +550,22 @@ function handleGalleryImage(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM gallery_images WHERE id = ?')->execute([$id]);
+        soft_delete('gallery_images', $id);
         log_activity('delete', 'gallery_image', $id);
         json_response(['success' => true, 'redirect' => '/admin/gallery']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('gallery_images', $id);
+        log_activity('restore', 'gallery_image', $id);
+        json_response(['success' => true, 'redirect' => '/admin/gallery']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('gallery_images', $id, 'gallery_image');
+        json_response(['success' => true, 'redirect' => '/admin/gallery?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -431,7 +576,7 @@ function handleGalleryImage(string $action): void {
             'alt_text'    => trim($_POST['alt_text'] ?? ''),
             'caption'     => trim($_POST['caption'] ?? ''),
             'sort_order'  => (int)($_POST['sort_order'] ?? 0),
-        ];
+        ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
@@ -455,9 +600,22 @@ function handleApartmentImage(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM apartment_images WHERE id = ?')->execute([$id]);
+        soft_delete('apartment_images', $id);
         log_activity('delete', 'apartment_image', $id);
         json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('apartment_images', $id);
+        log_activity('restore', 'apartment_image', $id);
+        json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('apartment_images', $id, 'apartment_image');
+        json_response(['success' => true, 'redirect' => '/admin/apartments?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -469,7 +627,7 @@ function handleApartmentImage(string $action): void {
             'caption'      => trim($_POST['caption'] ?? ''),
             'sort_order'   => (int)($_POST['sort_order'] ?? 0),
             'is_hero'      => isset($_POST['is_hero']) ? 1 : 0,
-        ];
+        ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
@@ -493,9 +651,22 @@ function handleApartmentAmenity(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM apartment_amenities WHERE id = ?')->execute([$id]);
+        soft_delete('apartment_amenities', $id);
         log_activity('delete', 'apartment_amenity', $id);
         json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('apartment_amenities', $id);
+        log_activity('restore', 'apartment_amenity', $id);
+        json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('apartment_amenities', $id, 'apartment_amenity');
+        json_response(['success' => true, 'redirect' => '/admin/apartments?trash=1']);
     }
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
@@ -575,9 +746,22 @@ function handleContactSubmission(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        $db->prepare('DELETE FROM contact_submissions WHERE id = ?')->execute([$id]);
+        soft_delete('contact_submissions', $id);
         log_activity('delete', 'contact_submission', $id);
         json_response(['success' => true, 'redirect' => '/admin/contact']);
+    }
+    if ($action === 'restore') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        restore_entity('contact_submissions', $id);
+        log_activity('restore', 'contact_submission', $id);
+        json_response(['success' => true, 'redirect' => '/admin/contact']);
+    }
+    if ($action === 'permanent_delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        permanent_delete('contact_submissions', $id, 'contact_submission');
+        json_response(['success' => true, 'redirect' => '/admin/contact?trash=1']);
     }
     json_error('Invalid action');
 }

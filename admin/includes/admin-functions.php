@@ -26,6 +26,7 @@ function admin_icon(string $name, int $size = 18): string
         'plus'      => '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
         'edit'      => '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
         'trash'     => '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+        'restore'   => '<polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>',
         'check'     => '<polyline points="20 6 9 17 4 12"/>',
         'mail'      => '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
         'eye'       => '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
@@ -44,20 +45,26 @@ function admin_icon(string $name, int $size = 18): string
 /**
  * Get all admin pages for sidebar navigation (SVG icons, no emoji)
  */
+function admin_base(): string
+{
+    return url('/admin');
+}
+
 function get_admin_nav(): array
 {
+    $base = admin_base();
     return [
-        ['label' => 'Dashboard',      'url' => '/admin/dashboard',       'icon' => 'dashboard'],
-        ['label' => 'Pages',          'url' => '/admin/pages',           'icon' => 'pages'],
-        ['label' => 'Sections',       'url' => '/admin/sections',        'icon' => 'sections'],
-        ['label' => 'Apartments',     'url' => '/admin/apartments',      'icon' => 'apartments'],
-        ['label' => 'Gallery',        'url' => '/admin/gallery',         'icon' => 'gallery'],
-        ['label' => 'Safari',         'url' => '/admin/safari',          'icon' => 'safari'],
-        ['label' => 'Testimonials',   'url' => '/admin/testimonials',    'icon' => 'testimonials'],
-        ['label' => 'FAQs',           'url' => '/admin/faqs',            'icon' => 'faqs'],
-        ['label' => 'Navigation',     'url' => '/admin/navigation',      'icon' => 'navigation'],
-        ['label' => 'Contact',        'url' => '/admin/contact',         'icon' => 'contact'],
-        ['label' => 'Settings',       'url' => '/admin/settings',        'icon' => 'settings'],
+        ['label' => 'Dashboard',      'url' => "$base/dashboard",       'path' => '/dashboard',   'icon' => 'dashboard'],
+        ['label' => 'Pages',          'url' => "$base/pages",           'path' => '/pages',       'icon' => 'pages'],
+        ['label' => 'Sections',       'url' => "$base/sections",        'path' => '/sections',    'icon' => 'sections'],
+        ['label' => 'Apartments',     'url' => "$base/apartments",      'path' => '/apartments',  'icon' => 'apartments'],
+        ['label' => 'Gallery',        'url' => "$base/gallery",         'path' => '/gallery',     'icon' => 'gallery'],
+        ['label' => 'Safari',         'url' => "$base/safari",          'path' => '/safari',      'icon' => 'safari'],
+        ['label' => 'Testimonials',   'url' => "$base/testimonials",    'path' => '/testimonials','icon' => 'testimonials'],
+        ['label' => 'FAQs',           'url' => "$base/faqs",            'path' => '/faqs',        'icon' => 'faqs'],
+        ['label' => 'Navigation',     'url' => "$base/navigation",      'path' => '/navigation',  'icon' => 'navigation'],
+        ['label' => 'Contact',        'url' => "$base/contact",         'path' => '/contact',     'icon' => 'contact'],
+        ['label' => 'Settings',       'url' => "$base/settings",        'path' => '/settings',    'icon' => 'settings'],
     ];
 }
 
@@ -69,13 +76,20 @@ function get_admin_stats(): array
     $db = Database::get();
     $stats = [];
 
-    $stats['pages'] = (int) $db->query('SELECT COUNT(*) FROM pages')->fetchColumn();
-    $stats['apartments'] = (int) $db->query('SELECT COUNT(*) FROM apartments')->fetchColumn();
-    $stats['testimonials'] = (int) $db->query('SELECT COUNT(*) FROM testimonials')->fetchColumn();
-    $stats['gallery_images'] = (int) $db->query('SELECT COUNT(*) FROM gallery_images')->fetchColumn();
-    $stats['faqs'] = (int) $db->query('SELECT COUNT(*) FROM faqs')->fetchColumn();
+    $stats['pages'] = (int) $db->query('SELECT COUNT(*) FROM pages WHERE deleted_at IS NULL')->fetchColumn();
+    $stats['apartments'] = (int) $db->query('SELECT COUNT(*) FROM apartments WHERE deleted_at IS NULL')->fetchColumn();
+    $stats['testimonials'] = (int) $db->query('SELECT COUNT(*) FROM testimonials WHERE deleted_at IS NULL')->fetchColumn();
+    $stats['gallery_images'] = (int) $db->query('SELECT COUNT(*) FROM gallery_images WHERE deleted_at IS NULL')->fetchColumn();
+    $stats['faqs'] = (int) $db->query('SELECT COUNT(*) FROM faqs WHERE deleted_at IS NULL')->fetchColumn();
     $stats['contact_unread'] = get_unread_submissions_count();
-    $stats['sections'] = (int) $db->query('SELECT COUNT(*) FROM sections')->fetchColumn();
+    $stats['sections'] = (int) $db->query('SELECT COUNT(*) FROM sections WHERE deleted_at IS NULL')->fetchColumn();
+
+    $trashTotal = (int) $db->query('SELECT COUNT(*) FROM pages WHERE deleted_at IS NOT NULL')->fetchColumn()
+                + (int) $db->query('SELECT COUNT(*) FROM apartments WHERE deleted_at IS NOT NULL')->fetchColumn()
+                + (int) $db->query('SELECT COUNT(*) FROM sections WHERE deleted_at IS NOT NULL')->fetchColumn()
+                + (int) $db->query('SELECT COUNT(*) FROM faqs WHERE deleted_at IS NOT NULL')->fetchColumn()
+                + (int) $db->query('SELECT COUNT(*) FROM testimonials WHERE deleted_at IS NOT NULL')->fetchColumn();
+    $stats['trash_count'] = $trashTotal;
 
     return $stats;
 }

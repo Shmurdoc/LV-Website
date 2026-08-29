@@ -381,6 +381,11 @@ button { font-family: inherit; }
 .badge-gold      { background: var(--admin-gold-100); color: var(--admin-gold); }
 .badge-info      { background: var(--admin-info-bg); color: var(--admin-info); }
 .badge-red { background: var(--admin-danger); color: #fff; }
+.badge-scheduled { background: #fef3c7; color: #92400e; }
+.badge-trashed  { background: #e5e7eb; color: #6b7280; }
+.badge-expired  { background: #fce7f3; color: #9d174d; }
+.row-trashed { opacity: 0.55; }
+.row-trashed:hover { opacity: 1; }
 
 /* ---------- Forms ---------- */
 .form-shell { max-width: 760px; margin: 0 auto; }

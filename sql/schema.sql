@@ -41,12 +41,16 @@ CREATE TABLE pages (
     template VARCHAR(50) NOT NULL DEFAULT 'default',
     is_published BOOLEAN DEFAULT TRUE,
     is_homepage BOOLEAN DEFAULT FALSE,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
     sort_order INT UNSIGNED DEFAULT 0,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_slug (slug),
     INDEX idx_published (is_published),
-    INDEX idx_sort (sort_order)
+    INDEX idx_sort (sort_order),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -64,12 +68,16 @@ CREATE TABLE sections (
     link_text VARCHAR(100),
     sort_order INT UNSIGNED DEFAULT 0,
     is_visible BOOLEAN DEFAULT TRUE,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
     css_class VARCHAR(255),
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE,
     INDEX idx_page_sort (page_id, sort_order),
-    INDEX idx_type (section_type)
+    INDEX idx_type (section_type),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -115,14 +123,18 @@ CREATE TABLE apartments (
     hero_image VARCHAR(500),
     sort_order INT UNSIGNED DEFAULT 0,
     is_published BOOLEAN DEFAULT TRUE,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
     meta_title VARCHAR(255),
     meta_description TEXT,
     og_image VARCHAR(500),
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE,
     INDEX idx_slug (slug),
-    INDEX idx_sort (sort_order)
+    INDEX idx_sort (sort_order),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -136,9 +148,11 @@ CREATE TABLE apartment_images (
     caption VARCHAR(255),
     sort_order INT UNSIGNED DEFAULT 0,
     is_hero BOOLEAN DEFAULT FALSE,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE,
-    INDEX idx_apt_sort (apartment_id, sort_order)
+    INDEX idx_apt_sort (apartment_id, sort_order),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -150,8 +164,10 @@ CREATE TABLE apartment_amenities (
     amenity_name VARCHAR(255) NOT NULL,
     amenity_icon VARCHAR(100),
     sort_order INT UNSIGNED DEFAULT 0,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE CASCADE,
-    INDEX idx_apt (apartment_id)
+    INDEX idx_apt (apartment_id),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -166,12 +182,16 @@ CREATE TABLE testimonials (
     source VARCHAR(50) DEFAULT 'direct',
     is_featured BOOLEAN DEFAULT FALSE,
     is_published BOOLEAN DEFAULT TRUE,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
     sort_order INT UNSIGNED DEFAULT 0,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (apartment_id) REFERENCES apartments(id) ON DELETE SET NULL,
     INDEX idx_apt (apartment_id),
     INDEX idx_featured (is_featured),
-    INDEX idx_sort (sort_order)
+    INDEX idx_sort (sort_order),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -184,11 +204,15 @@ CREATE TABLE faqs (
     answer TEXT NOT NULL,
     sort_order INT UNSIGNED DEFAULT 0,
     is_published BOOLEAN DEFAULT TRUE,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE SET NULL,
     INDEX idx_page (page_id),
-    INDEX idx_sort (sort_order)
+    INDEX idx_sort (sort_order),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -201,8 +225,12 @@ CREATE TABLE gallery_categories (
     description TEXT,
     sort_order INT UNSIGNED DEFAULT 0,
     is_published BOOLEAN DEFAULT TRUE,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_sort (sort_order)
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    INDEX idx_sort (sort_order),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -215,9 +243,13 @@ CREATE TABLE gallery_images (
     alt_text VARCHAR(255),
     caption VARCHAR(255),
     sort_order INT UNSIGNED DEFAULT 0,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES gallery_categories(id) ON DELETE CASCADE,
-    INDEX idx_cat_sort (category_id, sort_order)
+    INDEX idx_cat_sort (category_id, sort_order),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -231,13 +263,17 @@ CREATE TABLE navigation (
     parent_id INT UNSIGNED DEFAULT NULL,
     sort_order INT UNSIGNED DEFAULT 0,
     is_published BOOLEAN DEFAULT TRUE,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
     open_in_new_tab BOOLEAN DEFAULT FALSE,
     css_class VARCHAR(100),
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE SET NULL,
     FOREIGN KEY (parent_id) REFERENCES navigation(id) ON DELETE CASCADE,
     INDEX idx_parent (parent_id),
-    INDEX idx_sort (sort_order)
+    INDEX idx_sort (sort_order),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -253,9 +289,13 @@ CREATE TABLE safari_activities (
     link_text VARCHAR(100),
     sort_order INT UNSIGNED DEFAULT 0,
     is_published BOOLEAN DEFAULT TRUE,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_sort (sort_order)
+    INDEX idx_sort (sort_order),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -270,8 +310,12 @@ CREATE TABLE contact_submissions (
     is_replied BOOLEAN DEFAULT FALSE,
     admin_notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    visible_from DATETIME NULL DEFAULT NULL,
+    visible_until DATETIME NULL DEFAULT NULL,
     INDEX idx_read (is_read),
-    INDEX idx_date (created_at)
+    INDEX idx_date (created_at),
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
@@ -299,9 +343,11 @@ CREATE TABLE page_seo (
     schema_type VARCHAR(50) DEFAULT 'WebPage',
     schema_json JSON,
     additional_meta JSON,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE
+    FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE,
+    INDEX idx_deleted (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
