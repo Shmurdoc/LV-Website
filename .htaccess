@@ -28,6 +28,9 @@ RewriteEngine On
 # Disable directory listing
 Options -Indexes
 
+# Route all pages through index.php (CMS-driven)
+DirectoryIndex index.php
+
 # Force HTTPS in production (APP_ENV=production)
 <IfModule mod_rewrite.c>
     RewriteCond %{HTTPS} off
@@ -59,17 +62,19 @@ Options -Indexes
 # FIX TYPO: /accommodation/ -> /accomodation/
 # (canonical is the typo, Google-indexed)
 # =====================================================
-RewriteCond %{HTTP_HOST} ^viataluxe\.com$ [OR]
-RewriteCond %{HTTP_HOST} ^www\.viataluxe\.com$
-RewriteRule ^accommodation(/.*)?$ /accomodation$1 [R=301,L]
+RewriteCond %{REQUEST_URI} ^(.*/)accommodation(/.*)?$
+RewriteRule ^accommodation(/.*)?$ %1accomodation$2 [R=301,L]
 
 # =====================================================
 # PHP ROUTING — Front Controller
 # =====================================================
 
-# If the request is for an existing file or directory, serve it directly
+# Admin routes → admin/index.php (SPA entry point)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^admin(/.*)?$ admin/index.php [QSA,L]
 
-# Route everything else through index.php
+# Route everything through index.php (CMS-driven, no static HTML bypass)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]

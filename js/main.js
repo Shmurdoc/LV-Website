@@ -87,36 +87,9 @@
     staggerReveal(".rooms", ".room", { stagger: 0.12 });
     staggerReveal(".promise__stats", ".promise__stat", { stagger: 0.08 });
 
-    // Gallery masonry item entrance
-    var masonryItems = document.querySelectorAll(".masonry__item");
-    if(masonryItems.length){
-      ScrollTrigger.create({
-        trigger: ".masonry",
-        start: "top 85%",
-        once: true,
-        onEnter: function(){
-          gsap.fromTo(masonryItems,
-            { y: 24, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.55, ease: "power3.out", stagger: 0.06 }
-          );
-        }
-      });
-    }
+    // Gallery masonry item entrance — handled by CSS .is-in via IntersectionObserver below
 
-    // Gallery filter transition
-    var filterBtns = document.querySelectorAll(".filter__inner button");
-    filterBtns.forEach(function(btn){
-      btn.addEventListener("click", function(){
-        filterBtns.forEach(function(b){ b.classList.remove("is-active"); });
-        btn.classList.add("is-active");
-        var filterVal = btn.getAttribute("data-filter");
-        var items = document.querySelectorAll(".masonry__item");
-        gsap.fromTo(items,
-          { opacity: 0, scale: 0.96 },
-          { opacity: 1, scale: 1, duration: 0.4, ease: "power3.out", stagger: 0.04, delay: 0.1 }
-        );
-      });
-    });
+    // Gallery filter transition — handled by inline script in gallery HTML to avoid double-fire
 
     // Hero content entrance animated via CSS — no GSAP needed
 
@@ -296,9 +269,7 @@
     document.documentElement.style.setProperty("--vh", (window.innerHeight * 0.01) + "px");
   }
   function layout(){
-    document.querySelectorAll("img[loading='lazy']").forEach(function(img){
-      if(!img.complete) img.style.contentVisibility="auto";
-    });
+    // contentVisibility removed — causes flicker on masonry grids
   }
   prepare(); layout();
   window.addEventListener("resize", prepare);
@@ -426,9 +397,6 @@
   function prepareMasonry(){
     var m = document.getElementById("masonry");
     if(!m) return;
-    m.querySelectorAll("img").forEach(function(img){
-      if(!img.complete) img.style.contentVisibility="auto";
-    });
     if(window.ScrollTrigger) ScrollTrigger.refresh();
   }
   if(typeof window.prepare === "function"){

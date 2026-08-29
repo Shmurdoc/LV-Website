@@ -68,4 +68,34 @@ $p = $page ?? [];
       </div>
     </form>
   </div></div>
+
+  <?php if (!$isNew): ?>
+  <?php $seo = $db->prepare('SELECT * FROM page_seo WHERE page_id = :id'); $seo->execute(['id' => $p['id']]); $seo = $seo->fetch() ?: ['schema_type'=>'WebPage','schema_json'=>'','additional_meta'=>'']; ?>
+  <div class="form-card" style="margin-top:20px"><div class="form-card__body form-card__body--narrow">
+    <h3 class="section-heading--sm">SEO — <?= e($p['title']) ?></h3>
+    <form method="POST" action="/admin/api/crud.php" data-ajax>
+      <?= csrf_field() ?>
+      <input type="hidden" name="entity" value="page_seo">
+      <input type="hidden" name="action" value="save">
+      <input type="hidden" name="page_id" value="<?= (int)$p['id'] ?>">
+      <div class="form-group">
+        <label>Schema type</label>
+        <select name="schema_type">
+          <?php foreach (['WebPage','LodgingBusiness','ContactPage','AboutPage','CollectionPage'] as $st): ?>
+            <option value="<?= e($st) ?>" <?= ($seo['schema_type'] ?? 'WebPage') === $st ? 'selected' : '' ?>><?= e($st) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Schema JSON <span class="muted small">— valid JSON-LD, e.g. {"@context":"https://schema.org", ...}</span></label>
+        <textarea name="schema_json" rows="6" style="font-family:monospace;font-size:12px"><?= e($seo['schema_json'] ?? '') ?></textarea>
+      </div>
+      <div class="form-group">
+        <label>Additional meta <span class="muted small">— JSON object for extra meta tags</span></label>
+        <textarea name="additional_meta" rows="3" style="font-family:monospace;font-size:12px"><?= e($seo['additional_meta'] ?? '') ?></textarea>
+      </div>
+      <div class="form-actions"><button type="submit" class="btn btn-sm btn-primary">Save SEO</button></div>
+    </form>
+  </div></div>
+  <?php endif; ?>
 </div>

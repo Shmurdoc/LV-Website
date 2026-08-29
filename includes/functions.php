@@ -71,6 +71,22 @@ function get_all_pages(): array
     return $stmt->fetchAll();
 }
 
+/**
+ * Get SEO record for a page (schema_json + additional_meta)
+ * Separation: keeps DB logic out of templates/header.php
+ */
+function get_page_seo(int $page_id): ?array
+{
+    try {
+        $db = Database::get();
+        $stmt = $db->prepare('SELECT schema_type, schema_json, additional_meta FROM page_seo WHERE page_id = :id LIMIT 1');
+        $stmt->execute(['id' => $page_id]);
+        return $stmt->fetch() ?: null;
+    } catch (Throwable $e) {
+        return null;
+    }
+}
+
 // =====================================================
 // SECTIONS
 // =====================================================
@@ -204,10 +220,14 @@ function get_apartment_images(int $apartment_id): array
  */
 function get_apartment_amenities(int $apartment_id): array
 {
-    $db = Database::get();
-    $stmt = $db->prepare('SELECT * FROM apartment_amenities WHERE apartment_id = :id ORDER BY sort_order ASC');
-    $stmt->execute(['id' => $apartment_id]);
-    return $stmt->fetchAll();
+    static $grouped = null;
+    if ($grouped === null) {
+        $db = Database::get();
+        $rows = $db->query('SELECT * FROM apartment_amenities ORDER BY apartment_id ASC, sort_order ASC')->fetchAll();
+        $grouped = [];
+        foreach ($rows as $r) { $grouped[(int)$r['apartment_id']][] = $r; }
+    }
+    return $grouped[$apartment_id] ?? [];
 }
 
 // =====================================================

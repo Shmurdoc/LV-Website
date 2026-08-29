@@ -72,10 +72,10 @@ INSERT INTO apartments (id, page_id, name, slug, subtitle, description, price_pe
  950.00, 2, 13.0, 1, 'Queen 157cm', 'uploads/apartments/classic-hero.jpg', 2),
 (3, 2, 'Comfort Apartment 3', 'comfort-apartment-3', 'Comfort Suite',
  'Spacious comfort apartment with queen bed, city views, self-catering kitchen, en-suite and free WiFi. 13 m².',
- 950.00, 2, 13.0, 1, 'Queen 157cm', 'uploads/apartments/comfort-hero.jpg', 3),
+ 1050.00, 2, 13.0, 1, 'Queen 157cm', 'uploads/apartments/comfort-hero.jpg', 3),
 (4, 2, 'Deluxe Apartment 4', 'deluxe-apartment-4', 'Deluxe Suite',
  'Grand deluxe suite — super clean units, new amenities, premium linens. 13 m² with city views and self-catering.',
- 950.00, 2, 13.0, 1, 'Queen 157cm', 'uploads/apartments/deluxe-hero.jpg', 4);
+ 1200.00, 2, 13.0, 1, 'Queen 157cm', 'uploads/apartments/deluxe-hero.jpg', 4);
 
 -- =====================================================
 -- APARTMENT IMAGES
@@ -145,11 +145,11 @@ INSERT INTO sections (page_id, section_type, title, subtitle, content, image, li
 -- Hero
 (1, 'hero', 'The Bush is Calling', '4-Star Luxury Self-Catering', NULL, 'uploads/hero/hero-main.jpg', NULL, NULL, 1),
 
--- Stats
-(1, 'stats', 'Why Viata Luxe?', NULL, '[{"value":"4","label":"Luxury Apartments"},{"value":"1800","label":"From Per Night"},{"value":"100","label":"5-Star Reviews"},{"value":"24","label":"Hour Support"}]', NULL, NULL, NULL, 2),
+-- Stats — editorial fidelity: matches index.html stats bar (4 apartments / 5 mins to Kruger / 4.8 rating / 100% self-catering)
+(1, 'stats', 'Why Viata Luxe?', NULL, '[{"value":"4","label":"Luxury Apartments"},{"value":"5","label":"Minutes to Kruger"},{"value":"4.8","label":"Guest Rating"},{"value":"100%","label":"Self-Catering"}]', NULL, NULL, NULL, 2),
 
--- Image + Text
-(1, 'image-text', 'Your Limpopo Escape Awaits', 'Award-Winning Guesthouse', '<p>Viata Luxe Guesthouse offers the perfect blend of luxury and nature. Each apartment is designed for comfort, with modern amenities and breathtaking bushveld views.</p><p>Whether you''re here for business or pleasure, our dedicated team ensures your stay is nothing short of exceptional.</p>', 'uploads/about/guesthouse-exterior.jpg', '/accommodation', 'View Apartments', 3),
+-- Image + Text — promise (editorial: Prepare to embark)
+(1, 'image-text', 'Prepare to embark.', 'Viata Guesthouse — Luxury Accommodation in Phalaborwa', '<p>True to its promise of luxury, a stay at Viata Luxe is marked by <strong>personalized service, elegant interiors, and a captivating atmosphere</strong> that celebrates the beauty of nature and relaxation.</p><p>Discover Viata Luxe Guesthouse, a premier destination that combines luxury with exceptional service. Our dedicated, well-trained staff is committed to making every guest''s stay truly memorable.</p>', 'Luxury Images/bedrooms/bedroom-chevron-pillows-headboard.jpg', '/accomodation', 'Explore Accommodation', 3),
 
 -- Gallery
 (1, 'gallery', 'Gallery', 'A Visual Journey', NULL, NULL, '/gallery', 'View Full Gallery', 4),
@@ -157,17 +157,20 @@ INSERT INTO sections (page_id, section_type, title, subtitle, content, image, li
 -- Testimonials
 (1, 'testimonials', 'Guest Voices', 'What Our Guests Say', 'From around the world, our guests share their Viata Luxe experience.', NULL, NULL, NULL, 5),
 
--- Booking CTA
-(1, 'booking-cta', 'Book Your Stay', 'Experience Luxury', 'Self-catering from R1,800 per night. Secure parking. Jacuzzi. Bushveld views.', NULL, NULL, NULL, 6),
+-- Moments — editorial: 3 moments cards (Relaxation / Braai / Serenity)
+(1, 'image-text', 'Moments at Viata Luxe', 'Relax · Braai · Pool', '<h3>Relaxation in Our Outdoor Chillers</h3><p>Discover the art of relaxation in our outdoor chillers — cozy nooks designed to unwind with a refreshing drink.</p><h3>Braai Under the Stars</h3><p>The quintessential South African tradition — a well-equipped braai area invites you to gather under the Limpopo stars.</p><h3>Serenity by the Pool</h3><p>Tranquility meets luxury — outdoor pool nestled within lush garden, escape from the African sun.</p>', 'Luxury Images/pool/pool-overview-gazebo-garden.jpg', NULL, NULL, 6),
 
--- Safari Teaser
-(1, 'safari-teaser', 'Safari & Activities', 'Discover Limpopo', 'Game drives, bushveld walks, and Limpopo adventures await.', 'uploads/safari/safari-hero.jpg', '/safari', 'Explore Safari', 7),
+-- Booking CTA — editorial: Come as you are, leave at gate open
+(1, 'booking-cta', 'Come as you are. Leave at gate open.', 'Book Now', 'One check to confirm dates. Rooms, bush, gate time — all on the next pages.', NULL, NULL, NULL, 7),
+
+-- Safari Teaser — editorial: Kedibone Safari
+(1, 'safari-teaser', 'Safari', 'Kedibone Safari', 'In collaboration with Kedibone Safari we offer Daily Kruger Safaris from Phalaborwa Gate + Exclusive Private Overnight Tours.', 'Luxury Images/activities/elephants-river-herd-grazing.jpg', '/safari', 'Explore Safari', 8),
 
 -- Pricing
-(1, 'pricing', 'Our Apartments', '4 Luxury Options', 'Choose from our range of luxury self-catering apartments.', NULL, NULL, NULL, 8),
+(1, 'pricing', 'Our Apartments', '4 Luxury Options', 'Choose from our range of luxury self-catering apartments.', NULL, NULL, NULL, 9),
 
--- Specials
-(1, 'specials', 'Summer Special', 'Book Direct & Save', '10% off when you book direct. Use code VIATA10.', NULL, 'https://book.nightsbridge.com/38331', 'Claim Offer', 9);
+-- Specials — editorial: Stay 3 nights save 10% via WhatsApp
+(1, 'specials', 'Stay 3 nights, save 10%', 'Limited Time', 'Book direct via WhatsApp and mention this offer. Valid for stays before 31 October 2026.', NULL, 'https://wa.me/27794182077?text=Hi%20Viata%20Luxe', 'Claim Offer', 10);
 
 -- =====================================================
 -- SECTIONS — ACCOMMODATION PAGE
@@ -252,40 +255,69 @@ INSERT INTO testimonials (apartment_id, reviewer_name, review_text, rating, sour
 (4, 'Dylan Chapman', 'Amazing guesthouse! The units were super clean, amenities new, and the staff are really friendly. Will definitely be staying there again', 5, 'google', 1, 4);
 
 -- =====================================================
--- GALLERY CATEGORIES
+-- GALLERY CATEGORIES — editorial fidelity: 5 Luxe categories, 45 frames from Luxury Images (see Documentation.md Appendix 8)
 -- =====================================================
-INSERT INTO gallery_categories (name, slug, description, sort_order) VALUES
-('Apartments', 'apartments', 'Interior shots of our luxury apartments', 1),
-('Facilities', 'facilities', 'Guesthouse amenities and common areas', 2),
-('Bushveld', 'bushveld', 'The beautiful Limpopo landscape', 3),
-('Safari', 'safari', 'Wildlife and game drive experiences', 4);
+INSERT INTO gallery_categories (id, name, slug, description, sort_order) VALUES
+(1, 'Luxe Bedrooms', 'luxe-bedrooms', '9 curated bedroom frames', 1),
+(2, 'Kitchens', 'kitchens', '9 kitchen frames', 2),
+(3, 'Luxe Bathrooms', 'luxe-bathrooms', '9 bathroom frames', 3),
+(4, 'Luxe Living Rooms', 'luxe-living-rooms', '9 living room frames', 4),
+(5, 'Luxe Outdoors', 'luxe-outdoors', '9 outdoor frames', 5);
 
 -- =====================================================
--- GALLERY IMAGES
+-- GALLERY IMAGES — 45 Luxury Images (9 per category, editorial order)
 -- =====================================================
 INSERT INTO gallery_images (category_id, image_path, alt_text, caption, sort_order) VALUES
--- Apartments
-(1, 'uploads/gallery/apt-bilateral-1.jpg', 'Bilateral apartment bedroom', 'Bilateral — Queen bedroom', 1),
-(1, 'uploads/gallery/apt-classic-1.jpg', 'Classic apartment', 'Classic — Elegant living', 2),
-(1, 'uploads/gallery/apt-comfort-1.jpg', 'Comfort apartment kitchen', 'Comfort — Gourmet kitchen', 3),
-(1, 'uploads/gallery/apt-deluxe-1.jpg', 'Deluxe apartment', 'Deluxe — King suite', 4),
-(1, 'uploads/gallery/apt-balcony-1.jpg', 'Balcony views', 'Morning coffee with bushveld views', 5),
-(1, 'uploads/gallery/apt-kitchen-1.jpg', 'Modern kitchen', 'Full equipped modern kitchen', 6),
--- Facilities
-(2, 'uploads/gallery/jacuzzi-1.jpg', 'Jacuzzi area', 'Jacuzzi under the stars', 1),
-(2, 'uploads/gallery/parking-1.jpg', 'Secure parking', 'Covered secure parking', 2),
-(2, 'uploads/gallery/garden-1.jpg', 'Garden area', 'Lush garden setting', 3),
-(2, 'uploads/gallery/entrance-1.jpg', 'Guesthouse entrance', 'Welcome to Viata Luxe', 4),
--- Bushveld
-(3, 'uploads/gallery/bush-1.jpg', 'Limpopo bushveld', 'Golden hour in the bush', 1),
-(3, 'uploads/gallery/bush-2.jpg', 'Sunset views', 'Spectacular Limpopo sunset', 2),
-(3, 'uploads/gallery/bush-3.jpg', 'Birdlife', 'Amazing bird watching', 3),
-(3, 'uploads/gallery/bush-4.jpg', 'Trees', 'Ancient bushveld trees', 4),
--- Safari
-(4, 'uploads/gallery/safari-1.jpg', 'Elephant', 'Elephant at waterhole', 1),
-(4, 'uploads/gallery/safari-2.jpg', 'Lion', 'Lion pride at sunset', 2),
-(4, 'uploads/gallery/safari-3.jpg', 'Giraffe', 'Giraffe in the bush', 3),
-(4, 'uploads/gallery/safari-4.jpg', 'Game drive', 'Game drive experience', 4);
+-- Luxe Bedrooms (9)
+(1, 'Luxury Images/bedrooms/bedroom-chevron-pillows-headboard.jpg', 'Luxe Bedrooms — chevron pillows headboard', 'Bedroom chevron', 1),
+(1, 'Luxury Images/bedrooms/bedroom-grey-curtains-ac-white-bedding.jpg', 'Luxe Bedrooms — grey curtains', 'Grey curtains', 2),
+(1, 'Luxury Images/bedrooms/bedroom-grey-headboard-mint-pillows.jpg', 'Luxe Bedrooms — mint pillows', 'Mint pillows', 3),
+(1, 'Luxury Images/bedrooms/bedroom-1-main-view-paisley.jpg', 'Luxe Bedrooms — paisley main', 'Paisley main', 4),
+(1, 'Luxury Images/bedrooms/bedroom-paisley-pillows-gold-throw.jpg', 'Luxe Bedrooms — gold throw', 'Gold throw', 5),
+(1, 'Luxury Images/bedrooms/bedroom-padded-headboard-grey-pillows.jpg', 'Luxe Bedrooms — padded headboard', 'Padded headboard', 6),
+(1, 'Luxury Images/bedrooms/bedroom-white-bedding-lamp-closeup.jpg', 'Luxe Bedrooms — white bedding lamp', 'White bedding', 7),
+(1, 'Luxury Images/apartments-classic-2/apt2-bedroom-main-view.jpg', 'Luxe Bedrooms — Classic 2', 'Classic 2', 8),
+(1, 'Luxury Images/apartments-classic-4/apt4-bedroom-main-view.jpg', 'Luxe Bedrooms — Deluxe 4', 'Deluxe 4', 9),
+-- Kitchens (9)
+(2, 'Luxury Images/kitchens/kitchen-wood-cabinets-marble-backsplash.jpg', 'Kitchens — marble backsplash', 'Marble', 1),
+(2, 'Luxury Images/kitchens/kitchen-dining-set-fruits.jpg', 'Kitchens — dining fruits', 'Dining fruits', 2),
+(2, 'Luxury Images/kitchens/kitchen-red-fridge-round-table.jpg', 'Kitchens — red fridge', 'Red fridge', 3),
+(2, 'Luxury Images/kitchens/kitchen-stove-counter-closeup.jpg', 'Kitchens — stove counter', 'Stove', 4),
+(2, 'Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg', 'Kitchens — Classic 1', 'Classic 1', 5),
+(2, 'Luxury Images/apartments-classic-3/apt3-kitchen-wide-angle.jpg', 'Kitchens — Comfort 3 wide', 'Comfort 3', 6),
+(2, 'Luxury Images/apartments-classic-4/apt4-kitchen-wide-angle.jpg', 'Kitchens — Deluxe 4 wide', 'Deluxe 4', 7),
+(2, 'Luxury Images/food-dining/scones-closeup-bowl.jpg', 'Kitchens — scones bowl', 'Scones', 8),
+(2, 'Luxury Images/food-dining/rose-champagne-berries-tray.jpg', 'Kitchens — champagne tray', 'Champagne', 9),
+-- Luxe Bathrooms (9)
+(3, 'Luxury Images/bathrooms/bathroom-1-sink-toilet-yellow-mat.jpg', 'Bathroom — yellow mat', 'Yellow mat', 1),
+(3, 'Luxury Images/bathrooms/bathroom-1-shower-glass-toilet.jpg', 'Bathroom — glass toilet', 'Glass toilet', 2),
+(3, 'Luxury Images/bathrooms/bathroom-shower-head-closeup.jpg', 'Bathroom — shower head', 'Shower head', 3),
+(3, 'Luxury Images/apartments-classic-2/apt2-bathroom-sink-area.jpg', 'Bathroom — Classic 2 sink', 'Classic 2', 4),
+(3, 'Luxury Images/apartments-classic-2/apt2-bathroom-toilet-view.jpg', 'Bathroom — Classic 2 toilet', 'Classic 2 toilet', 5),
+(3, 'Luxury Images/apartments-classic-3/apt3-bathroom-sink-toilet.jpg', 'Bathroom — Comfort 3', 'Comfort 3', 6),
+(3, 'Luxury Images/apartments-classic-3/apt3-bathroom-faucet-closeup.jpg', 'Bathroom — Comfort 3 faucet', 'Faucet', 7),
+(3, 'Luxury Images/apartments-classic-4/apt4-bathroom-shower-glass.jpg', 'Bathroom — Deluxe 4 shower', 'Deluxe shower', 8),
+(3, 'Luxury Images/apartments-classic-4/apt4-bathroom-sink-mirror.jpg', 'Bathroom — Deluxe 4 sink', 'Deluxe sink', 9),
+-- Luxe Living Rooms (9)
+(4, 'Luxury Images/living-rooms/living-room-tv-smart-console.jpg', 'Living — smart console', 'Smart console', 1),
+(4, 'Luxury Images/living-rooms/living-room-black-sofas-tv-unit.jpg', 'Living — black sofas', 'Black sofas', 2),
+(4, 'Luxury Images/living-rooms/living-room-brown-sofa-leaf-pillows.jpg', 'Living — leaf pillows', 'Leaf pillows', 3),
+(4, 'Luxury Images/living-rooms/living-room-1-orange-cushions.jpg', 'Living — orange cushions', 'Orange cushions', 4),
+(4, 'Luxury Images/apartments-classic-2/apt2-living-room-main-view.jpg', 'Living — Classic 2', 'Classic 2', 5),
+(4, 'Luxury Images/apartments-classic-3/apt3-living-room-entertainment-unit.jpg', 'Living — Comfort 3', 'Comfort 3', 6),
+(4, 'Luxury Images/apartments-classic-4/apt4-living-room-sectional-sofa.jpg', 'Living — Deluxe 4', 'Deluxe 4', 7),
+(4, 'Luxury Images/bedrooms/bedroom-1-side-angle-divider.jpg', 'Living — divider', 'Divider', 8),
+(4, 'Luxury Images/gallery-scenic/exterior-grey-cottages-red-doors.jpg', 'Living — exterior', 'Exterior', 9),
+-- Luxe Outdoors (9)
+(5, 'Luxury Images/pool/pool-overview-entertainment-area.jpg', 'Outdoors — entertainment area', 'Pool entertainment', 1),
+(5, 'Luxury Images/pool/pool-overview-gazebo-garden.jpg', 'Outdoors — gazebo garden', 'Gazebo garden', 2),
+(5, 'Luxury Images/pool/pool-overview-gazebo-angle.jpg', 'Outdoors — gazebo angle', 'Gazebo angle', 3),
+(5, 'Luxury Images/pool/poolside-refreshments-drinks.jpg', 'Outdoors — refreshments', 'Refreshments', 4),
+(5, 'Luxury Images/activities/elephants-river-crossing-herd.jpg', 'Outdoors — elephants crossing', 'Elephants', 5),
+(5, 'Luxury Images/activities/elephants-river-herd-grazing.jpg', 'Outdoors — elephants grazing', 'Elephants grazing', 6),
+(5, 'Luxury Images/activities/zebra-golden-hour-closeup.jpg', 'Outdoors — zebra golden hour', 'Zebra', 7),
+(5, 'Luxury Images/activities/hippos-water-group.jpg', 'Outdoors — hippos', 'Hippos', 8),
+(5, 'Luxury Images/gallery-scenic/wildlife-buffalo-closeup-herd.jpg', 'Outdoors — buffalo herd', 'Buffalo', 9);
 
 -- =====================================================
 -- NAVIGATION

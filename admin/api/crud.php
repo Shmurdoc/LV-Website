@@ -46,6 +46,18 @@ switch ($entity) {
     case 'gallery_category':
         handleGalleryCategory($action);
         break;
+    case 'gallery_image':
+        handleGalleryImage($action);
+        break;
+    case 'apartment_image':
+        handleApartmentImage($action);
+        break;
+    case 'apartment_amenity':
+        handleApartmentAmenity($action);
+        break;
+    case 'page_seo':
+        handlePageSeo($action);
+        break;
     case 'setting':
         handleSetting($action);
         break;
@@ -136,17 +148,25 @@ function handleSection(string $action): void {
             $id = (int)$db->lastInsertId();
             log_activity('create', 'section', $id);
         }
-        // Save orientation
+        // Save orientation — all fields (full DB alignment, no hardcoded omission)
         $orient = [
             'section_id' => $id,
             'layout' => trim($_POST['layout'] ?? 'text-left'),
-            'background_color' => trim($_POST['background_color'] ?? ''),
-            'text_color' => trim($_POST['text_color'] ?? ''),
+            'background_color' => trim($_POST['background_color'] ?? '') ?: null,
+            'background_image' => trim($_POST['background_image'] ?? '') ?: null,
+            'text_color' => trim($_POST['text_color'] ?? '') ?: null,
+            'padding_top' => trim($_POST['padding_top'] ?? '4rem'),
+            'padding_bottom' => trim($_POST['padding_bottom'] ?? '4rem'),
+            'max_width' => trim($_POST['max_width'] ?? '1200px'),
             'alignment' => trim($_POST['alignment'] ?? 'left'),
+            'vertical_alignment' => trim($_POST['vertical_alignment'] ?? 'center'),
             'animation' => trim($_POST['animation'] ?? 'fade-up'),
+            'responsive_stack' => trim($_POST['responsive_stack'] ?? 'stack'),
         ];
-        $db->prepare('INSERT INTO section_orientation (section_id, layout, background_color, text_color, alignment, animation) VALUES (:section_id, :layout, :background_color, :text_color, :alignment, :animation) ON DUPLICATE KEY UPDATE layout = :layout2, background_color = :bg2, text_color = :tc2, alignment = :al2, animation = :an2')
-            ->execute(array_merge($orient, ['layout2'=>$orient['layout'],'bg2'=>$orient['background_color'],'tc2'=>$orient['text_color'],'al2'=>$orient['alignment'],'an2'=>$orient['animation']]));
+        $db->prepare('INSERT INTO section_orientation (section_id, layout, background_color, background_image, text_color, padding_top, padding_bottom, max_width, alignment, vertical_alignment, animation, responsive_stack)
+            VALUES (:section_id, :layout, :background_color, :background_image, :text_color, :padding_top, :padding_bottom, :max_width, :alignment, :vertical_alignment, :animation, :responsive_stack)
+            ON DUPLICATE KEY UPDATE layout=VALUES(layout), background_color=VALUES(background_color), background_image=VALUES(background_image), text_color=VALUES(text_color), padding_top=VALUES(padding_top), padding_bottom=VALUES(padding_bottom), max_width=VALUES(max_width), alignment=VALUES(alignment), vertical_alignment=VALUES(vertical_alignment), animation=VALUES(animation), responsive_stack=VALUES(responsive_stack)')
+            ->execute($orient);
         json_response(['success' => true, 'redirect' => '/admin/sections']);
     }
     json_error('Invalid action');
@@ -388,6 +408,144 @@ function handleGalleryCategory(string $action): void {
             log_activity('create', 'gallery_category', $id);
         }
         json_response(['success' => true, 'redirect' => '/admin/gallery']);
+    }
+    json_error('Invalid action');
+}
+
+// ── GALLERY IMAGES ──
+function handleGalleryImage(string $action): void {
+    $db = Database::get();
+    if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        $db->prepare('DELETE FROM gallery_images WHERE id = ?')->execute([$id]);
+        log_activity('delete', 'gallery_image', $id);
+        json_response(['success' => true, 'redirect' => '/admin/gallery']);
+    }
+    if ($action === 'save') {
+        $id = (int)($_POST['id'] ?? 0);
+        require_fields($_POST, ['category_id', 'image_path']);
+        $data = [
+            'category_id' => (int)$_POST['category_id'],
+            'image_path'  => trim($_POST['image_path']),
+            'alt_text'    => trim($_POST['alt_text'] ?? ''),
+            'caption'     => trim($_POST['caption'] ?? ''),
+            'sort_order'  => (int)($_POST['sort_order'] ?? 0),
+        ];
+        if ($id) {
+            $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
+            $data['id'] = $id;
+            $db->prepare("UPDATE gallery_images SET $sets WHERE id = :id")->execute($data);
+            log_activity('update', 'gallery_image', $id);
+        } else {
+            $cols = implode(', ', array_keys($data));
+            $placeholders = implode(', ', array_map(fn($k) => ":$k", array_keys($data)));
+            $db->prepare("INSERT INTO gallery_images ($cols) VALUES ($placeholders)")->execute($data);
+            $id = (int)$db->lastInsertId();
+            log_activity('create', 'gallery_image', $id);
+        }
+        json_response(['success' => true, 'redirect' => '/admin/gallery/images?category_id=' . $data['category_id']]);
+    }
+    json_error('Invalid action');
+}
+
+// ── APARTMENT IMAGES ──
+function handleApartmentImage(string $action): void {
+    $db = Database::get();
+    if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        $db->prepare('DELETE FROM apartment_images WHERE id = ?')->execute([$id]);
+        log_activity('delete', 'apartment_image', $id);
+        json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    if ($action === 'save') {
+        $id = (int)($_POST['id'] ?? 0);
+        require_fields($_POST, ['apartment_id', 'image_path']);
+        $data = [
+            'apartment_id' => (int)$_POST['apartment_id'],
+            'image_path'   => trim($_POST['image_path']),
+            'alt_text'     => trim($_POST['alt_text'] ?? ''),
+            'caption'      => trim($_POST['caption'] ?? ''),
+            'sort_order'   => (int)($_POST['sort_order'] ?? 0),
+            'is_hero'      => isset($_POST['is_hero']) ? 1 : 0,
+        ];
+        if ($id) {
+            $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
+            $data['id'] = $id;
+            $db->prepare("UPDATE apartment_images SET $sets WHERE id = :id")->execute($data);
+            log_activity('update', 'apartment_image', $id);
+        } else {
+            $cols = implode(', ', array_keys($data));
+            $placeholders = implode(', ', array_map(fn($k) => ":$k", array_keys($data)));
+            $db->prepare("INSERT INTO apartment_images ($cols) VALUES ($placeholders)")->execute($data);
+            $id = (int)$db->lastInsertId();
+            log_activity('create', 'apartment_image', $id);
+        }
+        json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    json_error('Invalid action');
+}
+
+// ── APARTMENT AMENITIES ──
+function handleApartmentAmenity(string $action): void {
+    $db = Database::get();
+    if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        $db->prepare('DELETE FROM apartment_amenities WHERE id = ?')->execute([$id]);
+        log_activity('delete', 'apartment_amenity', $id);
+        json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    if ($action === 'save') {
+        $id = (int)($_POST['id'] ?? 0);
+        require_fields($_POST, ['apartment_id', 'amenity_name']);
+        $data = [
+            'apartment_id' => (int)$_POST['apartment_id'],
+            'amenity_name' => trim($_POST['amenity_name']),
+            'amenity_icon' => trim($_POST['amenity_icon'] ?? ''),
+            'sort_order'   => (int)($_POST['sort_order'] ?? 0),
+        ];
+        if ($id) {
+            $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
+            $data['id'] = $id;
+            $db->prepare("UPDATE apartment_amenities SET $sets WHERE id = :id")->execute($data);
+            log_activity('update', 'apartment_amenity', $id);
+        } else {
+            $cols = implode(', ', array_keys($data));
+            $placeholders = implode(', ', array_map(fn($k) => ":$k", array_keys($data)));
+            $db->prepare("INSERT INTO apartment_amenities ($cols) VALUES ($placeholders)")->execute($data);
+            $id = (int)$db->lastInsertId();
+            log_activity('create', 'apartment_amenity', $id);
+        }
+        json_response(['success' => true, 'redirect' => '/admin/apartments']);
+    }
+    json_error('Invalid action');
+}
+
+// ── PAGE SEO ──
+function handlePageSeo(string $action): void {
+    $db = Database::get();
+    if ($action === 'save') {
+        $page_id = (int)($_POST['page_id'] ?? 0);
+        if (!$page_id) json_error('Missing page_id');
+        $data = [
+            'page_id'       => $page_id,
+            'schema_type'   => trim($_POST['schema_type'] ?? 'WebPage'),
+            'schema_json'   => trim($_POST['schema_json'] ?? ''),
+            'additional_meta' => trim($_POST['additional_meta'] ?? ''),
+        ];
+        // Validate JSON if provided
+        if ($data['schema_json'] !== '' && json_decode($data['schema_json']) === null && $data['schema_json'] !== 'null') {
+            json_error('schema_json must be valid JSON');
+        }
+        if ($data['additional_meta'] !== '' && json_decode($data['additional_meta']) === null && $data['additional_meta'] !== 'null') {
+            json_error('additional_meta must be valid JSON');
+        }
+        $db->prepare('INSERT INTO page_seo (page_id, schema_type, schema_json, additional_meta) VALUES (:page_id, :schema_type, :schema_json, :additional_meta) ON DUPLICATE KEY UPDATE schema_type = VALUES(schema_type), schema_json = VALUES(schema_json), additional_meta = VALUES(additional_meta)')
+            ->execute($data);
+        log_activity('update', 'page_seo', $page_id);
+        json_response(['success' => true, 'redirect' => '/admin/pages']);
     }
     json_error('Invalid action');
 }

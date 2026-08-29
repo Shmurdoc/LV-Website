@@ -42,8 +42,13 @@ $apartments = get_apartments();
             <div class="price-card__features">
                 <span class="price-card__feature">Sleeps <?= e($apt['max_guests']) ?><?= $roomSize ? ' · ' . e($roomSize) . ' m²' : '' ?></span>
                 <span class="price-card__feature"><?= e($beds) ?></span>
+                <?php $amenities = get_apartment_amenities((int)$apt['id']); $top = array_slice($amenities, 0, 4); foreach ($top as $am): ?>
+                <span class="price-card__feature"><?= e($am['amenity_name']) ?></span>
+                <?php endforeach; ?>
+                <?php if (empty($amenities)): ?>
                 <span class="price-card__feature">Jacuzzi access</span>
                 <span class="price-card__feature">Secure parking</span>
+                <?php endif; ?>
             </div>
             <a href="<?= e(url($apt['slug'])) ?>" class="btn btn--outline price-card__cta">View Details</a>
         </div>

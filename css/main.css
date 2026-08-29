@@ -101,6 +101,8 @@ p{max-width:var(--measure)}
 }
 .nav__cta:hover{background:var(--navy-80); transform:translateY(-1px); box-shadow:0 4px 16px rgba(11,26,46,0.12)}
 .nav__cta:active{transform:translateY(0)}
+.nav__admin{display:inline-flex;align-items:center;padding:0 12px;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-55);text-decoration:none;border:1px solid var(--line);border-radius:999px;height:32px;transition:border-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.nav__admin:hover{color:var(--gold);border-color:var(--gold)}
 .nav__toggle{display:none; width:40px; height:40px; border:1px solid var(--line); border-radius:10px; background:var(--white); place-items:center; cursor:pointer; transition:border-color var(--dur-fast) var(--ease-out)}
 .nav__toggle:hover{border-color:var(--line-strong)}
 .nav__toggle span{width:16px; height:1.5px; background:var(--navy); display:block; position:relative; transition:background var(--dur-fast) var(--ease-out)}
@@ -342,6 +344,8 @@ p{max-width:var(--measure)}
 
 /* ——— Footer ——— */
 .footer{background:var(--cream); border-top:1px solid var(--line); padding:28px 0 36px}
+.footer__admin-btn{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--line); border-radius:999px; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700; color:var(--ink-55); text-decoration:none; line-height:1; transition:border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out)}
+.footer__admin-btn:hover{color:var(--navy); border-color:var(--gold); background:rgba(184,150,90,0.08)}
 .footer__inner{width:min(var(--container), calc(100% - 2*var(--gutter))); margin-inline:auto; display:grid; gap:18px}
 .footer__top{display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap; align-items:center}
 .footer__brand{font-family:var(--font-display); font-weight:300; letter-spacing:0.16em; text-transform:uppercase; font-size:14px}
@@ -359,7 +363,45 @@ p{max-width:var(--measure)}
 /* ——— Counter ——— */
 .counter{font-variant-numeric:tabular-nums}
 
-/* ——— Stay page ——— */
+/* ——— Page hero (full-bleed, subpages) ——— */
+.page-hero{
+  position:relative; min-height:70vh; display:grid; align-items:end; overflow:hidden;
+  background:var(--navy); padding-top:68px;
+}
+.page-hero__media{position:absolute; inset:0; overflow:hidden}
+.page-hero__media img{
+  width:100%; height:100%; object-fit:cover; object-position:center 55%;
+  transform:scale(1.04); animation:kenBurns 9s var(--ease-in-out) forwards;
+  will-change:transform;
+}
+.page-hero__veil{
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(11,26,46,0.12) 0%, rgba(11,26,46,0.38) 58%, rgba(11,26,46,0.58) 100%);
+}
+.page-hero__veil::after{content:""; position:absolute; inset:0; background:linear-gradient(90deg, rgba(11,26,46,0.18), transparent 62%)}
+.page-hero__content{
+  position:relative; z-index:2; width:min(var(--container), calc(100% - 2*var(--gutter))); margin-inline:auto;
+  padding-block:clamp(48px, 8vh, 100px) clamp(32px, 5vh, 56px);
+  display:grid; gap:14px; color:var(--cream);
+}
+.page-hero__content > *{animation:heroEntrance 1s var(--ease-emerge) both}
+.page-hero__kicker{animation-delay:100ms}
+.page-hero__title{animation-delay:280ms}
+.page-hero__lead{animation-delay:420ms}
+.page-hero__meta{animation-delay:560ms}
+.page-hero__kicker{color:var(--gold-300); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; font-weight:700}
+.page-hero__kicker::before{display:none}
+.page-hero__title{
+  font-family:var(--font-display); font-weight:300; line-height:0.92; letter-spacing:-0.03em;
+  font-size:clamp(36px, 5.2vw, 64px); max-width:14ch;
+}
+.page-hero__title em{font-style:italic; color:var(--gold-300)}
+.page-hero__lead{color:rgba(248,246,241,0.88); max-width:52ch; font-size:clamp(15px, 1.5vw, 17px); line-height:1.6}
+.page-hero__meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:4px}
+.page-hero--center .page-hero__content{text-align:center; justify-items:center}
+.page-hero--center .page-hero__title{max-width:18ch}
+
+/* ——— Stay page (fallback / apartment detail) ——— */
 .page-head{
   padding-top:96px; padding-bottom:28px; background:var(--cream); border-bottom:1px solid var(--line);
 }
@@ -369,6 +411,7 @@ p{max-width:var(--measure)}
 .page-head__lead{color:var(--ink-70); max-width:64ch; font-size:16px}
 .page-head__meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:4px}
 .chip{font-size:11px; letter-spacing:0.12em; text-transform:uppercase; font-weight:700; padding:8px 12px; border-radius:999px; border:1px solid var(--line); background:var(--white); color:var(--navy)}
+.chip--light{border-color:rgba(248,246,241,0.28); background:rgba(248,246,241,0.12); color:var(--cream)}
 
 /* Room spreads */
 .rooms{display:grid; gap:28px; padding-block:32px 0}

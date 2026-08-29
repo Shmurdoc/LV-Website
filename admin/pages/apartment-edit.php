@@ -103,4 +103,72 @@ $a = $apartment ?? [];
       </div>
     </form>
   </div></div>
+
+  <?php if (!$isNew): ?>
+  <?php $aptImages = $db->prepare('SELECT * FROM apartment_images WHERE apartment_id = :id ORDER BY sort_order'); $aptImages->execute(['id' => $a['id']]); $aptImages = $aptImages->fetchAll(); ?>
+  <?php $aptAmenities = $db->prepare('SELECT * FROM apartment_amenities WHERE apartment_id = :id ORDER BY sort_order'); $aptAmenities->execute(['id' => $a['id']]); $aptAmenities = $aptAmenities->fetchAll(); ?>
+  <div class="form-card" style="margin-top:20px"><div class="form-card__body">
+    <h3 class="section-heading--sm">Images — <?= e($a['name']) ?> (<?= count($aptImages) ?>)</h3>
+    <div class="gallery-grid">
+      <?php foreach ($aptImages as $img): ?>
+        <div class="card gallery-thumb">
+          <img src="<?= e(image_url($img['image_path'])) ?>" alt="<?= e($img['alt_text'] ?? '') ?>" class="gallery-img" onerror="this.style.display='none'">
+          <div class="gallery-caption">
+            <div class="small"><strong><?= e($img['alt_text'] ?: '(no alt)') ?></strong> <?= $img['is_hero'] ? '<span class="badge badge-published">Hero</span>' : '' ?></div>
+            <div class="muted small" style="word-break:break-all"><?= e($img['image_path']) ?></div>
+            <div class="muted small">Order <?= (int)$img['sort_order'] ?></div>
+            <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline" style="margin-top:6px">
+              <?= csrf_field() ?>
+              <input type="hidden" name="entity" value="apartment_image">
+              <input type="hidden" name="action" value="delete">
+              <input type="hidden" name="id" value="<?= $img['id'] ?>">
+              <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Delete image?"><?= admin_icon('trash', 12) ?> Delete</button>
+            </form>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <h4 class="section-heading--sm" style="margin-top:16px">Add image</h4>
+    <form method="POST" action="/admin/api/crud.php" data-ajax>
+      <?= csrf_field() ?>
+      <input type="hidden" name="entity" value="apartment_image">
+      <input type="hidden" name="action" value="save">
+      <input type="hidden" name="apartment_id" value="<?= (int)$a['id'] ?>">
+      <div class="form-row">
+        <div class="form-group"><label>Image path *</label><input type="text" name="image_path" required placeholder="Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg"></div>
+        <div class="form-group"><label>Alt text</label><input type="text" name="alt_text"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Sort order</label><input type="number" name="sort_order" value="<?= count($aptImages)+1 ?>"></div>
+        <div class="form-group form-row--bottom"><label class="checkbox-label"><input type="checkbox" name="is_hero" value="1"> Hero image</label></div>
+      </div>
+      <div class="form-actions"><button type="submit" class="btn btn-sm btn-primary">Add Image</button></div>
+    </form>
+  </div></div>
+
+  <div class="form-card" style="margin-top:16px"><div class="form-card__body">
+    <h3 class="section-heading--sm">Amenities — <?= e($a['name']) ?> (<?= count($aptAmenities) ?>)</h3>
+    <?php if ($aptAmenities): ?>
+      <table class="data-table"><thead><tr><th>Name</th><th>Icon</th><th>Order</th><th></th></tr></thead><tbody>
+        <?php foreach ($aptAmenities as $am): ?><tr>
+          <td><?= e($am['amenity_name']) ?></td><td class="muted small"><?= e($am['amenity_icon'] ?? '') ?></td><td><?= (int)$am['sort_order'] ?></td>
+          <td><form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline"><?= csrf_field() ?><input type="hidden" name="entity" value="apartment_amenity"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= $am['id'] ?>"><button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Delete amenity?"><?= admin_icon('trash', 12) ?></button></form></td>
+        </tr><?php endforeach; ?>
+      </tbody></table>
+    <?php else: ?><p class="muted small">No amenities yet.</p><?php endif; ?>
+    <h4 class="section-heading--sm" style="margin-top:16px">Add amenity</h4>
+    <form method="POST" action="/admin/api/crud.php" data-ajax>
+      <?= csrf_field() ?>
+      <input type="hidden" name="entity" value="apartment_amenity">
+      <input type="hidden" name="action" value="save">
+      <input type="hidden" name="apartment_id" value="<?= (int)$a['id'] ?>">
+      <div class="form-row">
+        <div class="form-group"><label>Amenity name *</label><input type="text" name="amenity_name" required placeholder="Free WiFi"></div>
+        <div class="form-group"><label>Icon</label><input type="text" name="amenity_icon" placeholder="wifi"></div>
+        <div class="form-group"><label>Order</label><input type="number" name="sort_order" value="<?= count($aptAmenities)+1 ?>"></div>
+      </div>
+      <div class="form-actions"><button type="submit" class="btn btn-sm btn-primary">Add Amenity</button></div>
+    </form>
+  </div></div>
+  <?php endif; ?>
 </div>

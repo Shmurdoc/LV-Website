@@ -47,21 +47,25 @@ require __DIR__ . '/../templates/header.php';
 ?>
 
 <main id="main-content">
-    <!-- Apartment hero -->
-    <section class="page-head">
-        <div class="page-head__inner">
-            <div class="kicker reveal"><?= e($apartment['name']) ?> · Viata Luxe</div>
-            <h1 class="page-head__title reveal"><?= e($apartment['name']) ?></h1>
+    <!-- Apartment hero — full-bleed page-hero -->
+    <section class="page-hero">
+        <div class="page-hero__media">
+            <img src="<?= url(!empty($apartment['hero_image']) ? $apartment['hero_image'] : 'Luxury Images/bachelor-hero.jpg') ?>" alt="" />
+        </div>
+        <div class="page-hero__veil"></div>
+        <div class="page-hero__content">
+            <p class="page-hero__kicker"><?= e($apartment['name']) ?> · Viata Luxe</p>
+            <h1 class="page-hero__title"><?= e($apartment['name']) ?></h1>
             <?php if (!empty($apartment['subtitle'])): ?>
-            <p class="page-head__lead reveal"><?= e($apartment['subtitle']) ?> — <?= e($apartment['description']) ?></p>
+            <p class="page-hero__lead"><?= e($apartment['subtitle']) ?> — <?= e($apartment['description']) ?></p>
             <?php else: ?>
-            <p class="page-head__lead reveal"><?= e($apartment['description']) ?></p>
+            <p class="page-hero__lead"><?= e($apartment['description']) ?></p>
             <?php endif; ?>
-            <div class="page-head__meta reveal">
-                <span class="chip">Sleeps <?= e($apartment['max_guests']) ?></span>
-                <span class="chip"><?= e($apartment['room_size_m2']) ?> m²</span>
-                <span class="chip"><?= e($apartment['beds_description']) ?></span>
-                <span class="chip">From <?= format_price((float)$apartment['price_per_night']) ?></span>
+            <div class="page-hero__meta">
+                <span class="chip chip--light">Sleeps <?= e($apartment['max_guests']) ?></span>
+                <span class="chip chip--light"><?= e($apartment['room_size_m2']) ?> m²</span>
+                <span class="chip chip--light"><?= e($apartment['beds_description']) ?></span>
+                <span class="chip chip--light">From <?= format_price((float)$apartment['price_per_night']) ?></span>
             </div>
         </div>
     </section>

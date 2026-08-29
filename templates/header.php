@@ -12,16 +12,8 @@ $og_image = $page['og_image'] ?? setting('og_image_home', '');
 $canonical = url($page['slug'] === 'home' ? '' : trim($page['slug'] ?? '', '/'));
 $current_slug = $page['slug'] ?? current_slug();
 
-// page_seo — only emitted if row exists for this page_id (no phantom meta)
-$pageSeo = null;
-if (!empty($page['id'])) {
-    try {
-        $db = Database::get();
-        $stmt = $db->prepare('SELECT schema_type, schema_json, additional_meta FROM page_seo WHERE page_id = :id LIMIT 1');
-        $stmt->execute(['id' => $page['id']]);
-        $pageSeo = $stmt->fetch();
-    } catch (Throwable $e) { $pageSeo = null; }
-}
+// page_seo — fetched via helper (no DB logic in template)
+$pageSeo = !empty($page['id']) ? get_page_seo((int)$page['id']) : null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -82,7 +74,7 @@ if (!empty($page['id'])) {
 <nav class="nav" aria-label="Primary">
     <div class="nav__inner">
         <a href="<?= url('/') ?>" class="nav__brand" aria-label="Viata Luxe Guesthouse — Home">
-            <img src="<?= e(setting('logo_dark', '/Luxury Images/logos/logo-viata-full-dark-official.png')) ?>" alt="Viata Luxe Guesthouse" width="160" height="34" style="height:34px;width:auto;display:block" loading="eager" decoding="async">
+            <img src="<?= e(url(setting('logo_dark', '/Luxury Images/logos/logo-viata-full-dark-official.png'))) ?>" alt="Viata Luxe Guesthouse" width="160" height="34" style="height:34px;width:auto;display:block" loading="eager" decoding="async">
         </a>
 
         <div class="nav__links" role="navigation" aria-label="Main">
@@ -103,6 +95,8 @@ if (!empty($page['id'])) {
         <a href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" class="nav__cta nav__cta--desktop" target="_blank" rel="noopener">
             <?= e(setting('booking_cta_text', 'BOOK NOW')) ?>
         </a>
+
+        <a class="nav__admin" href="/admin/login" rel="nofollow" aria-label="Admin login">Admin</a>
 
         <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileDrawer">
             <span aria-hidden="true"></span>
