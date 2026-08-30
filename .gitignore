@@ -2,19 +2,35 @@ node_modules/
 screenshots/
 test-results/
 playwright-report/
+tests/
+logs/
+.agent/
+_static-archive/
+docs/
+.gstack/
+
+# Dev files
 package-lock.json
+package.json
+playwright.config.ts
+prove-claims.js
+
+# Env
 .env
 .env.local
-assets/uploads/*
-!assets/uploads/.htaccess
+.env.backup
+
+# Media (large, deploy separately)
 Luxury Images/
 Luxury_Images/
 uploads/
-.env.backup
-tests/*.png
+
+# Dev docs
 DATABASE_ARCHITECTURE.md
 Documentation.md
 IMPLEMENTATION_PLAN.md
 PLAN.md
+CHANGELOG.md
+
+# Static archive
 index.html
-.gstack/
