@@ -71,7 +71,6 @@ RewriteRule ^accommodation(/.*)?$ %1accomodation$2 [R=301,L]
 
 # Admin routes → admin/index.php (SPA entry point)
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^admin(/.*)?$ admin/index.php [QSA,L]
 
 # Route everything through index.php (CMS-driven, no static HTML bypass)

@@ -102,6 +102,12 @@ $og_image         = $page['hero_image']        ?: '/Luxury Images/gallery-scenic
 .section-heading em{font-style:italic; color:var(--gold-600)}
 .subhead{color:var(--ink-70); max-width:58ch; font-size:15px; line-height:1.6}
 
+/* ——— Nav brand lockup ——— */
+.nav__brand{display:flex; align-items:center; gap:10px}
+.nav__brand img{height:48px; width:auto; object-fit:contain}
+.nav__brand-text{font-family:var(--font-display); font-weight:300; letter-spacing:0.14em; text-transform:uppercase; font-size:19px; color:var(--navy)}
+.nav__brand-text span{color:var(--gold)}
+
 /* ——— Call float ——— */
 .call-float{position:fixed; bottom:24px; right:90px; z-index:50; width:56px; height:56px; border-radius:999px; background:var(--gold); color:var(--cream); display:grid; place-items:center; box-shadow:0 4px 24px rgba(140,116,52,0.35); transition:transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-fast) var(--ease-out); cursor:pointer; border:0; text-decoration:none}
 .call-float:hover{transform:scale(1.08); box-shadow:0 6px 32px rgba(140,116,52,0.45)}
@@ -110,6 +116,7 @@ $og_image         = $page['hero_image']        ?: '/Luxury Images/gallery-scenic
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" integrity="sha384-tKsJDT6PlUI0pSBt9/sBKJluKgA19/a6mBrDsZaXotLB4ZYfMGM6xt6/WgGpYhTm" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js" defer></script>
 </head>
 <body class="arrival">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -126,7 +133,7 @@ $og_image         = $page['hero_image']        ?: '/Luxury Images/gallery-scenic
 <nav class="nav" aria-label="Primary">
   <div class="nav__inner">
     <a class="nav__brand" href="<?= url('/') ?>" aria-label="Viata Luxe Guesthouse — Home">
-      <img src="<?= e(url(setting('logo_dark', '/Luxury Images/logos/logo-viata-full-dark-official.png'))) ?>" alt="Viata Luxe" width="132" height="36" fetchpriority="high" decoding="async" onerror="this.style.display='none'">
+      <img src="<?= e(url(setting('logo_dark', '/Luxury Images/logos/logo-kruger-national-park.png'))) ?>" alt="" width="136" height="135" style="height:48px;width:auto;display:block" fetchpriority="high" decoding="async">
       <span class="nav__brand-text">Viata <span>Luxe</span></span>
     </a>
     <div class="nav__links" role="navigation">
@@ -137,6 +144,7 @@ $og_image         = $page['hero_image']        ?: '/Luxury Images/gallery-scenic
       <a class="is-active" href="<?= url('/contact/') ?>" aria-current="page">Contact</a>
     </div>
     <a class="nav__cta nav__cta--desktop" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener">Book Now</a>
+    <a class="nav__admin" href="<?= e(url('/admin/login')) ?>" rel="nofollow" aria-label="Admin login">Admin</a>
     <button id="navToggle" class="nav__toggle" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Open menu"><span></span></button>
   </div>
 </nav>
@@ -147,6 +155,7 @@ $og_image         = $page['hero_image']        ?: '/Luxury Images/gallery-scenic
   <a href="<?= url('/gallery/') ?>">Gallery</a>
   <a href="<?= url('/contact/') ?>" aria-current="page">Contact</a>
   <a class="cta" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener">Book Now</a>
+  <a href="<?= e(url('/admin/login')) ?>" rel="nofollow" class="cta cta--outline">Admin</a>
 </div>
 <script>
   document.getElementById('mobileDrawer').hidden=false;
@@ -273,7 +282,7 @@ $og_image         = $page['hero_image']        ?: '/Luxury Images/gallery-scenic
       <a class="footer__admin-btn" href="<?= e(url('/admin/login')) ?>" rel="nofollow" aria-label="Admin login">✳ Admin</a>
     </div>
     <div class="footer__logos">
-      <img src="<?= e(url(setting('logo_dark', '/Luxury Images/logos/logo-viata-full-dark-official.png'))) ?>" alt="Viata Luxe Guesthouse" loading="lazy" decoding="async">
+      <img src="<?= e(url(setting('logo_dark', '/Luxury Images/logos/logo-kruger-national-park.png'))) ?>" alt="Viata Luxe Guesthouse" loading="lazy" decoding="async">
     </div>
   </div>
 </footer>
@@ -309,5 +318,6 @@ if(form){
   });
 }
 </script>
+<script>document.addEventListener('DOMContentLoaded',function(){if(typeof lucide!=='undefined')lucide.createIcons();});</script>
 </body>
 </html>

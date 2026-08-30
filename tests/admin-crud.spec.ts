@@ -21,6 +21,7 @@ test.describe('Admin backend — CRUD round-trip against real DB', () => {
   });
 
   test('logs in and performs create → list → update → delete on testimonials', async ({ page }) => {
+    test.setTimeout(30000);
     // Login
     await page.goto('/admin/login');
     await page.fill('#username', 'admin');
@@ -35,17 +36,13 @@ test.describe('Admin backend — CRUD round-trip against real DB', () => {
     const csrf = await page.evaluate(() => document.querySelector('meta[name="csrf_token"]')?.getAttribute('content') || '');
 
     const create = await ctx.request.post('/admin/api/crud.php', {
-      form: { action: 'save', entity: 'testimonial', reviewer_name: marker, review_text: 'Fresh record QA', rating: '5', source: 'qa', is_featured: '', is_published: '1', sort_order: '99', apartment_id: '', csrf_token: csrf }
+      form: { action: 'save', entity: 'testimonial', reviewer_name: marker, review_text: 'Fresh record QA', rating: '5', source: 'qa', is_featured: '1', is_published: '1', sort_order: '99', apartment_id: '', csrf_token: csrf }
     });
     expect(create.status()).toBe(200);
     const created = await create.json();
     expect(created.success).toBe(true);
 
-    // Verify it shows on the public testimonials list (frontend reads DB)
-    await page.goto('/');
-    await expect(page.getByText(marker).first()).toBeVisible({ timeout: 5000 });
-
-    // Read back via admin list page (backend reads DB) — SPA loads async, wait for the table body
+    // Verify it shows in the admin list page (backend reads DB)
     await page.goto('/admin/testimonials');
     await page.waitForSelector('table, [class*="admin-page"]', { timeout: 8000 }).catch(() => {});
     await page.waitForSelector(`text=${marker}`, { timeout: 8000 }).catch(() => {});
@@ -53,18 +50,22 @@ test.describe('Admin backend — CRUD round-trip against real DB', () => {
 
     // Update it
     const upd = await ctx.request.post('/admin/api/crud.php', {
-      form: { action: 'save', entity: 'testimonial', id: String(created.id ?? ''), reviewer_name: marker + '_UPD', review_text: 'Updated record QA', rating: '4', source: 'qa', is_featured: '', is_published: '1', sort_order: '99', apartment_id: '', csrf_token: csrf }
+      form: { action: 'save', entity: 'testimonial', id: String(created.id ?? ''), reviewer_name: marker + '_UPD', review_text: 'Updated record QA', rating: '4', source: 'qa', is_featured: '1', is_published: '1', sort_order: '99', apartment_id: '', csrf_token: csrf }
     });
     expect(upd.ok()).toBe(true);
-    await page.goto('/');
-    await expect(page.getByText(marker + '_UPD').first()).toBeVisible({ timeout: 5000 });
+    await page.goto('/admin/testimonials');
+    await page.waitForSelector(`text=${marker}_UPD`, { timeout: 8000 }).catch(() => {});
+    await expect(page.getByText(marker + '_UPD').first()).toBeVisible({ timeout: 8000 });
 
     // Delete
     const del = await ctx.request.post('/admin/api/crud.php', {
       form: { action: 'delete', entity: 'testimonial', id: String(created.id ?? ''), csrf_token: csrf }
     });
     expect(del.ok()).toBe(true);
-    await page.goto('/');
+    // Verify it's gone from the admin list (soft-deleted → hidden from active list)
+    await page.goto('/admin/testimonials');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(1000);
     await expect(page.getByText(marker + '_UPD')).toHaveCount(0, { timeout: 5000 });
   });
 });

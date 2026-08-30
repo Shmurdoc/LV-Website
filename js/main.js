@@ -2,15 +2,27 @@
 (function(){
   "use strict";
 
-  /* ——— Preloader 1.2s max quiet ——— */
+  /* ——— Preloader 1.2s minimum, fade after load ——— */
   var pre = document.getElementById("preloader");
+  var preStart = Date.now();
+  var PRE_MIN_MS = 1200;
+  var preLoaded = false;
   function hidePre(){
     if(!pre) return;
     pre.classList.add("is-hidden");
     setTimeout(function(){ pre.style.display="none"; }, 700);
   }
-  setTimeout(hidePre, 1100);
-  window.addEventListener("load", function(){ setTimeout(hidePre, 200); });
+  function tryHidePre(){
+    if(Date.now() - preStart >= PRE_MIN_MS) hidePre();
+    else setTimeout(hidePre, PRE_MIN_MS - (Date.now() - preStart));
+  }
+  window.addEventListener("load", function(){
+    preLoaded = true;
+    tryHidePre();
+  });
+  setTimeout(function(){
+    if(preLoaded) hidePre();
+  }, PRE_MIN_MS + 200);
 
   /* ——— Mobile drawer with animated links ——— */
   var toggle = document.getElementById("navToggle");
@@ -160,7 +172,8 @@
   /* ——— Hero pause control ——— */
   var hero = document.getElementById("hero");
   var pauseBtn = document.getElementById("heroPause");
-  if(hero && pauseBtn){
+  // Static hero (no slideshow) — simple pause toggle; slideshow hero is handled by dedicated block below
+  if(hero && pauseBtn && document.querySelectorAll('.slide').length === 0){
     var isPaused = false;
     pauseBtn.addEventListener("click", function(){
       isPaused = !isPaused;
@@ -175,6 +188,70 @@
       pauseBtn.innerHTML="&#9654;";
     }
   }
+
+  /* ——— Hero slideshow — cinematic, interval + dots + progress + pause (extracted from pages/home.php inline) ——— */
+  (function(){
+    var slides=[].slice.call(document.querySelectorAll('.slide'));
+    var dots=document.getElementById('heroDots');
+    var caption=document.getElementById('slideCaption');
+    var progress=document.getElementById('heroProgress');
+    var heroEl=document.getElementById('hero');
+    if(!slides.length || !heroEl) return;
+    var cur=0, timer=null, timer2=null, dur=5200, isPaused=false;
+    var pauseBtn2=document.getElementById('heroPause');
+    // Build dots
+    if(dots){
+      slides.forEach(function(_,i){
+        var b=document.createElement('button');
+        b.setAttribute('role','tab'); b.setAttribute('aria-label','Slide '+(i+1));
+        if(i===0) b.classList.add('is-active');
+        b.addEventListener('click',function(){ go(i); reset(); });
+        dots.appendChild(b);
+      });
+    }
+    var dotBtns=dots ? [].slice.call(dots.children) : [];
+    function go(n){
+      if(dotBtns[cur]) dotBtns[cur].classList.remove('is-active');
+      slides[cur].classList.remove('is-active');
+      cur=(n+slides.length)%slides.length;
+      slides[cur].classList.add('is-active');
+      if(dotBtns[cur]) dotBtns[cur].classList.add('is-active');
+      if(caption) caption.textContent=slides[cur].getAttribute('data-caption')||'';
+    }
+    function next(){ go(cur+1); }
+    function startProg(){
+      if(!progress) return;
+      progress.style.transition='none'; progress.style.width='0';
+      void progress.offsetWidth;
+      progress.style.transition='width '+dur+'ms linear'; progress.style.width='100%';
+    }
+    function reset(){
+      if(timer) clearInterval(timer);
+      if(timer2) clearInterval(timer2);
+      if(!isPaused){ timer=setInterval(next, dur); startProg(); timer2=setInterval(startProg, dur); }
+    }
+    timer=setInterval(next, dur); timer2=setInterval(startProg, dur); startProg();
+    var prevBtn=document.getElementById('prevSlide'), nextBtn=document.getElementById('nextSlide');
+    if(prevBtn) prevBtn.addEventListener('click',function(){ go(cur-1); reset(); });
+    if(nextBtn) nextBtn.addEventListener('click',function(){ go(cur+1); reset(); });
+    if(pauseBtn2){
+      pauseBtn2.addEventListener('click',function(){
+        isPaused=!isPaused;
+        heroEl.classList.toggle('is-paused', isPaused);
+        pauseBtn2.setAttribute('aria-pressed', isPaused?'true':'false');
+        pauseBtn2.textContent=isPaused?'▶':'❚❚';
+        pauseBtn2.title=isPaused?'Play':'Pause';
+        if(isPaused){ clearInterval(timer); clearInterval(timer2); if(progress) progress.style.transition='none'; }
+        else { timer=setInterval(next,dur); timer2=setInterval(startProg,dur); startProg(); }
+      });
+      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        isPaused=true; heroEl.classList.add('is-paused'); pauseBtn2.setAttribute('aria-pressed','true'); pauseBtn2.textContent='▶';
+        clearInterval(timer); clearInterval(timer2);
+      }
+      heroEl.addEventListener('mouseenter',function(){ if(!isPaused) { clearInterval(timer); clearInterval(timer2); } });
+      heroEl.addEventListener('mouseleave',function(){ if(!isPaused) { timer=setInterval(next,dur); timer2=setInterval(startProg,dur); startProg(); } });
+    }
+  })();
 
   /* ——— Counter (GSAP-powered) ——— */
   function animateCounter(el){
@@ -407,5 +484,53 @@
   }
   window.addEventListener("load", prepareMasonry);
   prepareMasonry();
+
+  /* ——— Testimonials slideshow ——— */
+  document.querySelectorAll(".testi-slideshow").forEach(function(ss){
+    var slides = ss.querySelectorAll(".testi-slide");
+    var dots = ss.querySelectorAll(".testi-nav__dot");
+    var prev = ss.querySelector(".testi-slideshow__prev");
+    var next = ss.querySelector(".testi-slideshow__next");
+    var total = slides.length;
+    if(total < 2) return;
+    var current = 0;
+    var autoMs = parseInt(ss.getAttribute("data-auto")) || 5000;
+    var timer = null;
+
+    function goTo(idx){
+      slides[current].classList.remove("is-active");
+      slides[current].setAttribute("aria-hidden","true");
+      dots[current].classList.remove("is-active");
+      dots[current].setAttribute("aria-selected","false");
+      current = (idx + total) % total;
+      slides[current].classList.add("is-active");
+      slides[current].setAttribute("aria-hidden","false");
+      dots[current].classList.add("is-active");
+      dots[current].setAttribute("aria-selected","true");
+    }
+    function nextSlide(){ goTo(current + 1); }
+    function prevSlide(){ goTo(current - 1); }
+    function startAuto(){ stopAuto(); timer = setInterval(nextSlide, autoMs); }
+    function stopAuto(){ if(timer){ clearInterval(timer); timer = null; } }
+
+    dots.forEach(function(d){ d.addEventListener("click", function(){
+      goTo(parseInt(d.getAttribute("data-target")));
+      startAuto();
+    });});
+    if(next) next.addEventListener("click", function(){ nextSlide(); startAuto(); });
+    if(prev) prev.addEventListener("click", function(){ prevSlide(); startAuto(); });
+
+    /* Pause on hover */
+    ss.addEventListener("mouseenter", stopAuto);
+    ss.addEventListener("mouseleave", startAuto);
+
+    /* Keyboard nav */
+    ss.addEventListener("keydown", function(e){
+      if(e.key === "ArrowLeft"){ prevSlide(); startAuto(); }
+      if(e.key === "ArrowRight"){ nextSlide(); startAuto(); }
+    });
+
+    startAuto();
+  });
 
 })();

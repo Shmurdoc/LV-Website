@@ -62,6 +62,29 @@ $p = $page ?? [];
         </div>
       </div>
 
+      <fieldset style="border:1px solid var(--border,#e2e0dc);border-radius:8px;padding:16px;margin-top:8px">
+        <legend style="font-weight:600;font-size:13px;padding:0 6px;color:var(--text-secondary,#666)">Hero Section</legend>
+        <div class="form-group">
+          <label>Hero Image Path</label>
+          <div class="flex gap-2">
+            <input type="text" name="hero_image" value="<?= e($p['hero_image'] ?? '') ?>" placeholder="/Luxury Images/home-hero/hero.jpg" class="grow">
+            <button type="button" class="btn btn-sm btn-outline browse-btn" data-target="hero_image">Browse</button>
+          </div>
+          <small style="color:var(--text-muted,#999)">Path from site root, e.g. /Luxury Images/pool/pool.jpg</small>
+        </div>
+        <div class="form-group">
+          <label>Hero Kicker</label>
+          <input type="text" name="hero_kicker" value="<?= e($p['hero_kicker'] ?? '') ?>" placeholder="Accommodation — 4 Apartments">
+        </div>
+        <div class="form-group">
+          <label>Hero Text Align</label>
+          <select name="hero_align">
+            <option value="center" <?= ($p['hero_align'] ?? 'center') === 'center' ? 'selected' : '' ?>>Center</option>
+            <option value="left" <?= ($p['hero_align'] ?? '') === 'left' ? 'selected' : '' ?>>Left</option>
+          </select>
+        </div>
+      </fieldset>
+
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Save Page</button>
         <a href="/admin/pages" class="btn btn-outline">Cancel</a>

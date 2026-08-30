@@ -45,7 +45,10 @@ if ($category_id) {
         <input type="hidden" name="category_id" value="<?= (int)$category['id'] ?>">
         <div class="form-group">
           <label>Image path * <span class="muted small">e.g. Luxury Images/pool/pool-overview-entertainment-area.jpg or uploads/gallery/...</span></label>
-          <input type="text" name="image_path" required placeholder="Luxury Images/bedrooms/bedroom-chevron-pillows-headboard.jpg">
+          <div class="flex gap-2">
+            <input type="text" name="image_path" required placeholder="Luxury Images/bedrooms/bedroom-chevron-pillows-headboard.jpg" class="grow">
+            <button type="button" class="btn btn-sm btn-outline browse-btn" data-target="image_path">Browse</button>
+          </div>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -60,6 +63,9 @@ if ($category_id) {
         <div class="form-group">
           <label>Caption</label>
           <input type="text" name="caption" placeholder="Optional caption">
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label"><input type="checkbox" name="is_featured" value="1"> Featured — show on homepage preview (8 max)</label>
         </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Add Image</button>
@@ -82,6 +88,9 @@ if ($category_id) {
               <div class="muted small" style="word-break:break-all"><?= e($img['image_path']) ?></div>
               <?php if ($img['caption']): ?><div class="muted small"><?= e($img['caption']) ?></div><?php endif; ?>
               <div class="muted small">Order <?= (int)$img['sort_order'] ?> · #<?= (int)$img['id'] ?></div>
+              <?php if (!empty($img['is_featured'])): ?>
+                <span class="badge badge-published">Featured</span>
+              <?php endif; ?>
               <?php if (!empty($img['deleted_at'])): ?>
                 <span class="badge badge-trashed">Trashed</span>
               <?php endif; ?>

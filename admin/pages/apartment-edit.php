@@ -59,7 +59,10 @@ $a = $apartment ?? [];
       </div>
       <div class="form-group">
         <label>Hero Image</label>
-        <input type="text" name="hero_image" value="<?= e($a['hero_image'] ?? '') ?>">
+        <div class="flex gap-2">
+          <input type="text" name="hero_image" value="<?= e($a['hero_image'] ?? '') ?>" class="grow">
+          <button type="button" class="btn btn-sm btn-outline browse-btn" data-target="hero_image">Browse</button>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -76,8 +79,22 @@ $a = $apartment ?? [];
         </div>
       </div>
       <div class="form-group">
-        <label>Beds Description</label>
-        <input type="text" name="beds_description" value="<?= e($a['beds_description'] ?? '') ?>">
+        <label>Tagline</label>
+        <input type="text" name="tagline" value="<?= e($a['tagline'] ?? '') ?>" placeholder="e.g. One Bedroom Apartment">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Bathrooms</label>
+          <input type="number" name="bathrooms" value="<?= (int)($a['bathrooms'] ?? 1) ?>" min="1" max="10">
+        </div>
+        <div class="form-group">
+          <label>Beds Description</label>
+          <input type="text" name="beds_description" value="<?= e($a['beds_description'] ?? '') ?>">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Features (JSON array) <span class="muted small">e.g. ["Sleeps 2","Full kitchen"] — also used in pricing cards</span></label>
+        <textarea name="features" rows="2" placeholder='["Sleeps 2","Full kitchen","Jacuzzi access","Secure parking"]'><?= e(is_array($a['features'] ?? null) ? json_encode($a['features']) : ($a['features'] ?? '')) ?></textarea>
       </div>
       <div class="form-group">
         <label>Meta Title</label>
@@ -92,8 +109,9 @@ $a = $apartment ?? [];
           <label>Sort Order</label>
           <input type="number" name="sort_order" value="<?= (int)($a['sort_order'] ?? 0) ?>">
         </div>
-        <div class="form-group form-row--bottom">
+        <div class="form-group form-row--gap form-row--bottom">
           <label class="checkbox-label"><input type="checkbox" name="is_published" value="1" <?= isset($a['is_published']) && $a['is_published'] ? 'checked' : '' ?>> Published</label>
+          <label class="checkbox-label"><input type="checkbox" name="is_featured" value="1" <?= !empty($a['is_featured']) ? 'checked' : '' ?>> Featured (pricing highlight)</label>
         </div>
       </div>
 
@@ -135,7 +153,12 @@ $a = $apartment ?? [];
       <input type="hidden" name="action" value="save">
       <input type="hidden" name="apartment_id" value="<?= (int)$a['id'] ?>">
       <div class="form-row">
-        <div class="form-group"><label>Image path *</label><input type="text" name="image_path" required placeholder="Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg"></div>
+        <div class="form-group"><label>Image path *</label>
+          <div class="flex gap-2">
+            <input type="text" name="image_path" required placeholder="Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg" class="grow">
+            <button type="button" class="btn btn-sm btn-outline browse-btn" data-target="image_path">Browse</button>
+          </div>
+        </div>
         <div class="form-group"><label>Alt text</label><input type="text" name="alt_text"></div>
       </div>
       <div class="form-row">

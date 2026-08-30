@@ -30,9 +30,6 @@ if ($isGalleryPage):
             <span class="small muted"><?= count($catImages) ?> frames</span>
         </div>
         <h3 class="section-heading"><?= e($cat['name']) ?></h3>
-        <?php if (!empty($cat['description'])): ?>
-        <p class="subhead"><?= e($cat['description']) ?></p>
-        <?php endif; ?>
         <div class="preview-grid" role="list">
         <?php foreach ($catImages as $img): ?>
             <img src="<?= e(image_url($img['image_path'])) ?>" alt="<?= e($img['alt_text'] ?? $cat['name'] . ' image') ?>" width="400" height="300" loading="lazy" decoding="async" role="listitem">
@@ -43,15 +40,20 @@ if ($isGalleryPage):
 <?php endif; ?>
 
 <?php else: ?>
-<?php $gallery_images = get_featured_gallery(12); ?>
+<?php $gallery_images = get_featured_gallery(8); ?>
 <?php if (!empty($section['title'])): ?>
 <div class="flex-between-end reveal">
     <div>
         <div class="kicker"><?= e($section['subtitle'] ?? 'Gallery') ?></div>
-        <h2 class="section-heading"><?= e($section['title']) ?></h2>
+        <?php
+        $parts = explode('.', $section['title'], 2);
+        $firstPart = $parts[0] . '.';
+        $secondPart = !empty($parts[1]) ? $parts[1] : '';
+        ?>
+        <h2 class="section-heading"><?= e($firstPart) ?><br><?php if ($secondPart): ?><em class="gold"><?= e(ltrim($secondPart)) ?></em><?php endif; ?></h2>
     </div>
     <?php if (!empty($section['link_url'])): ?>
-    <a class="btn btn--navy" href="<?= e($section['link_url']) ?>"><?= e($section['link_text'] ?? 'View Gallery') ?></a>
+    <a class="btn btn--navy" href="<?= e(preg_match('#^https?://#i', $section['link_url']) ? $section['link_url'] : url(ltrim($section['link_url'],'/'))) ?>"><?= e($section['link_text'] ?? 'View Gallery') ?></a>
     <?php endif; ?>
 </div>
 <?php endif; ?>

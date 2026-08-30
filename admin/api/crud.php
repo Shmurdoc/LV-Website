@@ -64,6 +64,18 @@ switch ($entity) {
     case 'contact_submission':
         handleContactSubmission($action);
         break;
+    case 'hero_slide':
+        handleHeroSlide($action);
+        break;
+    case 'promise_pillar':
+        handlePromisePillar($action);
+        break;
+    case 'moment':
+        handleMoment($action);
+        break;
+    case 'dining_item':
+        handleDiningItem($action);
+        break;
     default:
         json_error('Unknown entity');
 }
@@ -252,21 +264,35 @@ function handleApartment(string $action): void {
     if ($action === 'save') {
         $id = (int)($_POST['id'] ?? 0);
         require_fields($_POST, ['name', 'slug', 'page_id', 'price_per_night']);
+        // features JSON hygiene — validate or null
+        $featuresRaw = trim($_POST['features'] ?? '');
+        $features = null;
+        if ($featuresRaw !== '') {
+            $decoded = json_decode($featuresRaw, true);
+            if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+                json_error('features must be valid JSON array');
+            }
+            $features = $featuresRaw; // store as JSON string (column type JSON handles it)
+        }
         $data = [
             'page_id' => (int)$_POST['page_id'],
             'name' => trim($_POST['name']),
             'slug' => trim($_POST['slug']),
             'subtitle' => trim($_POST['subtitle'] ?? ''),
+            'tagline' => trim($_POST['tagline'] ?? '') ?: null,
             'description' => trim($_POST['description'] ?? ''),
             'price_per_night' => (float)$_POST['price_per_night'],
             'max_guests' => (int)($_POST['max_guests'] ?? 2),
             'room_size_m2' => (float)($_POST['room_size_m2'] ?? 0),
             'bedrooms' => (int)($_POST['bedrooms'] ?? 1),
+            'bathrooms' => (int)($_POST['bathrooms'] ?? 1),
             'beds_description' => trim($_POST['beds_description'] ?? ''),
+            'features' => $features,
             'hero_image' => trim($_POST['hero_image'] ?? ''),
             'meta_title' => trim($_POST['meta_title'] ?? ''),
             'meta_description' => trim($_POST['meta_description'] ?? ''),
             'is_published' => isset($_POST['is_published']) ? 1 : 0,
+            'is_featured' => isset($_POST['is_featured']) ? 1 : 0,
             'sort_order' => (int)($_POST['sort_order'] ?? 0),
         ] + visibility_fields();
         if ($id) {
@@ -576,6 +602,7 @@ function handleGalleryImage(string $action): void {
             'alt_text'    => trim($_POST['alt_text'] ?? ''),
             'caption'     => trim($_POST['caption'] ?? ''),
             'sort_order'  => (int)($_POST['sort_order'] ?? 0),
+            'is_featured' => isset($_POST['is_featured']) ? 1 : 0,
         ] + visibility_fields();
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
@@ -730,6 +757,68 @@ function handleSetting(string $action): void {
         save_setting($key, $value);
         log_activity('update', 'setting', null, ['key' => $key]);
         json_response(['success' => true]);
+    }
+    json_error('Invalid action');
+}
+
+// ── TRACK B: HERO SLIDES ──
+function handleHeroSlide(string $action): void {
+    $db = Database::get();
+    if ($action === 'delete') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); soft_delete('hero_slides',$id); log_activity('delete','hero_slide',$id); json_response(['success'=>true,'redirect'=>'/admin/hero-slides']); }
+    if ($action === 'restore') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); restore_entity('hero_slides',$id); log_activity('restore','hero_slide',$id); json_response(['success'=>true,'redirect'=>'/admin/hero-slides']); }
+    if ($action === 'permanent_delete') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); permanent_delete('hero_slides',$id,'hero_slide'); json_response(['success'=>true,'redirect'=>'/admin/hero-slides?trash=1']); }
+    if ($action === 'save') {
+        $id=(int)($_POST['id']??0);
+        require_fields($_POST,['image_path']);
+        $data=['page_id'=>(int)($_POST['page_id']??1),'image_path'=>trim($_POST['image_path']),'alt_text'=>trim($_POST['alt_text']??''),'caption'=>trim($_POST['caption']??''),'link_url'=>trim($_POST['link_url']??''),'sort_order'=>(int)($_POST['sort_order']??0),'is_published'=>isset($_POST['is_published'])?1:0] + visibility_fields();
+        if($id){ $sets=implode(', ',array_map(fn($k)=>"$k=:$k",array_keys($data))); $data['id']=$id; $db->prepare("UPDATE hero_slides SET $sets, updated_at=NOW() WHERE id=:id")->execute($data); log_activity('update','hero_slide',$id); }
+        else { $cols=implode(', ',array_keys($data)); $ph=implode(', ',array_map(fn($k)=>":$k",array_keys($data))); $db->prepare("INSERT INTO hero_slides ($cols) VALUES ($ph)")->execute($data); $id=(int)$db->lastInsertId(); log_activity('create','hero_slide',$id); }
+        json_response(['success'=>true,'redirect'=>'/admin/hero-slides']);
+    }
+    json_error('Invalid action');
+}
+function handlePromisePillar(string $action): void {
+    $db = Database::get();
+    if ($action === 'delete') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); soft_delete('promise_pillars',$id); log_activity('delete','promise_pillar',$id); json_response(['success'=>true,'redirect'=>'/admin/promise-pillars']); }
+    if ($action === 'restore') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); restore_entity('promise_pillars',$id); log_activity('restore','promise_pillar',$id); json_response(['success'=>true,'redirect'=>'/admin/promise-pillars']); }
+    if ($action === 'permanent_delete') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); permanent_delete('promise_pillars',$id,'promise_pillar'); json_response(['success'=>true,'redirect'=>'/admin/promise-pillars?trash=1']); }
+    if ($action === 'save') {
+        $id=(int)($_POST['id']??0);
+        require_fields($_POST,['title','text']);
+        $data=['page_id'=>(int)($_POST['page_id']??1),'icon'=>trim($_POST['icon']??''),'title'=>trim($_POST['title']),'text'=>trim($_POST['text']),'link_url'=>trim($_POST['link_url']??''),'sort_order'=>(int)($_POST['sort_order']??0),'is_published'=>isset($_POST['is_published'])?1:0] + visibility_fields();
+        if($id){ $sets=implode(', ',array_map(fn($k)=>"$k=:$k",array_keys($data))); $data['id']=$id; $db->prepare("UPDATE promise_pillars SET $sets, updated_at=NOW() WHERE id=:id")->execute($data); log_activity('update','promise_pillar',$id); }
+        else { $cols=implode(', ',array_keys($data)); $ph=implode(', ',array_map(fn($k)=>":$k",array_keys($data))); $db->prepare("INSERT INTO promise_pillars ($cols) VALUES ($ph)")->execute($data); $id=(int)$db->lastInsertId(); log_activity('create','promise_pillar',$id); }
+        json_response(['success'=>true,'redirect'=>'/admin/promise-pillars']);
+    }
+    json_error('Invalid action');
+}
+function handleMoment(string $action): void {
+    $db = Database::get();
+    if ($action === 'delete') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); soft_delete('moments',$id); log_activity('delete','moment',$id); json_response(['success'=>true,'redirect'=>'/admin/moments']); }
+    if ($action === 'restore') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); restore_entity('moments',$id); log_activity('restore','moment',$id); json_response(['success'=>true,'redirect'=>'/admin/moments']); }
+    if ($action === 'permanent_delete') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); permanent_delete('moments',$id,'moment'); json_response(['success'=>true,'redirect'=>'/admin/moments?trash=1']); }
+    if ($action === 'save') {
+        $id=(int)($_POST['id']??0);
+        require_fields($_POST,['title','image_path']);
+        $data=['page_id'=>(int)($_POST['page_id']??1),'kicker'=>trim($_POST['kicker']??''),'title'=>trim($_POST['title']),'text'=>trim($_POST['text']??''),'image_path'=>trim($_POST['image_path']),'alt_text'=>trim($_POST['alt_text']??''),'sort_order'=>(int)($_POST['sort_order']??0),'is_published'=>isset($_POST['is_published'])?1:0] + visibility_fields();
+        if($id){ $sets=implode(', ',array_map(fn($k)=>"$k=:$k",array_keys($data))); $data['id']=$id; $db->prepare("UPDATE moments SET $sets, updated_at=NOW() WHERE id=:id")->execute($data); log_activity('update','moment',$id); }
+        else { $cols=implode(', ',array_keys($data)); $ph=implode(', ',array_map(fn($k)=>":$k",array_keys($data))); $db->prepare("INSERT INTO moments ($cols) VALUES ($ph)")->execute($data); $id=(int)$db->lastInsertId(); log_activity('create','moment',$id); }
+        json_response(['success'=>true,'redirect'=>'/admin/moments']);
+    }
+    json_error('Invalid action');
+}
+function handleDiningItem(string $action): void {
+    $db = Database::get();
+    if ($action === 'delete') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); soft_delete('dining_items',$id); log_activity('delete','dining_item',$id); json_response(['success'=>true,'redirect'=>'/admin/dining']); }
+    if ($action === 'restore') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); restore_entity('dining_items',$id); log_activity('restore','dining_item',$id); json_response(['success'=>true,'redirect'=>'/admin/dining']); }
+    if ($action === 'permanent_delete') { $id=(int)($_POST['id']??0); if(!$id) json_error('Missing id'); permanent_delete('dining_items',$id,'dining_item'); json_response(['success'=>true,'redirect'=>'/admin/dining?trash=1']); }
+    if ($action === 'save') {
+        $id=(int)($_POST['id']??0);
+        require_fields($_POST,['title']);
+        $data=['page_id'=>(int)($_POST['page_id']??1),'title'=>trim($_POST['title']),'time_label'=>trim($_POST['time_label']??''),'text'=>trim($_POST['text']??''),'icon'=>trim($_POST['icon']??''),'sort_order'=>(int)($_POST['sort_order']??0),'is_published'=>isset($_POST['is_published'])?1:0] + visibility_fields();
+        if($id){ $sets=implode(', ',array_map(fn($k)=>"$k=:$k",array_keys($data))); $data['id']=$id; $db->prepare("UPDATE dining_items SET $sets, updated_at=NOW() WHERE id=:id")->execute($data); log_activity('update','dining_item',$id); }
+        else { $cols=implode(', ',array_keys($data)); $ph=implode(', ',array_map(fn($k)=>":$k",array_keys($data))); $db->prepare("INSERT INTO dining_items ($cols) VALUES ($ph)")->execute($data); $id=(int)$db->lastInsertId(); log_activity('create','dining_item',$id); }
+        json_response(['success'=>true,'redirect'=>'/admin/dining']);
     }
     json_error('Invalid action');
 }

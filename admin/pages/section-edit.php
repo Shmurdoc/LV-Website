@@ -63,7 +63,10 @@ $sectionTypes = ['hero','about','services','features','text-left','text-right','
       </div>
       <div class="form-group">
         <label>Image</label>
-        <input type="text" name="image" value="<?= e($s['image'] ?? '') ?>">
+        <div class="flex gap-2">
+          <input type="text" name="image" value="<?= e($s['image'] ?? '') ?>" class="grow">
+          <button type="button" class="btn btn-sm btn-outline browse-btn" data-target="image">Browse</button>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">

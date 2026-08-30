@@ -21,6 +21,7 @@ if ($basePath !== '/' && strpos($uri, $basePath) === 0) {
 }
 
 $path = preg_replace('#^/admin#', '', $uri);
+$path = preg_replace('#\.php$#', '', $path);
 $path = '/' . ltrim($path, '/');
 
 // Allow login/logout without auth
@@ -96,7 +97,22 @@ $pageRoutes = [
     '/safari'       => 'pages/safari-list.php',
     '/safari/edit'  => 'pages/safari-edit.php',
     '/safari/edit/' => 'pages/safari-edit.php',
+    '/hero-slides'       => 'pages/hero-slides-list.php',
+    '/hero-slides/edit'  => 'pages/hero-slide-edit.php',
+    '/hero-slides/edit/' => 'pages/hero-slide-edit.php',
+    '/promise-pillars'       => 'pages/promise-pillars-list.php',
+    '/promise-pillars/edit'  => 'pages/promise-pillar-edit.php',
+    '/promise-pillars/edit/' => 'pages/promise-pillar-edit.php',
+    '/moments'       => 'pages/moments-list.php',
+    '/moments/edit'  => 'pages/moment-edit.php',
+    '/moments/edit/' => 'pages/moment-edit.php',
+    '/dining'       => 'pages/dining-list.php',
+    '/dining/edit'  => 'pages/dining-edit.php',
+    '/dining/edit/' => 'pages/dining-edit.php',
     '/contact'      => 'pages/contact-submissions.php',
+    '/categories'       => 'pages/categories-list.php',
+    '/categories/edit'  => 'pages/category-edit.php',
+    '/categories/edit/' => 'pages/category-edit.php',
 ];
 
 if (isset($pageRoutes[$path])) {

@@ -18,7 +18,13 @@
         <p class="specials__detail"><?= e($section['content']) ?></p>
         <?php endif; ?>
     </div>
-    <?php if (!empty($section['link_url'])): ?>
-    <a href="<?= e($section['link_url']) ?>" class="btn btn--primary" target="_blank" rel="noopener"><?= e($section['link_text'] ?? 'Claim Offer') ?></a>
-    <?php endif; ?>
+    <?php
+    $specialsUrl = $section['link_url'] ?? '';
+    if (empty($specialsUrl)) {
+        $wa = preg_replace('/[^0-9]/','', setting('booking_whatsapp_number', setting('whatsapp','27618417838')));
+        $msg = setting('booking_whatsapp_message', 'Hi Viata Luxe, I’d like to enquire about the 3-night stay offer.');
+        $specialsUrl = 'https://wa.me/'.$wa.'?text='.rawurlencode($msg);
+    }
+    ?>
+    <a href="<?= e($specialsUrl) ?>" class="btn btn--primary" target="_blank" rel="noopener"><?= e($section['link_text'] ?? 'Claim Offer') ?><i data-lucide="arrow-right" class="icon--cta"></i></a>
 </div>

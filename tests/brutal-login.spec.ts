@@ -16,15 +16,12 @@ test('admin login with seed creds succeeds', async ({ page }) => {
 
 test('contact POST creates row (no auth required)', async ({ page }) => {
   await page.goto('/contact', { waitUntil: 'domcontentloaded' });
-  const token = await page.getAttribute('input[name="csrf_token"]', 'value');
-  console.log(`csrf token=${token?.slice(0, 8)}`);
 
   const r = await page.request.post('/api/contact', {
     form: {
-      csrf_token: token || '',
       name: 'Playwright Tester',
       email: 'pw@test.com',
-      message: 'Brutal audit message from Playwright — 10+ chars'
+      message: 'Brutal audit message from Playwright — this is a test message with more than 10 chars'
     }
   });
   console.log(`contact POST status=${r.status()} body=${(await r.text()).slice(0, 500)}`);

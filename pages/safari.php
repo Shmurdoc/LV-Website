@@ -1,7 +1,7 @@
 <?php
 /**
  * Safari Page — DB-driven, renders HTML directly (home.php pattern)
- * Fetches page hero data from `pages` table, activities from `safari_activities`.
+ * Fetches page hero data from `pages` + `page_settings` tables.
  */
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -10,21 +10,26 @@ $page = get_page('safari');
 $nav  = get_navigation();
 $settings = settings_group('contact');
 
-// ── Hero data (from pages table) ──
-$heroImage   = url($page['hero_image']  ?? '/Luxury Images/hero/safari-hero.webp');
+// ── Hero data (from page_settings table, with fallbacks) ──
+$heroImage   = url($page['hero_image']  ?? '/Luxury Images/gallery-scenic/exterior-grey-cottages-red-doors.jpg');
 $heroKicker  = $page['hero_kicker']    ?? 'Discover the Bushveld';
 $heroTitle   = $page['hero_title']     ?? '<em>Safari</em> Adventures';
 $heroLead    = $page['hero_lead']      ?? 'From Big Five game drives in the Kruger to scenic boat safaris on the Olifants River — every day is a new chapter in the wild.';
 $metaTitle   = $page['meta_title']     ?? 'Safari | Viata Luxe Guesthouse';
 $metaDesc    = $page['meta_description'] ?? 'Explore Limpopo safaris from Phalaborwa — Kruger game drives, Olifants boat cruises, Blyde River Canyon and cultural tours.';
 
-// ── Activities (all published, sorted) ──
-$activities = $db->query(
-    'SELECT title, content, image, video_urls, link_url, link_text, sort_order
-     FROM safari_activities
-     WHERE is_published = 1
-     ORDER BY sort_order ASC, id ASC'
-)->fetchAll();
+// ── Activities (table may not exist — fail gracefully) ──
+$activities = [];
+try {
+    $activities = $db->query(
+        'SELECT title, content, image, video_urls, link_url, link_text, sort_order
+         FROM safari_activities
+         WHERE is_published = 1
+         ORDER BY sort_order ASC, id ASC'
+    )->fetchAll();
+} catch (Throwable $e) {
+    // Table missing or query failed — use empty array
+}
 
 // ── Group activities by sort_order ranges ──
 // 1–2  = Video / Game Drive  |  3–4  = Boat Safaris
@@ -34,13 +39,29 @@ $boatCards   = array_filter($activities, fn($a) => $a['sort_order'] >= 3 && $a['
 $adventure   = array_filter($activities, fn($a) => $a['sort_order'] >= 5 && $a['sort_order'] <= 6);
 $beyondGate  = array_filter($activities, fn($a) => $a['sort_order'] >= 7);
 
-// ── Gallery images (static fallback, can be DB-driven later) ──
-$galleryImages = [
-    ['src' => url('/Luxury Images/optimized/standard-apartment-luxury-guesthouse-phalaborwa.webp'), 'alt' => 'Kruger landscape'],
-    ['src' => url('/Luxury Images/optimized/DSC03609.webp'),                                       'alt' => 'Elephant herd at sunset'],
-    ['src' => url('/Luxury Images/optimized/DSC03963.webp'),                                       'alt' => 'Hippos in the Olifants River'],
-    ['src' => url('/Luxury Images/optimized/DSC02142.webp'),                                       'alt' => 'Birdlife along the river'],
-];
+// ── Gallery images (DB-driven: outdoor + activity images) ──
+$galleryImages = [];
+try {
+    $galleryImages = $db->query("
+        SELECT gi.image_path, gi.alt_text
+        FROM gallery_images gi
+        JOIN gallery_categories gc ON gi.category_id = gc.id
+        WHERE gi.deleted_at IS NULL AND gc.slug IN ('outdoors')
+        ORDER BY gi.sort_order ASC
+        LIMIT 8
+    ")->fetchAll(PDO::FETCH_ASSOC);
+    // Normalize to ['src' => ..., 'alt' => ...] format
+    $galleryImages = array_map(fn($g) => [
+        'src' => url($g['image_path']),
+        'alt' => $g['alt_text'] ?? 'Safari moment',
+    ], $galleryImages);
+} catch (Throwable $e) {
+    // Fallback to static images if query fails
+    $galleryImages = [
+        ['src' => url('/Luxury Images/activities/elephants-river-crossing-herd.jpg'), 'alt' => 'Elephant herd at sunset'],
+        ['src' => url('/Luxury Images/activities/hippos-water-group.jpg'),            'alt' => 'Hippos in the Olifants River'],
+    ];
+}
 
 // ── Pricelist download ──
 $pricelistUrl = url('/uploads/safari/viata-safari-pricelist.pdf');
@@ -98,19 +119,18 @@ require_once __DIR__ . '/../templates/header.php';
      ════════════════════════════════════════════════════ -->
 <section class="section" id="safari-intro" style="padding-top:96px; padding-bottom:64px">
     <div class="container">
-        <p class="section__intro">Every stay at Viata Luxe is a gateway to the wild — just 15 minutes from the Phalaborwa Gate of Kruger National Park. Safari drives at dawn, boat cruises on the Olifants, and canyon vistas that stretch to the horizon.</p>
+        <p class="section__intro"><?= e(setting('safari_intro_text', 'Every stay at Viata Luxe is a gateway to the wild — just 15 minutes from the Phalaborwa Gate of Kruger National Park. Safari drives at dawn, boat cruises on the Olifants, and canyon vistas that stretch to the horizon.')) ?></p>
 
         <?php if (!empty($videos)): ?>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:42px">
             <?php foreach ($videos as $vid):
-                $thumb = url($vid['image'] ?? '/Luxury Images/optimized/standard-apartment-luxury-guesthouse-phalaborwa.webp');
+                $thumb = url($vid['image'] ?? '/Luxury Images/gallery-scenic/exterior-grey-cottages-red-doors.jpg');
                 $videoUrls = json_decode($vid['video_urls'] ?? '[]', true);
                 $videoUrl  = $videoUrls[0] ?? '';
                 $ytId      = preg_match('/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]+)/', $videoUrl, $m) ? $m[1] : '';
-                $ytThumb   = $ytId ? "https://img.youtube.com/vi/{$ytId}/maxresdefault.jpg" : $thumb;
             ?>
             <div class="yt-facade" data-src="https://www.youtube.com/embed/<?= e($ytId) ?>?autoplay=1&rel=0&modestbranding=1&playsinline=1">
-                <img src="<?= e($ytThumb) ?>" alt="<?= e($vid['title']) ?>" width="720" height="405" loading="lazy" decoding="async">
+                <img src="<?= e($thumb) ?>" alt="<?= e($vid['title']) ?>" width="720" height="405" loading="lazy" decoding="async">
                 <div class="yt-facade__play" aria-hidden="true"></div>
                 <div class="yt-facade__cap"><?= e($vid['title']) ?></div>
             </div>
@@ -126,7 +146,7 @@ require_once __DIR__ . '/../templates/header.php';
 <section class="section section--alt">
     <div class="container" style="display:grid;grid-template-columns:repeat(2,1fr);gap:32px">
         <?php foreach ($boatCards as $card):
-            $img = url($card['image'] ?? '/Luxury Images/optimized/standard-apartment-luxury-guesthouse-phalaborwa.webp');
+            $img = url($card['image'] ?? '/Luxury Images/gallery-scenic/exterior-grey-cottages-red-doors.jpg');
         ?>
         <article class="activity-card">
             <div class="activity-card__img">
@@ -145,7 +165,7 @@ require_once __DIR__ . '/../templates/header.php';
         <?php endforeach; ?>
 
         <?php foreach ($adventure as $card):
-            $img = url($card['image'] ?? '/Luxury Images/optimized/standard-apartment-luxury-guesthouse-phalaborwa.webp');
+            $img = url($card['image'] ?? '/Luxury Images/gallery-scenic/exterior-grey-cottages-red-doors.jpg');
         ?>
         <article class="activity-card">
             <div class="activity-card__img">
@@ -170,13 +190,13 @@ require_once __DIR__ . '/../templates/header.php';
      ════════════════════════════════════════════════════ -->
 <section class="section" style="padding-top:96px; padding-bottom:72px">
     <div class="container">
-        <h2 class="section__title" style="max-width:16ch">Beyond the Gate</h2>
-        <p class="section__lead" style="max-width:58ch">Phalaborwa sits at the crossroads of the Lowveld — Blyde River Canyon to the south, cultural heritage sites within minutes, and sunset drinks at Amarula on the banks of the Olifants.</p>
+        <h2 class="section__title" style="max-width:16ch"><?= e(setting('safari_beyond_title', 'Beyond the Gate')) ?></h2>
+        <p class="section__lead" style="max-width:58ch"><?= e(setting('safari_beyond_lead', 'Phalaborwa sits at the crossroads of the Lowveld — Blyde River Canyon to the south, cultural heritage sites within minutes, and sunset drinks at Amarula on the banks of the Olifants.')) ?></p>
 
         <?php if (!empty($beyondGate)): ?>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:42px">
             <?php foreach ($beyondGate as $card):
-                $img = url($card['image'] ?? '/Luxury Images/optimized/standard-apartment-luxury-guesthouse-phalaborwa.webp');
+                $img = url($card['image'] ?? '/Luxury Images/gallery-scenic/exterior-grey-cottages-red-doors.jpg');
             ?>
             <article class="activity-card">
                 <div class="activity-card__img">
@@ -203,7 +223,7 @@ require_once __DIR__ . '/../templates/header.php';
      ════════════════════════════════════════════════════ -->
 <section class="section section--alt">
     <div class="container">
-        <h2 class="section__title" style="max-width:16ch">Moments from the Bush</h2>
+        <h2 class="section__title" style="max-width:16ch"><?= e(setting('safari_gallery_title', 'Moments from the Bush')) ?></h2>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:36px">
             <?php foreach ($galleryImages as $img): ?>
             <figure class="gallery-item" style="margin:0;overflow:hidden;border-radius:12px;aspect-ratio:4/5">
@@ -219,8 +239,8 @@ require_once __DIR__ . '/../templates/header.php';
      ════════════════════════════════════════════════════ -->
 <section class="section" style="padding:96px 0">
     <div class="container" style="text-align:center">
-        <h2 class="section__title" style="margin-inline:auto">Ready to Explore?</h2>
-        <p class="section__lead" style="margin-inline:auto; margin-top:12px; max-width:52ch">Download our full safari pricelist or get in touch to tailor your Limpopo adventure.</p>
+        <h2 class="section__title" style="margin-inline:auto"><?= e(setting('safari_cta_title', 'Ready to Explore?')) ?></h2>
+        <p class="section__lead" style="margin-inline:auto; margin-top:12px; max-width:52ch"><?= e(setting('safari_cta_lead', 'Download our full safari pricelist or get in touch to tailor your Limpopo adventure.')) ?></p>
         <div style="display:flex;gap:16px;justify-content:center;margin-top:36px;flex-wrap:wrap">
             <a href="<?= e($pricelistUrl) ?>" class="cta cta--primary" download>Download Pricelist</a>
             <a href="<?= e(url('/contact/')) ?>" class="cta cta--outline">Contact Us</a>

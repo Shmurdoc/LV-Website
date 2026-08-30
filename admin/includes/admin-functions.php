@@ -35,6 +35,7 @@ function admin_icon(string $name, int $size = 18): string
         'star'      => '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
         'users'     => '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
         'inbox'     => '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+        'tags'      => '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
     ];
     $body = $paths[$name] ?? '<circle cx="12" cy="12" r="10"/>';
     return '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size
@@ -63,6 +64,10 @@ function get_admin_nav(): array
         ['label' => 'Testimonials',   'url' => "$base/testimonials",    'path' => '/testimonials','icon' => 'testimonials'],
         ['label' => 'FAQs',           'url' => "$base/faqs",            'path' => '/faqs',        'icon' => 'faqs'],
         ['label' => 'Navigation',     'url' => "$base/navigation",      'path' => '/navigation',  'icon' => 'navigation'],
+        ['label' => 'Hero Slides',    'url' => "$base/hero-slides",     'path' => '/hero-slides', 'icon' => 'gallery'],
+        ['label' => 'Pillars',        'url' => "$base/promise-pillars", 'path' => '/promise-pillars','icon' => 'sections'],
+        ['label' => 'Moments',        'url' => "$base/moments",         'path' => '/moments',     'icon' => 'gallery'],
+        ['label' => 'Dining',         'url' => "$base/dining",          'path' => '/dining',      'icon' => 'sections'],
         ['label' => 'Contact',        'url' => "$base/contact",         'path' => '/contact',     'icon' => 'contact'],
         ['label' => 'Settings',       'url' => "$base/settings",        'path' => '/settings',    'icon' => 'settings'],
     ];

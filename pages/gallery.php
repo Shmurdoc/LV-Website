@@ -17,14 +17,14 @@ $settings  = settings_group('branding');
 $contact   = settings_group('contact');
 $categories = get_gallery_categories();
 
-// Fetch all gallery images with category names
+// Fetch all gallery images with category names (real schema: category_id FK, sort_order, deleted_at)
 $db = Database::get();
 $stmt = $db->query("
-    SELECT gi.*, gc.name AS category_name, gc.slug AS category_slug
+    SELECT gi.*, gc.name AS cat_name, gc.slug AS cat_slug
     FROM gallery_images gi
     JOIN gallery_categories gc ON gi.category_id = gc.id
-    WHERE gc.is_published = 1
-    ORDER BY gc.sort_order ASC, gi.sort_order ASC
+    WHERE gi.deleted_at IS NULL
+    ORDER BY gi.category_id ASC, gi.sort_order ASC
 ");
 $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -57,11 +57,12 @@ require __DIR__ . '/../templates/header.php';
 
 /* ——— Masonry grid ——— */
 .masonry{column-count:3; column-gap:14px}
-.masonry__item{break-inside:avoid; margin-bottom:14px; border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow-soft); cursor:pointer; transition:transform var(--dur) var(--ease-spring), box-shadow var(--dur) var(--ease-out)}
+.masonry__item{break-inside:avoid; margin-bottom:14px; border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow-soft); cursor:pointer; display:inline-block; width:100%; opacity:1; transform:none; contain:none; transition:transform var(--dur) var(--ease-spring), box-shadow var(--dur) var(--ease-out)}
 .masonry__item:hover{transform:translateY(-3px); box-shadow:var(--shadow-medium)}
 .masonry__item img{width:100%; height:auto; display:block; transition:transform 600ms var(--ease-out)}
 .masonry__item:hover img{transform:scale(1.04)}
-.masonry__cap{padding:8px 12px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; font-weight:700; color:var(--ink-55); background:var(--cream); border-top:1px solid var(--line)}
+.masonry__cap{padding:8px 12px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; font-weight:700; color:var(--ink-55); background:var(--cream); border-top:1px solid var(--line); transition:background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out)}
+.masonry__item:hover .masonry__cap{background:var(--ivory); color:var(--navy)}
 .masonry__item.is-hidden{display:none}
 
 /* ——— Section intro ——— */
@@ -71,8 +72,6 @@ require __DIR__ . '/../templates/header.php';
 .section-intro h2 em{font-style:italic; color:var(--gold-600)}
 .section-intro p{color:var(--ink-70); max-width:58ch; margin-inline:auto; font-size:15px; line-height:1.6}
 
-@media (max-width:980px){ .masonry{column-count:2} }
-@media (max-width:560px){ .masonry{column-count:1} }
 </style>
 
 <main id="main-content">
@@ -85,7 +84,7 @@ require __DIR__ . '/../templates/header.php';
   <div class="page-hero__veil"></div>
   <div class="page-hero__content">
     <p class="page-hero__kicker"><?= e($page['hero_kicker'] ?? 'Gallery — Luxe Bedrooms, Kitchens, Bathrooms, Living Rooms, Outdoors') ?></p>
-    <h1 class="page-hero__title">45 frames.<br><em>No filter tabs.</em></h1>
+    <h1 class="page-hero__title"><?= $total ?> frames.<br><em>No filter tabs.</em></h1>
     <p class="page-hero__lead">Our curated collection of Viata Luxe interiors, kitchens, bathrooms, and outdoor spaces.</p>
   </div>
 </section>
@@ -95,7 +94,7 @@ require __DIR__ . '/../templates/header.php';
   <div class="filter__inner">
     <button class="is-active" data-filter="all">All</button>
     <?php foreach ($categories as $cat): ?>
-      <button data-filter="<?= e($cat['slug']) ?>"><?= e($cat['name']) ?></button>
+      <button data-filter="<?= e(strtolower($cat['slug'])) ?>"><?= e($cat['name']) ?></button>
     <?php endforeach; ?>
   </div>
 </div>
@@ -104,9 +103,9 @@ require __DIR__ . '/../templates/header.php';
 <section class="container" style="padding-bottom:var(--section-pad); padding-top:18px">
   <div class="masonry" id="masonry">
     <?php foreach ($images as $img): ?>
-      <div class="masonry__item" data-cat="<?= e($img['category_slug']) ?>" data-lightbox href="<?= url($img['image_path']) ?>">
-        <img src="<?= url($img['image_path']) ?>" alt="<?= e($img['alt_text'] ?? $img['title'] ?? $img['category_name']) ?>" width="800" height="600" loading="lazy" decoding="async">
-        <div class="masonry__cap"><?= e($img['category_name']) ?> — <?= e($img['title'] ?? '') ?></div>
+      <div class="masonry__item" data-cat="<?= e($img['cat_slug']) ?>" data-lightbox href="<?= url($img['image_path']) ?>">
+        <img src="<?= url($img['image_path']) ?>" alt="<?= e($img['alt_text'] ?? $img['caption'] ?? $img['cat_name']) ?>" width="800" height="600" loading="lazy" decoding="async">
+        <div class="masonry__cap"><?= e($img['cat_name']) ?> — <?= e($img['caption'] ?? $img['alt_text'] ?? '') ?></div>
       </div>
     <?php endforeach; ?>
   </div>

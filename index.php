@@ -61,6 +61,7 @@ $routes = [
     '/'                 => 'pages/home.php',
     '/home'             => 'pages/home.php',
     '/accomodation'     => 'pages/accommodation.php',
+    '/accommodation'    => 'pages/accommodation.php',
     '/bachelor-apartment'   => 'pages/apartment.php',
     '/classic-apartment-2'  => 'pages/apartment.php',
     '/comfort-apartment-3'  => 'pages/apartment.php',

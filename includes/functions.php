@@ -20,7 +20,8 @@ function setting(string $key, string $default = ''): string
     }
     $db = Database::get();
     try {
-        $stmt = $db->prepare('SELECT setting_value FROM site_settings WHERE setting_key = :key AND is_active = 1 LIMIT 1');
+        // site_settings is canonical table; global_settings is VIEW alias (kept for B/C)
+        $stmt = $db->prepare('SELECT setting_value FROM site_settings WHERE setting_key = :key LIMIT 1');
         $stmt->execute(['key' => $key]);
         $result = $stmt->fetch();
         $cache[$key] = $result ? $result['setting_value'] : $default;
@@ -41,7 +42,8 @@ function settings_group(string $group): array
     }
     $db = Database::get();
     try {
-        $stmt = $db->prepare('SELECT setting_key, setting_value FROM site_settings WHERE category = :group AND is_active = 1 ORDER BY sort_order ASC');
+        // site_settings.setting_group is canonical; no is_active column (removed fallback masking)
+        $stmt = $db->prepare('SELECT setting_key, setting_value FROM site_settings WHERE setting_group = :group ORDER BY sort_order ASC');
         $stmt->execute(['group' => $group]);
         $rows = $stmt->fetchAll();
         $cache[$group] = [];
@@ -110,9 +112,8 @@ function active_where(
     bool $include_scheduled = false
 ): string {
     $conditions = [];
-    if ($include_deleted) {
-        $conditions[] = "$table.deleted_at IS NOT NULL";
-    } else {
+    // include_deleted=true = no filter (show both active + trashed); fix: previously added IS NOT NULL (trash-only) — bug
+    if (!$include_deleted) {
         $conditions[] = "$table.deleted_at IS NULL";
     }
     if (!$include_scheduled) {
@@ -182,19 +183,24 @@ function get_sections(int $page_id): array
     $db = Database::get();
     try {
         $stmt = $db->prepare('
-            SELECT s.id, s.section_type, s.title, s.subtitle, s.content, s.image,
-                   s.link_url, s.link_text, s.css_class,
+            SELECT s.id, s.page_id, s.section_type, s.title, s.subtitle, s.content, s.image,
+                   s.link_url, s.link_text, s.css_class, s.sort_order,
+                   s.is_visible, s.visible_from, s.visible_until, s.deleted_at,
                    so.layout, so.background_color, so.background_image, so.text_color,
                    so.padding_top, so.padding_bottom, so.padding_left, so.padding_right,
                    so.max_width, so.alignment, so.vertical_alignment, so.animation, so.responsive_stack
             FROM sections s
             LEFT JOIN section_orientation so ON so.section_id = s.id
             WHERE s.page_id = :page_id AND s.is_visible = 1
+              AND s.deleted_at IS NULL
+              AND (s.visible_from IS NULL OR s.visible_from <= NOW())
+              AND (s.visible_until IS NULL OR s.visible_until >= NOW())
             ORDER BY s.sort_order ASC
         ');
         $stmt->execute(['page_id' => $page_id]);
         return $stmt->fetchAll();
     } catch (Throwable $e) {
+        error_log('get_sections failed: ' . $e->getMessage());
         return [];
     }
 }
@@ -234,16 +240,20 @@ function get_navigation(): array
     try {
         $stmt = $db->prepare('
             SELECT n.id, n.label, n.url, n.page_id, n.parent_id, n.sort_order,
-                   n.open_in_new_tab, n.css_class, p.page_slug
+                   n.open_in_new_tab, n.css_class, p.slug AS page_slug,
+                   n.visible_from, n.visible_until, n.deleted_at
             FROM navigation n
             LEFT JOIN pages p ON p.id = n.page_id
-            WHERE n.is_published = 1
+            WHERE n.is_published = 1 AND n.deleted_at IS NULL
+              AND (n.visible_from IS NULL OR n.visible_from <= NOW())
+              AND (n.visible_until IS NULL OR n.visible_until >= NOW())
             ORDER BY n.sort_order ASC
         ');
         $stmt->execute();
         $rows = $stmt->fetchAll();
     } catch (Throwable $e) {
-        // navigation table missing — provide hardcoded fallback
+        // navigation table missing — provide hardcoded fallback (logs warning to error_log)
+        error_log('get_navigation fallback: ' . $e->getMessage());
         $rows = [
             ['id' => 1, 'label' => 'Home',          'url' => '',          'page_id' => null, 'parent_id' => null, 'sort_order' => 1, 'open_in_new_tab' => 0, 'css_class' => '', 'page_slug' => 'home'],
             ['id' => 2, 'label' => 'Accommodation',  'url' => null,       'page_id' => null, 'parent_id' => null, 'sort_order' => 2, 'open_in_new_tab' => 0, 'css_class' => '', 'page_slug' => 'accommodation'],
@@ -275,13 +285,35 @@ function get_navigation(): array
 // =====================================================
 
 /**
- * Get all published apartments
+ * Get all published apartments — static cache, no N+1, respects soft-delete + visibility
+ * Uses single query; callers should reuse result rather than querying per-apartment
  */
 function get_apartments(): array
 {
+    static $cache = null;
+    if ($cache !== null) {
+        return $cache;
+    }
     $db = Database::get();
-    $stmt = $db->query('SELECT * FROM apartments WHERE is_published = 1 ORDER BY sort_order ASC');
-    return $stmt->fetchAll();
+    // Explicitly filter deleted_at + is_published, order by sort_order (pricing highlights via is_featured check in template, not ORDER)
+    $stmt = $db->query('SELECT * FROM apartments WHERE is_published = 1 AND deleted_at IS NULL ORDER BY sort_order ASC');
+    $cache = $stmt->fetchAll();
+    return $cache;
+}
+
+/**
+ * Get the featured apartment — is_featured=1, fallback to first by sort_order
+ * Wrapper owned by Track A (contract)
+ */
+function get_featured_apartment(): ?array
+{
+    $apartments = get_apartments();
+    foreach ($apartments as $apt) {
+        if (!empty($apt['is_featured'])) {
+            return $apt;
+        }
+    }
+    return $apartments[0] ?? null;
 }
 
 /**
@@ -290,7 +322,7 @@ function get_apartments(): array
 function get_apartment(string $slug): ?array
 {
     $db = Database::get();
-    $stmt = $db->prepare('SELECT * FROM apartments WHERE slug = :slug AND is_published = 1 LIMIT 1');
+    $stmt = $db->prepare('SELECT * FROM apartments WHERE slug = :slug AND is_published = 1 AND deleted_at IS NULL LIMIT 1');
     $stmt->execute(['slug' => $slug]);
     return $stmt->fetch() ?: null;
 }
@@ -301,31 +333,46 @@ function get_apartment(string $slug): ?array
 function get_apartment_by_id(int $id): ?array
 {
     $db = Database::get();
-    $stmt = $db->prepare('SELECT * FROM apartments WHERE id = :id LIMIT 1');
+    $stmt = $db->prepare('SELECT * FROM apartments WHERE id = :id AND deleted_at IS NULL LIMIT 1');
     $stmt->execute(['id' => $id]);
     return $stmt->fetch() ?: null;
 }
 
 /**
- * Get images for an apartment
+ * Get images for an apartment — static grouped cache, single query, no N+1 (like amenities)
  */
 function get_apartment_images(int $apartment_id): array
 {
+    static $grouped = null;
+    if ($grouped === null) {
+        $db = Database::get();
+        $rows = $db->query('SELECT * FROM apartment_images WHERE deleted_at IS NULL ORDER BY apartment_id ASC, sort_order ASC')->fetchAll();
+        $grouped = [];
+        foreach ($rows as $r) { $grouped[(int)$r['apartment_id']][] = $r; }
+    }
+    return $grouped[$apartment_id] ?? [];
+}
+
+/**
+ * Get testimonials for a specific apartment (DB-driven, no author_name/quote phantom cols)
+ */
+function get_apartment_testimonials(int $apartment_id): array
+{
     $db = Database::get();
-    $stmt = $db->prepare('SELECT * FROM apartment_images WHERE apartment_id = :id ORDER BY sort_order ASC');
+    $stmt = $db->prepare('SELECT * FROM testimonials WHERE apartment_id = :id AND is_published = 1 AND deleted_at IS NULL ORDER BY sort_order ASC LIMIT 1');
     $stmt->execute(['id' => $apartment_id]);
     return $stmt->fetchAll();
 }
 
 /**
- * Get amenities for an apartment
+ * Get amenities for an apartment — static grouped cache, single query, no N+1
  */
 function get_apartment_amenities(int $apartment_id): array
 {
     static $grouped = null;
     if ($grouped === null) {
         $db = Database::get();
-        $rows = $db->query('SELECT * FROM apartment_amenities ORDER BY apartment_id ASC, sort_order ASC')->fetchAll();
+        $rows = $db->query('SELECT * FROM apartment_amenities WHERE deleted_at IS NULL ORDER BY apartment_id ASC, sort_order ASC')->fetchAll();
         $grouped = [];
         foreach ($rows as $r) { $grouped[(int)$r['apartment_id']][] = $r; }
     }
@@ -337,23 +384,12 @@ function get_apartment_amenities(int $apartment_id): array
 // =====================================================
 
 /**
- * Get featured testimonials
+ * Get featured testimonials — respects deleted_at + visibility windows
  */
 function get_featured_testimonials(): array
 {
     $db = Database::get();
-    $stmt = $db->query('SELECT * FROM testimonials WHERE is_featured = 1 AND is_published = 1 ORDER BY sort_order ASC');
-    return $stmt->fetchAll();
-}
-
-/**
- * Get testimonials for a specific apartment
- */
-function get_apartment_testimonials(int $apartment_id): array
-{
-    $db = Database::get();
-    $stmt = $db->prepare('SELECT * FROM testimonials WHERE apartment_id = :id AND is_published = 1 ORDER BY sort_order ASC');
-    $stmt->execute(['id' => $apartment_id]);
+    $stmt = $db->query('SELECT * FROM testimonials WHERE is_featured = 1 AND is_published = 1 AND deleted_at IS NULL ORDER BY sort_order ASC');
     return $stmt->fetchAll();
 }
 
@@ -394,17 +430,21 @@ function get_gallery_images(int $category_id): array
 }
 
 /**
- * Get featured gallery images (for homepage preview)
+ * Get featured gallery images (for homepage preview) — single JOIN query, no N+1, no fallback masking
+ * Filters gi.is_featured=1 (seeded 8 preview images), respects soft-delete + category visibility
  */
-function get_featured_gallery(int $limit = 6): array
+function get_featured_gallery(int $limit = 8): array
 {
     $db = Database::get();
     $stmt = $db->prepare('
         SELECT gi.image_path, gi.alt_text, gi.caption, gc.name AS category_name
         FROM gallery_images gi
         JOIN gallery_categories gc ON gi.category_id = gc.id
-        WHERE gi.deleted_at IS NULL
-        ORDER BY gi.sort_order ASC
+        WHERE gi.is_featured = 1
+          AND gi.deleted_at IS NULL
+          AND gc.deleted_at IS NULL
+          AND gc.is_published = 1
+        ORDER BY gi.sort_order ASC, gi.id ASC
         LIMIT :limit
     ');
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -447,6 +487,77 @@ function get_faqs(?int $page_id = null): array
         } else {
             $stmt = $db->query('SELECT * FROM faqs WHERE is_published = 1 ORDER BY sort_order ASC');
         }
+        return $stmt->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+// =====================================================
+// TRACK B — HERO / PROMISE / MOMENTS / DINING (Builder B)
+// Contract: new tables hero_slides, promise_pillars, moments, dining_items — B owns, A reads only
+// Helpers: get_hero_slides(), get_promise_pillars(), get_moments(), get_dining_items()
+// =====================================================
+
+/**
+ * Get hero slides for a page — respects is_published, soft-delete, visibility window, ORDER BY sort_order
+ * Single query, no N+1, no fallback masking
+ */
+function get_hero_slides(int $page_id = 1): array
+{
+    $db = Database::get();
+    try {
+        $now = date('Y-m-d H:i:s');
+        $stmt = $db->prepare('SELECT * FROM hero_slides WHERE page_id = :page_id AND is_published = 1 AND deleted_at IS NULL AND (visible_from IS NULL OR visible_from <= :vf) AND (visible_until IS NULL OR visible_until >= :vu) ORDER BY sort_order ASC');
+        $stmt->execute(['page_id' => $page_id, 'vf' => $now, 'vu' => $now]);
+        return $stmt->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+/**
+ * Get promise pillars for a page — respects soft-delete + visibility
+ */
+function get_promise_pillars(int $page_id = 1): array
+{
+    $db = Database::get();
+    try {
+        $now = date('Y-m-d H:i:s');
+        $stmt = $db->prepare('SELECT * FROM promise_pillars WHERE page_id = :page_id AND is_published = 1 AND deleted_at IS NULL AND (visible_from IS NULL OR visible_from <= :vf) AND (visible_until IS NULL OR visible_until >= :vu) ORDER BY sort_order ASC');
+        $stmt->execute(['page_id' => $page_id, 'vf' => $now, 'vu' => $now]);
+        return $stmt->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+/**
+ * Get moments for a page — respects soft-delete + visibility
+ */
+function get_moments(int $page_id = 1): array
+{
+    $db = Database::get();
+    try {
+        $now = date('Y-m-d H:i:s');
+        $stmt = $db->prepare('SELECT * FROM moments WHERE page_id = :page_id AND is_published = 1 AND deleted_at IS NULL AND (visible_from IS NULL OR visible_from <= :vf) AND (visible_until IS NULL OR visible_until >= :vu) ORDER BY sort_order ASC');
+        $stmt->execute(['page_id' => $page_id, 'vf' => $now, 'vu' => $now]);
+        return $stmt->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+/**
+ * Get dining items for a page — respects soft-delete + visibility
+ */
+function get_dining_items(int $page_id = 1): array
+{
+    $db = Database::get();
+    try {
+        $now = date('Y-m-d H:i:s');
+        $stmt = $db->prepare('SELECT * FROM dining_items WHERE page_id = :page_id AND is_published = 1 AND deleted_at IS NULL AND (visible_from IS NULL OR visible_from <= :vf) AND (visible_until IS NULL OR visible_until >= :vu) ORDER BY sort_order ASC');
+        $stmt->execute(['page_id' => $page_id, 'vf' => $now, 'vu' => $now]);
         return $stmt->fetchAll();
     } catch (Throwable $e) {
         return [];
@@ -616,7 +727,7 @@ function is_admin_logged_in(): bool
 function require_admin(): void
 {
     if (!is_admin_logged_in()) {
-        header('Location: ' . url('/admin/login.php'));
+        header('Location: ' . url('/admin/login'));
         exit;
     }
 
@@ -624,7 +735,7 @@ function require_admin(): void
     if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > ADMIN_TIMEOUT) {
         session_unset();
         session_destroy();
-        header('Location: ' . url('/admin/login.php'));
+        header('Location: ' . url('/admin/login'));
         exit;
     }
     $_SESSION['last_activity'] = time();
