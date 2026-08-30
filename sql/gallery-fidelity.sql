@@ -30,7 +30,7 @@ INSERT INTO gallery_images (category_id, image_path, alt_text, caption, sort_ord
 (4, '/Luxury Images/living-rooms/living-room-black-sofas-tv-unit.jpg', 'Black sofas TV unit', 'Comfortable living area', 2),
 (4, '/Luxury Images/living-rooms/living-room-brown-sofa-leaf-pillows.jpg', 'Brown sofa leaf pillows', 'Relaxed lounge', 3),
 (4, '/Luxury Images/living-rooms/living-room-1-orange-cushions.jpg', 'Orange cushions living', 'Vibrant accent living room', 4),
-(5, 'uploads/gallery/jacuzzi-1.jpg', 'Jacuzzi area', 'Jacuzzi under the stars', 1),
+(5, 'uploads/gallery/pool-1.jpg', 'Swimming Pool area', 'Pool under the stars', 1),
 (5, 'uploads/gallery/garden-1.jpg', 'Garden area', 'Lush garden setting', 2),
 (5, '/Luxury Images/pool/pool-overview-entertainment-area.jpg', 'Pool entertainment area', 'Serenity by the pool', 3),
 (5, '/Luxury Images/pool/pool-overview-gazebo-garden.jpg', 'Pool gazebo garden', 'Outdoor chillers', 4),

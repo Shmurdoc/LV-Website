@@ -85,7 +85,7 @@ INSERT INTO site_settings (setting_key, setting_value, setting_type, setting_gro
 ('footer_credit', 'Built with pride by Recast Media', 'text', 'footer', 3),
 ('footer_legal', '© 2026 Viata Luxe Guesthouse. All rights reserved.', 'text', 'footer', 4),
 ('footer_about', 'Viata Luxe Guesthouse offers award-winning luxury self-catering accommodation in the heart of Limpopo. Perfect for business travelers, weekend getaways, and bushveld adventures.', 'textarea', 'footer', 5),
-('site_tagline', 'Luxury self-catering in Phalaborwa — bushveld views, secure parking, jacuzzi.', 'text', 'general', 2)
+('site_tagline', 'Luxury self-catering in Phalaborwa — bushveld views, secure parking, swimming pool.', 'text', 'general', 2)
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
 
 -- =====================================================

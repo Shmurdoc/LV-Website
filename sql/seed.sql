@@ -53,8 +53,8 @@ INSERT INTO global_settings (setting_key, setting_value, setting_type, setting_g
 -- PAGES
 -- =====================================================
 INSERT INTO pages (id, slug, title, subtitle, meta_title, meta_description, template, is_published, is_homepage, sort_order) VALUES
-(1, 'home', 'Home', 'Luxury Self-Catering in Limpopo', 'Viata Luxe Guesthouse — 4-Star Luxury Self-Catering Limpopo', 'Award-winning luxury self-catering guesthouse in Limpopo. Secure parking, jacuzzi, bushveld views. Book direct for best rates.', 'home', 1, 1, 1),
-(2, 'accommodation', 'Accommodation', '4 Luxury Apartments', 'Accommodation — Viata Luxe Guesthouse', 'Choose from 4 luxury self-catering apartments in Limpopo. Queen beds, full kitchens, jacuzzi access, secure parking.', 'default', 1, 0, 2),
+(1, 'home', 'Home', 'Luxury Self-Catering in Limpopo', 'Viata Luxe Guesthouse — 4-Star Luxury Self-Catering Limpopo', 'Award-winning luxury self-catering guesthouse in Limpopo. Secure parking, swimming pool, bushveld views. Book direct for best rates.', 'home', 1, 1, 1),
+(2, 'accommodation', 'Accommodation', '4 Luxury Apartments', 'Accommodation — Viata Luxe Guesthouse', 'Choose from 4 luxury self-catering apartments in Limpopo. Queen beds, full kitchens, swimming pool, secure parking.', 'default', 1, 0, 2),
 (3, 'gallery', 'Gallery', 'See Our Spaces', 'Gallery — Viata Luxe Guesthouse', 'Browse photos of our luxury apartments, facilities, and the beautiful Limpopo bushveld.', 'default', 1, 0, 3),
 (4, 'safari', 'Safari & Activities', 'Discover Limpopo', 'Safari & Activities — Viata Luxe Guesthouse', 'Game drives, bushveld walks, and Limpopo adventures. Your gateway to South Africa\'s wildlife.', 'default', 1, 0, 4),
 (5, 'contact', 'Contact Us', 'Get in Touch', 'Contact — Viata Luxe Guesthouse', 'Contact Viata Luxe Guesthouse for reservations, inquiries, and special requests.', 'default', 1, 0, 5),
@@ -107,7 +107,7 @@ INSERT INTO apartment_amenities (apartment_id, amenity_name, amenity_icon, sort_
 (1, 'DStv', 'tv', 2),
 (1, 'Full Kitchen', 'kitchen', 3),
 (1, 'Secure Parking', 'car', 4),
-(1, 'Jacuzzi Access', 'hot-tub', 5),
+(1, 'Swimming Pool', 'hot-tub', 5),
 (1, 'Air Conditioning', 'snowflake', 6),
 (1, 'Private Balcony', 'balcony', 7),
 
@@ -115,7 +115,7 @@ INSERT INTO apartment_amenities (apartment_id, amenity_name, amenity_icon, sort_
 (2, 'DStv', 'tv', 2),
 (2, 'Full Kitchen', 'kitchen', 3),
 (2, 'Secure Parking', 'car', 4),
-(2, 'Jacuzzi Access', 'hot-tub', 5),
+(2, 'Swimming Pool', 'hot-tub', 5),
 (2, 'Air Conditioning', 'snowflake', 6),
 (2, 'Ensuite Bathroom', 'bath', 7),
 
@@ -123,7 +123,7 @@ INSERT INTO apartment_amenities (apartment_id, amenity_name, amenity_icon, sort_
 (3, 'DStv', 'tv', 2),
 (3, 'Full Kitchen', 'kitchen', 3),
 (3, 'Secure Parking', 'car', 4),
-(3, 'Jacuzzi Access', 'hot-tub', 5),
+(3, 'Swimming Pool', 'hot-tub', 5),
 (3, 'Air Conditioning', 'snowflake', 6),
 (3, 'Dishwasher', 'dishwasher', 7),
 (3, 'Private Patio', 'patio', 8),
@@ -132,7 +132,7 @@ INSERT INTO apartment_amenities (apartment_id, amenity_name, amenity_icon, sort_
 (4, 'DStv', 'tv', 2),
 (4, 'Gourmet Kitchen', 'kitchen', 3),
 (4, 'Secure Parking', 'car', 4),
-(4, 'Jacuzzi Access', 'hot-tub', 5),
+(4, 'Swimming Pool', 'hot-tub', 5),
 (4, 'Air Conditioning', 'snowflake', 6),
 (4, 'Soaking Tub', 'bath', 7),
 (4, 'Panoramic Views', 'mountain', 8),

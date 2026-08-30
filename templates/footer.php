@@ -37,7 +37,7 @@ $navFooter = $nav ?? get_navigation();
 
         <div class="footer__grid">
             <div>
-                <p class="muted small footer__tagline"><?= e(setting('site_tagline', 'Luxury self-catering in Phalaborwa — bushveld views, secure parking, jacuzzi.')) ?></p>
+                <p class="muted small footer__tagline"><?= e(setting('site_tagline', 'Luxury self-catering in Phalaborwa — bushveld views, secure parking, swimming pool.')) ?></p>
                 <p class="small footer__address"><?= e(setting('address_full', '86 Nollie Bosman Street, Phalaborwa, 1390')) ?></p>
             </div>
             <div class="small">
