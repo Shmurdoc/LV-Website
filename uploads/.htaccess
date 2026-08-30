@@ -3,4 +3,6 @@ Options -Indexes
 <FilesMatch "\.(php|phtml|phar|pl|py|cgi)$">
     Require all denied
 </FilesMatch>
-Header set X-Content-Type-Options "nosniff"
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
