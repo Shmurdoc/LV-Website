@@ -1922,3 +1922,9 @@ a:focus-visible, button:focus-visible, .btn:focus-visible{outline:2px solid var(
 .section-booking-cta{background:var(--navy); color:var(--cream); position:relative; overflow:hidden}
 .section-booking-cta .container{padding-block:0}
 
+
+/* ---------- Category Filter ---------- */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;padding:24px 0;justify-content:center}
+.filter-btn{padding:8px 20px;border:1px solid rgba(140,116,52,0.3);border-radius:999px;background:transparent;color:var(--text);font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.25s ease;font-family:inherit}
+.filter-btn:hover{border-color:var(--gold);color:var(--gold)}
+.filter-btn.active{background:var(--gold);border-color:var(--gold);color:#fff}

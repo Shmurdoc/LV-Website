@@ -22,6 +22,7 @@ function get_admin_nav_groups(): array
                 ['label' => 'Sections',    'url' => "$base/sections",       'path' => '/sections',       'icon' => 'sections'],
                 ['label' => 'Hero Slides', 'url' => "$base/hero-slides",    'path' => '/hero-slides',    'icon' => 'gallery'],
                 ['label' => 'Navigation',  'url' => "$base/navigation",     'path' => '/navigation',     'icon' => 'navigation'],
+                ['label' => 'Categories',  'url' => "$base/categories",     'path' => '/categories',     'icon' => 'tags'],
             ],
         ],
         [

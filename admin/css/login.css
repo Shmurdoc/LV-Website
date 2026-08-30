@@ -1,0 +1,105 @@
+/* Viata Luxe Admin Login */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: var(--navy, #0B1A2E);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+}
+/* soft gold aurora */
+body::before, body::after {
+    content: ''; position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5;
+}
+body::before { width: 420px; height: 420px; background: rgba(140,116,52,.40); top: -80px; left: -80px; }
+body::after  { width: 380px; height: 380px; background: rgba(19,40,66,.80); bottom: -100px; right: -60px; }
+
+.login-card {
+    position: relative; z-index: 2;
+    background: var(--cream, #FFFFFF);
+    border-radius: 18px;
+    padding: 3rem 3rem 2.75rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 30px 70px rgba(0,0,0,.45);
+    border: 1px solid rgba(255,255,255,.08);
+}
+.login-lock {
+    width: 52px; height: 52px; margin: 0 auto 18px;
+    display: grid; place-items: center;
+    border-radius: 14px;
+    background: var(--gold-100, #F5F0E1);
+    color: var(--gold, #8C7434);
+}
+.login-lock svg { width: 24px; height: 24px; }
+.login-card h1 {
+    font-family: 'Fraunces', serif; font-weight: 300;
+    font-size: 1.6rem; color: var(--navy, #0B1A2E);
+    text-align: center; letter-spacing: .02em;
+}
+.login-card .brand-sub {
+    text-align: center; color: var(--muted, #8A93A0);
+    font-size: .78rem; letter-spacing: .18em; text-transform: uppercase;
+    margin-bottom: 2rem;
+}
+.form-group { margin-bottom: 1.25rem; }
+.form-group label {
+    display: block; font-weight: 600; color: var(--text, #1A2233);
+    margin-bottom: .45rem; font-size: .82rem;
+}
+.form-group .field {
+    position: relative;
+}
+.form-group .field svg {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; color: #A7B0BD;
+}
+.form-group input {
+    width: 100%;
+    padding: .82rem 1rem .82rem 44px;
+    border: 1px solid var(--border, #E5E8EE);
+    border-radius: 10px;
+    font-size: .95rem;
+    font-family: inherit;
+    color: var(--text, #1A2233);
+    background: #FAFBFC;
+    transition: border-color .2s, box-shadow .2s;
+}
+.form-group input:focus {
+    outline: none;
+    border-color: var(--gold, #8C7434);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(140,116,52,.16);
+}
+.error {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: #FDECEC; color: #B91C1C;
+    padding: .7rem 1rem; border-radius: 10px;
+    margin-bottom: 1.25rem; font-size: .82rem;
+    border: 1px solid #F6D0D0;
+}
+.error svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.btn {
+    width: 100%;
+    padding: .85rem;
+    background: var(--gold, #8C7434);
+    color: #fff;
+    border: none; border-radius: 10px;
+    font-size: .95rem; font-weight: 700; font-family: inherit;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+}
+.btn:hover { background: var(--gold-600, #7A642C); }
+.btn:active { transform: translateY(1px); }
+.login-foot {
+    margin-top: 1.5rem; text-align: center;
+    font-size: .74rem; color: var(--muted, #8A93A0);
+}
+.login-foot a { color: var(--gold, #8C7434); text-decoration: none; font-weight: 600; }
+.login-foot a:hover { text-decoration: underline; }
+.icon { display: none; }

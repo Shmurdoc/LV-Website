@@ -93,8 +93,20 @@ $a = $apartment ?? [];
         </div>
       </div>
       <div class="form-group">
-        <label>Features (JSON array) <span class="muted small">e.g. ["Sleeps 2","Full kitchen"] — also used in pricing cards</span></label>
-        <textarea name="features" rows="2" placeholder='["Sleeps 2","Full kitchen","Jacuzzi access","Secure parking"]'><?= e(is_array($a['features'] ?? null) ? json_encode($a['features']) : ($a['features'] ?? '')) ?></textarea>
+        <label>Features <span class="muted small">— displayed on room cards and pricing</span></label>
+        <div id="features-list" class="tag-list">
+          <?php
+          $features = $a['features'] ?? null;
+          if (is_string($features) && $features !== '') { $features = json_decode($features, true); }
+          if (!is_array($features)) { $features = []; }
+          foreach ($features as $f): ?>
+            <div class="tag-item">
+              <input type="text" name="features[]" value="<?= e($f) ?>" placeholder="e.g. Free WiFi" class="tag-input">
+              <button type="button" class="tag-remove btn btn-sm btn-danger-outline" title="Remove">&times;</button>
+            </div>
+          <?php endforeach; ?>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline" id="add-feature" style="margin-top:6px">+ Add Feature</button>
       </div>
       <div class="form-group">
         <label>Meta Title</label>
@@ -194,4 +206,20 @@ $a = $apartment ?? [];
     </form>
   </div></div>
   <?php endif; ?>
+  <script>
+  (() => {
+    const list = document.getElementById('features-list');
+    if (!list) return;
+    document.getElementById('add-feature')?.addEventListener('click', () => {
+      const item = document.createElement('div');
+      item.className = 'tag-item';
+      item.innerHTML = '<input type="text" name="features[]" placeholder="e.g. Free WiFi" class="tag-input"><button type="button" class="tag-remove btn btn-sm btn-danger-outline" title="Remove">&times;</button>';
+      list.appendChild(item);
+      item.querySelector('input').focus();
+    });
+    list.addEventListener('click', e => {
+      if (e.target.classList.contains('tag-remove')) e.target.closest('.tag-item')?.remove();
+    });
+  })();
+  </script>
 </div>

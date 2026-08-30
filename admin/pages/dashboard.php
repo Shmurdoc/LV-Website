@@ -10,7 +10,7 @@ $cards = [
     ['k' => 'gallery_images','label' => 'Gallery',    'icon' => 'gallery',     'tint' => 'green'],
     ['k' => 'faqs',         'label' => 'FAQs',        'icon' => 'faqs',        'tint' => 'navy'],
     ['k' => 'contact_unread','label' => 'Unread Messages', 'icon' => 'inbox',  'tint' => 'red'],
-    ['k' => 'sections',     'label' => 'Book Now CTA', 'icon' => 'bed',        'tint' => 'gold'],
+    ['k' => 'categories',   'label' => 'Categories',   'icon' => 'tags',       'tint' => 'blue'],
 ];
 ?>
 <div class="admin-page">
@@ -34,7 +34,7 @@ $cards = [
   <div class="card card-pad">
     <div class="page-header-inline">
       <h3><?= admin_icon('sections', 16) ?> Recent activity</h3>
-      <a href="/admin/contact" class="btn btn-sm btn-outline"><?= admin_icon('inbox', 14) ?> View all</a>
+      <a href="<?= e(url('/admin/contact')) ?>" class="btn btn-sm btn-outline"><?= admin_icon('inbox', 14) ?> View all</a>
     </div>
     <?php if (empty($activity)): ?>
       <p class="muted small">No activity yet — changes you make will appear here.</p>

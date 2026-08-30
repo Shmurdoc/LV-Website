@@ -76,6 +76,9 @@ switch ($entity) {
     case 'dining_item':
         handleDiningItem($action);
         break;
+    case 'public_category':
+        handlePublicCategory($action);
+        break;
     default:
         json_error('Unknown entity');
 }
@@ -851,6 +854,44 @@ function handleContactSubmission(string $action): void {
         if (!$id) json_error('Missing id');
         permanent_delete('contact_submissions', $id, 'contact_submission');
         json_response(['success' => true, 'redirect' => '/admin/contact?trash=1']);
+    }
+    json_error('Invalid action');
+}
+
+// ── PUBLIC CATEGORIES (TAXONOMY) ──
+function handlePublicCategory(string $action): void {
+    $db = Database::get();
+    if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if (!$id) json_error('Missing id');
+        $db->prepare('DELETE FROM public_categories WHERE id = ?')->execute([$id]);
+        log_activity('delete', 'public_category', $id);
+        json_response(['success' => true, 'redirect' => '/admin/categories']);
+    }
+    if ($action === 'save') {
+        $id = (int)($_POST['id'] ?? 0);
+        require_fields($_POST, ['entity_type', 'name', 'slug']);
+        $data = [
+            'entity_type' => trim($_POST['entity_type']),
+            'name'        => trim($_POST['name']),
+            'slug'        => trim($_POST['slug']),
+            'description' => trim($_POST['description'] ?? ''),
+            'sort_order'  => (int)($_POST['sort_order'] ?? 0),
+            'is_active'   => isset($_POST['is_active']) ? 1 : 0,
+        ];
+        if ($id) {
+            $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
+            $data['id'] = $id;
+            $db->prepare("UPDATE public_categories SET $sets WHERE id = :id")->execute($data);
+            log_activity('update', 'public_category', $id);
+        } else {
+            $cols = implode(', ', array_keys($data));
+            $placeholders = implode(', ', array_map(fn($k) => ":$k", array_keys($data)));
+            $db->prepare("INSERT INTO public_categories ($cols) VALUES ($placeholders)")->execute($data);
+            $id = (int)$db->lastInsertId();
+            log_activity('create', 'public_category', $id);
+        }
+        json_response(['success' => true, 'redirect' => '/admin/categories']);
     }
     json_error('Invalid action');
 }

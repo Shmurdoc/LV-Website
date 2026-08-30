@@ -22,6 +22,19 @@ $contact  = settings_group('contact');
 $apartments = get_apartments();
 $db = Database::get();
 
+// Taxonomy categories for filter tabs
+require_once __DIR__ . '/../admin/includes/taxonomy.php';
+$aptCategories = get_public_categories('apartment');
+
+// Build apartment-to-category mapping
+$aptCategoryMap = [];
+foreach ($apartments as $apt) {
+    $stmt = $db->prepare('SELECT pc.slug FROM public_categories pc WHERE pc.id = :cat_id');
+    $stmt->execute(['cat_id' => $apt['category_id'] ?? 0]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $aptCategoryMap[$apt['id']] = $row ? $row['slug'] : '';
+}
+
 // Compute dynamic min price for chips
 $minPrice = null;
 foreach ($apartments as $ap) {
@@ -63,6 +76,16 @@ require __DIR__ . '/../templates/header.php';
 </section>
 
 <main id="main-content" class="container" style="padding-bottom: var(--section-pad)">
+
+  <!-- ====== CATEGORY FILTER TABS ====== -->
+  <?php if (!empty($aptCategories)): ?>
+  <div class="filter-bar" data-category-filter="apartment">
+    <button data-cat="all" class="filter-btn active">All</button>
+    <?php foreach ($aptCategories as $cat): ?>
+      <button data-cat="<?= e($cat['slug']) ?>" class="filter-btn"><?= e($cat['name']) ?></button>
+    <?php endforeach; ?>
+  </div>
+  <?php endif; ?>
 
   <!-- ====== ROOM CARDS (4 apartments) ====== -->
   <section class="rooms" style="margin-top:14px">
@@ -120,6 +143,12 @@ require __DIR__ . '/../templates/header.php';
         $images = $dbApt ? get_apartment_images((int)$dbApt['id']) : [];
         $firstImg = !empty($images) ? ($images[0]['image_path'] ?? '') : '';
 
+        // Get category slug for filtering
+        $catSlug = '';
+        if ($dbApt && isset($aptCategoryMap[$dbApt['id']])) {
+            $catSlug = $aptCategoryMap[$dbApt['id']];
+        }
+
         // Fallback image paths by apartment slug
         $fallbackImages = [
             'bachelor-apartment'   => '/Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg',
@@ -170,7 +199,7 @@ require __DIR__ . '/../templates/header.php';
         // Build price display
         $price = '<strong>From R' . number_format($aptPrice, 0) . '</strong><span>per night · Cancellation 0–7 days 100%</span>';
     ?>
-    <article class="room<?= $card['reverse'] ? ' room--reverse' : '' ?> reveal" data-grade="<?= $card['grade'] ?>">
+    <article class="room<?= $card['reverse'] ? ' room--reverse' : '' ?> reveal" data-grade="<?= $card['grade'] ?>" data-category="<?= e($catSlug) ?>">
       <div class="room__media" data-lightbox href="<?= e($imgUrl) ?>">
         <img src="<?= e($imgUrl) ?>" alt="<?= e($imgAlt) ?>" width="1200" height="800" loading="lazy" decoding="async">
         <div class="room__grade room__grade--<?= $card['grade'] ?>"></div>

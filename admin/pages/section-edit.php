@@ -108,11 +108,58 @@ $sectionTypes = ['hero','about','services','features','text-left','text-right','
           <input type="text" name="text_color" value="<?= e($s['text_color'] ?? '') ?>" placeholder="#1a1a2e">
         </div>
       </div>
+      <div class="form-group mt-2">
+        <label>Background Image</label>
+        <div class="flex gap-2">
+          <input type="text" name="background_image" value="<?= e($s['background_image'] ?? '') ?>" class="grow">
+          <button type="button" class="btn btn-sm btn-outline browse-btn" data-target="background_image">Browse</button>
+        </div>
+      </div>
+      <div class="form-row--gap mt-2">
+        <div class="form-group grow">
+          <label>Padding Top</label>
+          <input type="text" name="padding_top" value="<?= e($s['padding_top'] ?? '4rem') ?>">
+        </div>
+        <div class="form-group grow">
+          <label>Padding Bottom</label>
+          <input type="text" name="padding_bottom" value="<?= e($s['padding_bottom'] ?? '4rem') ?>">
+        </div>
+      </div>
+      <div class="form-row--gap mt-2">
+        <div class="form-group grow">
+          <label>Padding Left</label>
+          <input type="text" name="padding_left" value="<?= e($s['padding_left'] ?? '2rem') ?>">
+        </div>
+        <div class="form-group grow">
+          <label>Padding Right</label>
+          <input type="text" name="padding_right" value="<?= e($s['padding_right'] ?? '2rem') ?>">
+        </div>
+      </div>
+      <div class="form-group mt-2">
+        <label>Max Width</label>
+        <input type="text" name="max_width" value="<?= e($s['max_width'] ?? '1200px') ?>" placeholder="1200px">
+      </div>
+      <div class="form-group mt-2">
+        <label>Vertical Alignment</label>
+        <select name="vertical_alignment">
+          <?php foreach (['top','center','bottom'] as $va): ?>
+            <option value="<?= e($va) ?>" <?= ($s['vertical_alignment'] ?? 'center') === $va ? 'selected' : '' ?>><?= e(ucfirst($va)) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
       <div class="form-group">
         <label>Animation</label>
         <select name="animation">
           <?php foreach (['fade-up','fade-in','fade-left','fade-right','zoom-in','none'] as $an): ?>
             <option value="<?= e($an) ?>" <?= ($s['animation'] ?? 'fade-up') === $an ? 'selected' : '' ?>><?= e($an) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="form-group mt-2">
+        <label>Responsive Stack</label>
+        <select name="responsive_stack">
+          <?php foreach (['stack','hide-image','hide-text'] as $rs): ?>
+            <option value="<?= e($rs) ?>" <?= ($s['responsive_stack'] ?? 'stack') === $rs ? 'selected' : '' ?>><?= e(ucfirst(str_replace('-',' ',$rs))) ?></option>
           <?php endforeach; ?>
         </select>
       </div>

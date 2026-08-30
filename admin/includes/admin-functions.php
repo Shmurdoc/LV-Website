@@ -88,6 +88,7 @@ function get_admin_stats(): array
     $stats['faqs'] = (int) $db->query('SELECT COUNT(*) FROM faqs WHERE deleted_at IS NULL')->fetchColumn();
     $stats['contact_unread'] = get_unread_submissions_count();
     $stats['sections'] = (int) $db->query('SELECT COUNT(*) FROM sections WHERE deleted_at IS NULL')->fetchColumn();
+    $stats['categories'] = (int) $db->query('SELECT COUNT(*) FROM public_categories')->fetchColumn();
 
     $trashTotal = (int) $db->query('SELECT COUNT(*) FROM pages WHERE deleted_at IS NOT NULL')->fetchColumn()
                 + (int) $db->query('SELECT COUNT(*) FROM apartments WHERE deleted_at IS NOT NULL')->fetchColumn()
