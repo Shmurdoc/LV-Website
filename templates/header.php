@@ -116,7 +116,7 @@ $logoDark = setting('logo_dark', '/Luxury Images/logos/logo-kruger-national-park
         </div>
 
         <a href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" class="nav__cta nav__cta--desktop" target="_blank" rel="noopener">
-            <?= e(setting('booking_cta_text', 'BOOK NOW')) ?><i data-lucide="arrow-right" class="icon--cta"></i>
+            <?= e(setting('booking_cta_text', 'BOOK NOW')) ?>
         </a>
 
         <a class="nav__admin" href="<?= e(url('/admin/login')) ?>" rel="nofollow" aria-label="Admin login"><i data-lucide="settings" class="icon--nav"></i></a>
@@ -148,5 +148,5 @@ $logoDark = setting('logo_dark', '/Luxury Images/logos/logo-kruger-national-park
         }
         ?>
     <?php endforeach; ?>
-    <a href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" class="cta" target="_blank" rel="noopener"><?= e(setting('booking_cta_text', 'BOOK NOW')) ?><i data-lucide="arrow-right" class="icon--cta"></i></a>
+    <a href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" class="cta" target="_blank" rel="noopener"><?= e(setting('booking_cta_text', 'BOOK NOW')) ?></a>
 </div>

@@ -36,7 +36,7 @@ require __DIR__ . '/../templates/header.php';
 
 <style>
 /* ——— Page hero ——— */
-.page-hero{position:relative; min-height:52vh; overflow:hidden; background:var(--navy); display:flex; align-items:flex-end}
+.page-hero{position:relative; min-height:52vh; overflow:hidden; clip-path:inset(0); background:var(--navy); display:flex; align-items:flex-end}
 .page-hero__media{position:absolute; inset:0}
 .page-hero__media img{width:100%; height:100%; object-fit:cover; object-position:center 58%; transform:scale(1.06); animation:heroKb 9s var(--ease-in-out) forwards}
 @keyframes heroKb{from{transform:scale(1.06)} to{transform:scale(1.14)}}
@@ -49,7 +49,7 @@ require __DIR__ . '/../templates/header.php';
 .page-hero__lead{font-size:15px; line-height:1.6; color:rgba(248,246,241,0.78); max-width:58ch}
 
 /* ——— Filter bar ——— */
-.filter{position:sticky; top:68px; z-index:5; background:rgba(248,246,241,0.88); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:12px 0; margin:0 calc(-1*var(--gutter)); padding-inline:var(--gutter)}
+.filter{position:sticky; top:68px; z-index:5; background:rgba(248,246,241,0.88); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:12px 0; overflow:hidden}
 .filter__inner{width:min(var(--container), calc(100% - 2*var(--gutter))); margin-inline:auto; display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
 .filter button{padding:8px 14px; border-radius:999px; border:1px solid var(--line); background:var(--white); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; font-weight:700; color:var(--ink-70); cursor:pointer; transition:background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast)}
 .filter button:hover{border-color:var(--navy); color:var(--navy)}

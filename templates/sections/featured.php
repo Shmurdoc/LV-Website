@@ -40,6 +40,7 @@ $iconMap = [
             $img = $apt['hero_image'] ?? null;
             $slug = $apt['slug'] ?? 'apt-' . $apt['id'];
             $amenities = get_apartment_amenities((int)$apt['id']);
+            $price = (float)($apt['price_per_night'] ?? 0);
         ?>
         <article class="apartment-card reveal reveal--delay-<?= min($i, 3) ?>">
             <a href="<?= e(url($slug)) ?>" class="apartment-card__link" aria-label="View <?= e($apt['name']) ?>">
@@ -47,13 +48,16 @@ $iconMap = [
                     <?php if (!empty($img)): ?>
                     <img src="<?= e(image_url($img)) ?>" alt="<?= e($apt['name']) ?>" width="600" height="400" loading="lazy" decoding="async">
                     <?php endif; ?>
-                    <span class="apartment-card__price"><?= format_price((float)$apt['price_per_night']) ?> <small>/night</small></span>
+                    <div class="apartment-card__overlay"></div>
+                    <span class="apartment-card__price"><?= format_price($price) ?><small>/night</small></span>
+                    <span class="apartment-card__grade"><?= e($apt['name']) ?></span>
                 </div>
                 <div class="apartment-card__body">
                     <h3 class="apartment-card__title"><?= e($apt['name']) ?></h3>
+                    <p class="apartment-card__desc"><?= e($apt['description'] ?? 'Self-catering suite with city views') ?></p>
                     <?php if (!empty($amenities)): ?>
                     <ul class="apartment-card__amenities">
-                        <?php foreach (array_slice($amenities, 0, 6) as $am):
+                        <?php foreach (array_slice($amenities, 0, 4) as $am):
                             $lucideName = $iconMap[$am['amenity_icon']] ?? 'check';
                         ?>
                         <li><i data-lucide="<?= $lucideName ?>" class="icon--xs"></i> <?= e($am['amenity_name']) ?></li>
