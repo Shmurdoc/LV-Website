@@ -84,7 +84,7 @@ require __DIR__ . '/../templates/header.php';
   <div class="page-hero__veil"></div>
   <div class="page-hero__content">
     <p class="page-hero__kicker"><?= e($page['hero_kicker'] ?? 'Gallery — Luxe Bedrooms, Kitchens, Bathrooms, Living Rooms, Outdoors') ?></p>
-    <h1 class="page-hero__title"><?= $total ?> frames.<br><em>No filter tabs.</em></h1>
+    <h1 class="page-hero__title"><?= $total ?> frames.<br><em>One story.</em></h1>
     <p class="page-hero__lead">Our curated collection of Viata Luxe interiors, kitchens, bathrooms, and outdoor spaces.</p>
   </div>
 </section>
