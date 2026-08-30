@@ -1601,6 +1601,25 @@ img[loading="lazy"]{content-visibility:auto}
 .info-card__list a:hover{text-decoration-color:var(--gold)}
 @media (max-width:900px){ .info-grid{grid-template-columns:1fr} }
 
+/* ——— Contact info card variants ——— */
+.info-card__label{font-size:10px; letter-spacing:0.18em; text-transform:uppercase; font-weight:700; color:var(--gold-600)}
+.info-card__value{font-family:var(--font-display); font-weight:300; font-size:18px; color:var(--navy)}
+.info-card__value a{color:var(--navy); text-decoration:underline; text-underline-offset:3px; text-decoration-color:rgba(184,150,90,0.4)}
+.info-card__value a:hover{text-decoration-color:var(--gold)}
+.info-card__detail{font-size:13px; color:var(--ink-70); line-height:1.6}
+
+/* ——— NightsBridge card ——— */
+.nb-card{background:var(--navy); color:var(--cream); border-radius:var(--radius-lg); padding:22px; display:grid; gap:8px}
+.nb-card .kicker{color:var(--gold-300)}
+.nb-card__title{font-family:var(--font-display); font-weight:300; font-size:22px; color:var(--cream)}
+.nb-card__title em{font-style:italic; color:var(--gold-300)}
+
+/* ——— Contact page overrides ——— */
+.contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+@media (max-width:880px){ .contact-grid{grid-template-columns:1fr} }
+.connect-form{background:var(--white); border:1px solid var(--line); border-radius:var(--radius-lg); box-shadow:var(--shadow-soft)}
+.connect-form .honey{position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden}
+
 /* ——— Host ——— */
 .host{display:grid; grid-template-columns:0.85fr 1.05fr; gap:clamp(24px,4vw,40px); align-items:center}
 .host__title{font-family:var(--font-display);font-weight:300;font-size:clamp(26px,3.4vw,38px);line-height:0.95;letter-spacing:-0.02em}
