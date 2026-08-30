@@ -4,7 +4,7 @@
  * Wraps all admin pages with branded sidebar + header (design system).
  */
 
-$adminNav = get_admin_nav();
+require_once __DIR__ . '/includes/admin-nav.php';
 $currentPage = $adminPage ?? '';
 $unreadCount = get_unread_submissions_count();
 $adminName = $_SESSION['admin_full_name'] ?? $_SESSION['admin_name'] ?? $_SESSION['admin_username'] ?? 'Admin';
