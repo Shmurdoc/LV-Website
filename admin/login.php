@@ -63,6 +63,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="<?= e(url('/admin/css/login.css')) ?>">
 </head>
 <body>
+    <!-- Nature hero — left panel -->
+    <div class="login-hero">
+        <img src="<?= e(url('/Luxury Images/activities/blyde-river-canyon-panorama.jpg')) ?>" alt="Blyde River Canyon — Kruger region" width="1920" height="1080" fetchpriority="high" decoding="async">
+        <div class="login-hero__veil"></div>
+        <div class="login-hero__content">
+            <div class="login-hero__brand">Viata <em>Luxe</em></div>
+            <div class="login-hero__tagline">Guesthouse &middot; Admin Panel</div>
+            <div class="login-hero__rule"></div>
+            <div class="login-hero__loc">Phalaborwa &middot; Kruger Minutes</div>
+        </div>
+    </div>
+
+    <!-- Login form — right panel -->
+    <div class="login-panel">
     <div class="login-card">
         <div class="login-lock" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -96,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="login-foot">
             <a href="<?= e(url('/')) ?>" rel="noopener">&larr; Back to website</a>
         </div>
+    </div>
     </div>
 </body>
 </html>
