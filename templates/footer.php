@@ -56,12 +56,11 @@ $navFooter = $nav ?? get_navigation();
 
         <div class="footer__legal">
             <span><?= e(setting('footer_copyright', '© 2026 Viata Luxe Guesthouse. All rights reserved.')) ?></span>
-            <span><?= e(setting('footer_credit', 'Built with pride by Recast Media')) ?></span>
+            <span>Created by Madoc Mhlongo</span>
             <a class="footer__admin-btn" href="<?= e(url('/admin/login')) ?>" rel="nofollow" aria-label="Admin login"><i data-lucide="settings" style="width:12px;height:12px;vertical-align:-0.1em;margin-right:4px"></i> Admin</a>
         </div>
         <div class="footer__logos" aria-label="Trusted partners">
             <img src="<?= e(url($footerDark)) ?>" alt="<?= e($footerBrand) ?>" loading="lazy" width="120" height="48">
-            <img src="<?= e(url($footerMonogram)) ?>" alt="Monogram" loading="lazy" width="48" height="48">
         </div>
     </div>
 </footer>

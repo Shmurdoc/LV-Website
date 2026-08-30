@@ -63,7 +63,7 @@ require_once __DIR__ . '/../templates/header.php';
 
 <style>
 /* ── YouTube facade (matches reference) ── */
-.yt-facade{position:relative; aspect-ratio:16/9; background:var(--navy); border-radius:var(--radius-lg,10px); overflow:hidden; border:1px solid rgba(11,26,46,0.12); cursor:pointer; display:grid; place-items:center}
+.yt-facade{position:relative; aspect-ratio:16/9; background:var(--navy); border-radius:var(--radius-lg,10px); overflow:hidden; border:1px solid rgba(11,26,46,0.12); cursor:pointer}
 .yt-facade img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.92}
 .yt-facade__play{width:64px; height:64px; border-radius:999px; background:rgba(248,246,241,0.92); border:1px solid var(--line); display:grid; place-items:center; color:var(--navy); font-size:20px; z-index:2; backdrop-filter:blur(8px)}
 .yt-facade:hover .yt-facade__play{background:rgba(248,246,241,1); transform:scale(1.05)}
@@ -85,20 +85,24 @@ require_once __DIR__ . '/../templates/header.php';
 </style>
 
 <!-- ════════════════════════════════════════════════════
-     HERO — page-head style matching reference
+     HERO — page-hero with background image
      ════════════════════════════════════════════════════ -->
-<header class="page-head">
-  <div class="page-head__inner">
-    <div class="kicker reveal"><?= e($heroKicker) ?></div>
-    <h1 class="page-head__title reveal"><?= $heroTitle /* raw HTML */ ?></h1>
-    <p class="page-head__lead reveal"><?= $heroLead /* raw HTML */ ?></p>
-    <div class="page-head__meta reveal">
-      <a class="btn btn--navy" href="<?= e($pricelistUrl) ?>" download>Download Pricelist — PDF</a>
+<section class="page-hero">
+  <div class="page-hero__media">
+    <img src="<?= e($heroImage) ?>" alt="" width="1920" height="800" fetchpriority="high" decoding="async">
+  </div>
+  <div class="page-hero__veil"></div>
+  <div class="page-hero__content">
+    <p class="page-hero__kicker reveal"><?= e($heroKicker) ?></p>
+    <h1 class="page-hero__title reveal"><?= $heroTitle /* raw HTML */ ?></h1>
+    <p class="page-hero__lead reveal"><?= $heroLead /* raw HTML */ ?></p>
+    <div class="page-hero__meta reveal">
+      <a class="btn btn--gold" href="<?= e($pricelistUrl) ?>" download>Download Pricelist — PDF</a>
       <span class="chip">Phalaborwa Gate</span>
       <span class="chip">Boat · Canyon · Amarula</span>
     </div>
   </div>
-</header>
+</section>
 
 <!-- ════════════════════════════════════════════════════
      YOUTUBE FACADES — 2×2 video grid
@@ -108,7 +112,7 @@ require_once __DIR__ . '/../templates/header.php';
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
     <?php foreach ($videoIds as $vid): ?>
     <div class="yt-facade" data-yt="<?= e($vid['id']) ?>" tabindex="0" role="button" aria-label="Play YouTube video">
-      <img src="<?= e(url($vid['image'])) ?>" alt="<?= e($vid['title']) ?> — click to play" loading="lazy" decoding="async">
+      <img src="<?= e(url($vid['image'])) ?>" alt="<?= e($vid['title']) ?> — click to play" decoding="async">
       <div class="yt-facade__overlay"></div>
       <div class="yt-facade__play">&#9654;</div>
       <div class="yt-facade__label"><?= e($vid['title']) ?></div>
