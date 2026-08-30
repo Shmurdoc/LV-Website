@@ -32,12 +32,11 @@ try {
 }
 
 // ── Group activities by sort_order ranges ──
-// 1–2  = Video / Game Drive  |  3–4  = Boat Safaris
-// 5–6  = Adventure           |  7+   = Beyond the Gate
-$videos      = array_filter($activities, fn($a) => $a['sort_order'] <= 2);
-$boatCards   = array_filter($activities, fn($a) => $a['sort_order'] >= 3 && $a['sort_order'] <= 4);
-$adventure   = array_filter($activities, fn($a) => $a['sort_order'] >= 5 && $a['sort_order'] <= 6);
-$beyondGate  = array_filter($activities, fn($a) => $a['sort_order'] >= 7);
+// 1–4  = Video / Game Drive (all 4 in intro grid, matching static reference)
+$videos      = array_filter($activities, fn($a) => $a['sort_order'] <= 4);
+$boatCards   = [];
+$adventure   = [];
+$beyondGate  = [];
 
 // ── Gallery images (DB-driven: outdoor + activity images) ──
 $galleryImages = [];

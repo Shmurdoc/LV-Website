@@ -40,7 +40,7 @@ if ($isGalleryPage):
 <?php endif; ?>
 
 <?php else: ?>
-<?php $gallery_images = get_featured_gallery(8); ?>
+<?php $gallery_images = get_featured_gallery(9); ?>
 <?php if (!empty($section['title'])): ?>
 <div class="flex-between-end reveal">
     <div>
