@@ -119,7 +119,7 @@ $logoDark = setting('logo_dark', '/Luxury Images/logos/logo-kruger-national-park
             <?= e(setting('booking_cta_text', 'BOOK NOW')) ?>
         </a>
 
-        <a class="nav__admin" href="<?= e(url('/admin/login')) ?>" rel="nofollow" aria-label="Admin login"><i data-lucide="settings" class="icon--nav"></i></a>
+        <a class="nav__admin" href="<?= e(url('/admin/login')) ?>" rel="nofollow" aria-label="Admin login"><i data-lucide="settings" class="icon--nav"></i> Admin</a>
 
         <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileDrawer">
             <span aria-hidden="true"></span>
