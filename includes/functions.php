@@ -137,7 +137,7 @@ function get_page(string $slug): ?array
 {
     $db = Database::get();
     try {
-        $stmt = $db->prepare('SELECT * FROM pages WHERE slug = :slug AND is_published = 1 LIMIT 1');
+        $stmt = $db->prepare('SELECT * FROM pages WHERE slug = :slug AND is_published = 1 AND deleted_at IS NULL LIMIT 1');
         $stmt->execute(['slug' => $slug]);
         return $stmt->fetch() ?: null;
     } catch (Throwable $e) {
@@ -296,7 +296,7 @@ function get_apartments(): array
     }
     $db = Database::get();
     // Explicitly filter deleted_at + is_published, order by sort_order (pricing highlights via is_featured check in template, not ORDER)
-    $stmt = $db->query('SELECT * FROM apartments WHERE is_published = 1 AND deleted_at IS NULL ORDER BY sort_order ASC');
+    $stmt = $db->query('SELECT * FROM apartments WHERE is_published = 1 AND deleted_at IS NULL AND (visible_from IS NULL OR visible_from <= NOW()) AND (visible_until IS NULL OR visible_until >= NOW()) ORDER BY sort_order ASC');
     $cache = $stmt->fetchAll();
     return $cache;
 }
@@ -322,7 +322,7 @@ function get_featured_apartment(): ?array
 function get_apartment(string $slug): ?array
 {
     $db = Database::get();
-    $stmt = $db->prepare('SELECT * FROM apartments WHERE slug = :slug AND is_published = 1 AND deleted_at IS NULL LIMIT 1');
+    $stmt = $db->prepare('SELECT * FROM apartments WHERE slug = :slug AND is_published = 1 AND deleted_at IS NULL AND (visible_from IS NULL OR visible_from <= NOW()) AND (visible_until IS NULL OR visible_until >= NOW()) LIMIT 1');
     $stmt->execute(['slug' => $slug]);
     return $stmt->fetch() ?: null;
 }
@@ -404,14 +404,14 @@ function get_gallery_categories(): array
 {
     $db = Database::get();
     try {
-        $stmt = $db->query('
+        $stmt = $db->query("
             SELECT gc.*, COUNT(gi.id) AS image_count
-            FROM gallery_categories gc
-            LEFT JOIN gallery_images gi ON gi.category_id = gc.id AND gi.deleted_at IS NULL
-            WHERE gc.is_published = 1 AND gc.deleted_at IS NULL
+            FROM public_categories gc
+            LEFT JOIN gallery_images gi ON gi.public_category_id = gc.id AND gi.deleted_at IS NULL
+            WHERE gc.entity_type = 'gallery' AND gc.is_active = 1
             GROUP BY gc.id
             ORDER BY gc.sort_order ASC
-        ');
+        ");
         return $stmt->fetchAll();
     } catch (Throwable $e) {
         return [];
@@ -424,7 +424,7 @@ function get_gallery_categories(): array
 function get_gallery_images(int $category_id): array
 {
     $db = Database::get();
-    $stmt = $db->prepare('SELECT * FROM gallery_images WHERE category_id = :cat AND deleted_at IS NULL ORDER BY sort_order ASC');
+    $stmt = $db->prepare('SELECT * FROM gallery_images WHERE public_category_id = :cat AND deleted_at IS NULL ORDER BY sort_order ASC');
     $stmt->execute(['cat' => $category_id]);
     return $stmt->fetchAll();
 }
@@ -439,11 +439,10 @@ function get_featured_gallery(int $limit = 8): array
     $stmt = $db->prepare('
         SELECT gi.image_path, gi.alt_text, gi.caption, gc.name AS category_name
         FROM gallery_images gi
-        JOIN gallery_categories gc ON gi.category_id = gc.id
+        JOIN public_categories gc ON gi.public_category_id = gc.id
         WHERE gi.is_featured = 1
           AND gi.deleted_at IS NULL
-          AND gc.deleted_at IS NULL
-          AND gc.is_published = 1
+          AND gc.is_active = 1
         ORDER BY gi.sort_order ASC, gi.id ASC
         LIMIT :limit
     ');

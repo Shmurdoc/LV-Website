@@ -9,6 +9,25 @@ require_once __DIR__ . '/includes/functions.php';
 
 // Serve static files directly (needed for php -S built-in server)
 $rawUri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+// Compute base path: the project directory relative to DocumentRoot
+$docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');
+$baseDir = str_replace('\\', '/', __DIR__);
+$basePath = '/' . ltrim(str_replace($docRoot, '', $baseDir), '/');
+
+// Strip base path from URI for routing
+$uri = $rawUri;
+if ($basePath !== '/' && strpos($uri, $basePath) === 0) {
+    $uri = substr($uri, strlen($basePath));
+}
+$uri = rtrim($uri, '/');
+
+// Dynamic sitemap — serve from DB, not static file
+if ($uri === '/sitemap.xml' || $uri === '/sitemap.xml/') {
+    require __DIR__ . '/sitemap.php';
+    exit;
+}
+
 $staticPath = __DIR__ . $rawUri;
 if (is_file($staticPath) && pathinfo($rawUri, PATHINFO_EXTENSION)) {
     $mimeTypes = [
@@ -25,22 +44,6 @@ if (is_file($staticPath) && pathinfo($rawUri, PATHINFO_EXTENSION)) {
         exit;
     }
 }
-
-// Get the request path — strip base path for nested directories
-$uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-
-// Compute base path: the project directory relative to DocumentRoot
-// e.g. DocumentRoot=C:\wamp64\www, project=C:\wamp64\www\work\final website => base=/work/final website
-$docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');
-$baseDir = str_replace('\\', '/', __DIR__);
-$basePath = str_replace($docRoot, '', $baseDir);
-$basePath = '/' . ltrim($basePath, '/');
-
-// Strip base path from URI
-if ($basePath !== '/' && strpos($uri, $basePath) === 0) {
-    $uri = substr($uri, strlen($basePath));
-}
-$uri = rtrim($uri, '/');
 
 // Delegate /admin/* to admin front controller (avoid phantom 404)
 if (strpos($uri, '/admin') === 0) {

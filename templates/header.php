@@ -20,7 +20,7 @@ $current_slug = $page['slug'] ?? current_slug();
 // page_seo — fetched via helper (no DB logic in template)
 $pageSeo = !empty($page['id']) ? get_page_seo((int)$page['id']) : null;
 $siteBrand = setting('site_name_brand', 'Viata Luxe Guesthouse');
-$favicon = setting('favicon', '/Luxury Images/logos/logo-viata-monogram-gold.png');
+$favicon = setting('favicon', '/Luxury Images/logos/logo-viata-monogram.svg');
 $logoDark = setting('logo_dark', '/Luxury Images/logos/logo-kruger-national-park.png');
 ?>
 <!DOCTYPE html>

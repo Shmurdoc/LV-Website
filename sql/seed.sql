@@ -255,69 +255,70 @@ INSERT INTO testimonials (apartment_id, reviewer_name, review_text, rating, sour
 (4, 'Dylan Chapman', 'Amazing guesthouse! The units were super clean, amenities new, and the staff are really friendly. Will definitely be staying there again', 5, 'google', 1, 4);
 
 -- =====================================================
--- GALLERY CATEGORIES — editorial fidelity: 5 Luxe categories, 45 frames from Luxury Images (see Documentation.md Appendix 8)
+-- GALLERY CATEGORIES → public_categories (entity_type='gallery')
+-- editorial fidelity: 5 Luxe categories, 45 frames from Luxury Images
 -- =====================================================
-INSERT INTO gallery_categories (id, name, slug, description, sort_order) VALUES
-(1, 'Luxe Bedrooms', 'luxe-bedrooms', '9 curated bedroom frames', 1),
-(2, 'Kitchens', 'kitchens', '9 kitchen frames', 2),
-(3, 'Luxe Bathrooms', 'luxe-bathrooms', '9 bathroom frames', 3),
-(4, 'Luxe Living Rooms', 'luxe-living-rooms', '9 living room frames', 4),
-(5, 'Luxe Outdoors', 'luxe-outdoors', '9 outdoor frames', 5);
+INSERT INTO public_categories (entity_type, name, slug, description, sort_order, is_published) VALUES
+('gallery', 'Luxe Bedrooms', 'luxe-bedrooms', '9 curated bedroom frames', 1, 1),
+('gallery', 'Kitchens', 'kitchens', '9 kitchen frames', 2, 1),
+('gallery', 'Luxe Bathrooms', 'luxe-bathrooms', '9 bathroom frames', 3, 1),
+('gallery', 'Luxe Living Rooms', 'luxe-living-rooms', '9 living room frames', 4, 1),
+('gallery', 'Luxe Outdoors', 'luxe-outdoors', '9 outdoor frames', 5, 1);
 
 -- =====================================================
 -- GALLERY IMAGES — 45 Luxury Images (9 per category, editorial order)
 -- =====================================================
-INSERT INTO gallery_images (category_id, image_path, alt_text, caption, sort_order) VALUES
--- Luxe Bedrooms (9)
-(1, 'Luxury Images/bedrooms/bedroom-chevron-pillows-headboard.jpg', 'Luxe Bedrooms — chevron pillows headboard', 'Bedroom chevron', 1),
-(1, 'Luxury Images/bedrooms/bedroom-grey-curtains-ac-white-bedding.jpg', 'Luxe Bedrooms — grey curtains', 'Grey curtains', 2),
-(1, 'Luxury Images/bedrooms/bedroom-grey-headboard-mint-pillows.jpg', 'Luxe Bedrooms — mint pillows', 'Mint pillows', 3),
-(1, 'Luxury Images/bedrooms/bedroom-1-main-view-paisley.jpg', 'Luxe Bedrooms — paisley main', 'Paisley main', 4),
-(1, 'Luxury Images/bedrooms/bedroom-paisley-pillows-gold-throw.jpg', 'Luxe Bedrooms — gold throw', 'Gold throw', 5),
-(1, 'Luxury Images/bedrooms/bedroom-padded-headboard-grey-pillows.jpg', 'Luxe Bedrooms — padded headboard', 'Padded headboard', 6),
-(1, 'Luxury Images/bedrooms/bedroom-white-bedding-lamp-closeup.jpg', 'Luxe Bedrooms — white bedding lamp', 'White bedding', 7),
-(1, 'Luxury Images/apartments-classic-2/apt2-bedroom-main-view.jpg', 'Luxe Bedrooms — Classic 2', 'Classic 2', 8),
-(1, 'Luxury Images/apartments-classic-4/apt4-bedroom-main-view.jpg', 'Luxe Bedrooms — Deluxe 4', 'Deluxe 4', 9),
+INSERT INTO gallery_images (public_category_id, image_path, alt_text, caption, sort_order) VALUES
+-- Luxe Bedrooms (9) — use subquery to resolve public_category_id by slug
+((SELECT id FROM public_categories WHERE slug='luxe-bedrooms' AND entity_type='gallery'), 'Luxury Images/bedrooms/bedroom-chevron-pillows-headboard.jpg', 'Luxe Bedrooms — chevron pillows headboard', 'Bedroom chevron', 1),
+((SELECT id FROM public_categories WHERE slug='luxe-bedrooms' AND entity_type='gallery'), 'Luxury Images/bedrooms/bedroom-grey-curtains-ac-white-bedding.jpg', 'Luxe Bedrooms — grey curtains', 'Grey curtains', 2),
+((SELECT id FROM public_categories WHERE slug='luxe-bedrooms' AND entity_type='gallery'), 'Luxury Images/bedrooms/bedroom-grey-headboard-mint-pillows.jpg', 'Luxe Bedrooms — mint pillows', 'Mint pillows', 3),
+((SELECT id FROM public_categories WHERE slug='luxe-bedrooms' AND entity_type='gallery'), 'Luxury Images/bedrooms/bedroom-1-main-view-paisley.jpg', 'Luxe Bedrooms — paisley main', 'Paisley main', 4),
+((SELECT id FROM public_categories WHERE slug='luxe-bedrooms' AND entity_type='gallery'), 'Luxury Images/bedrooms/bedroom-paisley-pillows-gold-throw.jpg', 'Luxe Bedrooms — gold throw', 'Gold throw', 5),
+((SELECT id FROM public_categories WHERE slug='luxe-bedrooms' AND entity_type='gallery'), 'Luxury Images/bedrooms/bedroom-padded-headboard-grey-pillows.jpg', 'Luxe Bedrooms — padded headboard', 'Padded headboard', 6),
+((SELECT id FROM public_categories WHERE slug='luxe-bedrooms' AND entity_type='gallery'), 'Luxury Images/bedrooms/bedroom-white-bedding-lamp-closeup.jpg', 'Luxe Bedrooms — white bedding lamp', 'White bedding', 7),
+((SELECT id FROM public_categories WHERE slug='luxe-bedrooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-2/apt2-bedroom-main-view.jpg', 'Luxe Bedrooms — Classic 2', 'Classic 2', 8),
+((SELECT id FROM public_categories WHERE slug='luxe-bedrooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-4/apt4-bedroom-main-view.jpg', 'Luxe Bedrooms — Deluxe 4', 'Deluxe 4', 9),
 -- Kitchens (9)
-(2, 'Luxury Images/kitchens/kitchen-wood-cabinets-marble-backsplash.jpg', 'Kitchens — marble backsplash', 'Marble', 1),
-(2, 'Luxury Images/kitchens/kitchen-dining-set-fruits.jpg', 'Kitchens — dining fruits', 'Dining fruits', 2),
-(2, 'Luxury Images/kitchens/kitchen-red-fridge-round-table.jpg', 'Kitchens — red fridge', 'Red fridge', 3),
-(2, 'Luxury Images/kitchens/kitchen-stove-counter-closeup.jpg', 'Kitchens — stove counter', 'Stove', 4),
-(2, 'Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg', 'Kitchens — Classic 1', 'Classic 1', 5),
-(2, 'Luxury Images/apartments-classic-3/apt3-kitchen-wide-angle.jpg', 'Kitchens — Comfort 3 wide', 'Comfort 3', 6),
-(2, 'Luxury Images/apartments-classic-4/apt4-kitchen-wide-angle.jpg', 'Kitchens — Deluxe 4 wide', 'Deluxe 4', 7),
-(2, 'Luxury Images/food-dining/scones-closeup-bowl.jpg', 'Kitchens — scones bowl', 'Scones', 8),
-(2, 'Luxury Images/food-dining/rose-champagne-berries-tray.jpg', 'Kitchens — champagne tray', 'Champagne', 9),
+((SELECT id FROM public_categories WHERE slug='kitchens' AND entity_type='gallery'), 'Luxury Images/kitchens/kitchen-wood-cabinets-marble-backsplash.jpg', 'Kitchens — marble backsplash', 'Marble', 1),
+((SELECT id FROM public_categories WHERE slug='kitchens' AND entity_type='gallery'), 'Luxury Images/kitchens/kitchen-dining-set-fruits.jpg', 'Kitchens — dining fruits', 'Dining fruits', 2),
+((SELECT id FROM public_categories WHERE slug='kitchens' AND entity_type='gallery'), 'Luxury Images/kitchens/kitchen-red-fridge-round-table.jpg', 'Kitchens — red fridge', 'Red fridge', 3),
+((SELECT id FROM public_categories WHERE slug='kitchens' AND entity_type='gallery'), 'Luxury Images/kitchens/kitchen-stove-counter-closeup.jpg', 'Kitchens — stove counter', 'Stove', 4),
+((SELECT id FROM public_categories WHERE slug='kitchens' AND entity_type='gallery'), 'Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg', 'Kitchens — Classic 1', 'Classic 1', 5),
+((SELECT id FROM public_categories WHERE slug='kitchens' AND entity_type='gallery'), 'Luxury Images/apartments-classic-3/apt3-kitchen-wide-angle.jpg', 'Kitchens — Comfort 3 wide', 'Comfort 3', 6),
+((SELECT id FROM public_categories WHERE slug='kitchens' AND entity_type='gallery'), 'Luxury Images/apartments-classic-4/apt4-kitchen-wide-angle.jpg', 'Kitchens — Deluxe 4 wide', 'Deluxe 4', 7),
+((SELECT id FROM public_categories WHERE slug='kitchens' AND entity_type='gallery'), 'Luxury Images/food-dining/scones-closeup-bowl.jpg', 'Kitchens — scones bowl', 'Scones', 8),
+((SELECT id FROM public_categories WHERE slug='kitchens' AND entity_type='gallery'), 'Luxury Images/food-dining/rose-champagne-berries-tray.jpg', 'Kitchens — champagne tray', 'Champagne', 9),
 -- Luxe Bathrooms (9)
-(3, 'Luxury Images/bathrooms/bathroom-1-sink-toilet-yellow-mat.jpg', 'Bathroom — yellow mat', 'Yellow mat', 1),
-(3, 'Luxury Images/bathrooms/bathroom-1-shower-glass-toilet.jpg', 'Bathroom — glass toilet', 'Glass toilet', 2),
-(3, 'Luxury Images/bathrooms/bathroom-shower-head-closeup.jpg', 'Bathroom — shower head', 'Shower head', 3),
-(3, 'Luxury Images/apartments-classic-2/apt2-bathroom-sink-area.jpg', 'Bathroom — Classic 2 sink', 'Classic 2', 4),
-(3, 'Luxury Images/apartments-classic-2/apt2-bathroom-toilet-view.jpg', 'Bathroom — Classic 2 toilet', 'Classic 2 toilet', 5),
-(3, 'Luxury Images/apartments-classic-3/apt3-bathroom-sink-toilet.jpg', 'Bathroom — Comfort 3', 'Comfort 3', 6),
-(3, 'Luxury Images/apartments-classic-3/apt3-bathroom-faucet-closeup.jpg', 'Bathroom — Comfort 3 faucet', 'Faucet', 7),
-(3, 'Luxury Images/apartments-classic-4/apt4-bathroom-shower-glass.jpg', 'Bathroom — Deluxe 4 shower', 'Deluxe shower', 8),
-(3, 'Luxury Images/apartments-classic-4/apt4-bathroom-sink-mirror.jpg', 'Bathroom — Deluxe 4 sink', 'Deluxe sink', 9),
+((SELECT id FROM public_categories WHERE slug='luxe-bathrooms' AND entity_type='gallery'), 'Luxury Images/bathrooms/bathroom-1-sink-toilet-yellow-mat.jpg', 'Bathroom — yellow mat', 'Yellow mat', 1),
+((SELECT id FROM public_categories WHERE slug='luxe-bathrooms' AND entity_type='gallery'), 'Luxury Images/bathrooms/bathroom-1-shower-glass-toilet.jpg', 'Bathroom — glass toilet', 'Glass toilet', 2),
+((SELECT id FROM public_categories WHERE slug='luxe-bathrooms' AND entity_type='gallery'), 'Luxury Images/bathrooms/bathroom-shower-head-closeup.jpg', 'Bathroom — shower head', 'Shower head', 3),
+((SELECT id FROM public_categories WHERE slug='luxe-bathrooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-2/apt2-bathroom-sink-area.jpg', 'Bathroom — Classic 2 sink', 'Classic 2', 4),
+((SELECT id FROM public_categories WHERE slug='luxe-bathrooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-2/apt2-bathroom-toilet-view.jpg', 'Bathroom — Classic 2 toilet', 'Classic 2 toilet', 5),
+((SELECT id FROM public_categories WHERE slug='luxe-bathrooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-3/apt3-bathroom-sink-toilet.jpg', 'Bathroom — Comfort 3', 'Comfort 3', 6),
+((SELECT id FROM public_categories WHERE slug='luxe-bathrooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-3/apt3-bathroom-faucet-closeup.jpg', 'Bathroom — Comfort 3 faucet', 'Faucet', 7),
+((SELECT id FROM public_categories WHERE slug='luxe-bathrooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-4/apt4-bathroom-shower-glass.jpg', 'Bathroom — Deluxe 4 shower', 'Deluxe shower', 8),
+((SELECT id FROM public_categories WHERE slug='luxe-bathrooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-4/apt4-bathroom-sink-mirror.jpg', 'Bathroom — Deluxe 4 sink', 'Deluxe sink', 9),
 -- Luxe Living Rooms (9)
-(4, 'Luxury Images/living-rooms/living-room-tv-smart-console.jpg', 'Living — smart console', 'Smart console', 1),
-(4, 'Luxury Images/living-rooms/living-room-black-sofas-tv-unit.jpg', 'Living — black sofas', 'Black sofas', 2),
-(4, 'Luxury Images/living-rooms/living-room-brown-sofa-leaf-pillows.jpg', 'Living — leaf pillows', 'Leaf pillows', 3),
-(4, 'Luxury Images/living-rooms/living-room-1-orange-cushions.jpg', 'Living — orange cushions', 'Orange cushions', 4),
-(4, 'Luxury Images/apartments-classic-2/apt2-living-room-main-view.jpg', 'Living — Classic 2', 'Classic 2', 5),
-(4, 'Luxury Images/apartments-classic-3/apt3-living-room-entertainment-unit.jpg', 'Living — Comfort 3', 'Comfort 3', 6),
-(4, 'Luxury Images/apartments-classic-4/apt4-living-room-sectional-sofa.jpg', 'Living — Deluxe 4', 'Deluxe 4', 7),
-(4, 'Luxury Images/bedrooms/bedroom-1-side-angle-divider.jpg', 'Living — divider', 'Divider', 8),
-(4, 'Luxury Images/gallery-scenic/exterior-grey-cottages-red-doors.jpg', 'Living — exterior', 'Exterior', 9),
+((SELECT id FROM public_categories WHERE slug='luxe-living-rooms' AND entity_type='gallery'), 'Luxury Images/living-rooms/living-room-tv-smart-console.jpg', 'Living — smart console', 'Smart console', 1),
+((SELECT id FROM public_categories WHERE slug='luxe-living-rooms' AND entity_type='gallery'), 'Luxury Images/living-rooms/living-room-black-sofas-tv-unit.jpg', 'Living — black sofas', 'Black sofas', 2),
+((SELECT id FROM public_categories WHERE slug='luxe-living-rooms' AND entity_type='gallery'), 'Luxury Images/living-rooms/living-room-brown-sofa-leaf-pillows.jpg', 'Living — leaf pillows', 'Leaf pillows', 3),
+((SELECT id FROM public_categories WHERE slug='luxe-living-rooms' AND entity_type='gallery'), 'Luxury Images/living-rooms/living-room-1-orange-cushions.jpg', 'Living — orange cushions', 'Orange cushions', 4),
+((SELECT id FROM public_categories WHERE slug='luxe-living-rooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-2/apt2-living-room-main-view.jpg', 'Living — Classic 2', 'Classic 2', 5),
+((SELECT id FROM public_categories WHERE slug='luxe-living-rooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-3/apt3-living-room-entertainment-unit.jpg', 'Living — Comfort 3', 'Comfort 3', 6),
+((SELECT id FROM public_categories WHERE slug='luxe-living-rooms' AND entity_type='gallery'), 'Luxury Images/apartments-classic-4/apt4-living-room-sectional-sofa.jpg', 'Living — Deluxe 4', 'Deluxe 4', 7),
+((SELECT id FROM public_categories WHERE slug='luxe-living-rooms' AND entity_type='gallery'), 'Luxury Images/bedrooms/bedroom-1-side-angle-divider.jpg', 'Living — divider', 'Divider', 8),
+((SELECT id FROM public_categories WHERE slug='luxe-living-rooms' AND entity_type='gallery'), 'Luxury Images/gallery-scenic/exterior-grey-cottages-red-doors.jpg', 'Living — exterior', 'Exterior', 9),
 -- Luxe Outdoors (9)
-(5, 'Luxury Images/pool/pool-overview-entertainment-area.jpg', 'Outdoors — entertainment area', 'Pool entertainment', 1),
-(5, 'Luxury Images/pool/pool-overview-gazebo-garden.jpg', 'Outdoors — gazebo garden', 'Gazebo garden', 2),
-(5, 'Luxury Images/pool/pool-overview-gazebo-angle.jpg', 'Outdoors — gazebo angle', 'Gazebo angle', 3),
-(5, 'Luxury Images/pool/poolside-refreshments-drinks.jpg', 'Outdoors — refreshments', 'Refreshments', 4),
-(5, 'Luxury Images/activities/elephants-river-crossing-herd.jpg', 'Outdoors — elephants crossing', 'Elephants', 5),
-(5, 'Luxury Images/activities/elephants-river-herd-grazing.jpg', 'Outdoors — elephants grazing', 'Elephants grazing', 6),
-(5, 'Luxury Images/activities/zebra-golden-hour-closeup.jpg', 'Outdoors — zebra golden hour', 'Zebra', 7),
-(5, 'Luxury Images/activities/hippos-water-group.jpg', 'Outdoors — hippos', 'Hippos', 8),
-(5, 'Luxury Images/gallery-scenic/wildlife-buffalo-closeup-herd.jpg', 'Outdoors — buffalo herd', 'Buffalo', 9);
+((SELECT id FROM public_categories WHERE slug='luxe-outdoors' AND entity_type='gallery'), 'Luxury Images/pool/pool-overview-entertainment-area.jpg', 'Outdoors — entertainment area', 'Pool entertainment', 1),
+((SELECT id FROM public_categories WHERE slug='luxe-outdoors' AND entity_type='gallery'), 'Luxury Images/pool/pool-overview-gazebo-garden.jpg', 'Outdoors — gazebo garden', 'Gazebo garden', 2),
+((SELECT id FROM public_categories WHERE slug='luxe-outdoors' AND entity_type='gallery'), 'Luxury Images/pool/pool-overview-gazebo-angle.jpg', 'Outdoors — gazebo angle', 'Gazebo angle', 3),
+((SELECT id FROM public_categories WHERE slug='luxe-outdoors' AND entity_type='gallery'), 'Luxury Images/pool/poolside-refreshments-drinks.jpg', 'Outdoors — refreshments', 'Refreshments', 4),
+((SELECT id FROM public_categories WHERE slug='luxe-outdoors' AND entity_type='gallery'), 'Luxury Images/activities/elephants-river-crossing-herd.jpg', 'Outdoors — elephants crossing', 'Elephants', 5),
+((SELECT id FROM public_categories WHERE slug='luxe-outdoors' AND entity_type='gallery'), 'Luxury Images/activities/elephants-river-herd-grazing.jpg', 'Outdoors — elephants grazing', 'Elephants grazing', 6),
+((SELECT id FROM public_categories WHERE slug='luxe-outdoors' AND entity_type='gallery'), 'Luxury Images/activities/zebra-golden-hour-closeup.jpg', 'Outdoors — zebra golden hour', 'Zebra', 7),
+((SELECT id FROM public_categories WHERE slug='luxe-outdoors' AND entity_type='gallery'), 'Luxury Images/activities/hippos-water-group.jpg', 'Outdoors — hippos', 'Hippos', 8),
+((SELECT id FROM public_categories WHERE slug='luxe-outdoors' AND entity_type='gallery'), 'Luxury Images/gallery-scenic/wildlife-buffalo-closeup-herd.jpg', 'Outdoors — buffalo herd', 'Buffalo', 9);
 
 -- =====================================================
 -- NAVIGATION
