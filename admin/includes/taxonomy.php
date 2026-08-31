@@ -160,11 +160,10 @@ function delete_public_category(int $id): bool
 function count_category_items(int $categoryId): int
 {
     $db = Database::get();
-    // Check all three entity tables
+    // Check entity tables that have category_id
     $tables = [
         ['table' => 'apartments',     'col' => 'category_id'],
-        ['table' => 'gallery_images', 'col' => 'category_id'],
-        ['table' => 'safari_activities', 'col' => 'category_id'],
+        ['table' => 'gallery_images', 'col' => 'public_category_id'],
     ];
     foreach ($tables as $t) {
         $stmt = $db->prepare("SELECT COUNT(*) FROM {$t['table']} WHERE {$t['col']} = :id");

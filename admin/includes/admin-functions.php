@@ -197,6 +197,85 @@ function handle_upload(string $fieldName, string $subDir = ''): ?string
     return 'uploads' . ($subDir ? '/' . $subDir : '') . '/' . $filename;
 }
 
+// =====================================================
+// ADMIN LIST HELPERS — search, pagination, bulk actions
+// =====================================================
+
+/**
+ * Render a search input for admin list pages.
+ * Client-side filtering: no extra DB queries.
+ */
+function admin_list_search(string $placeholder = 'Search…'): string
+{
+    return <<<HTML
+<div class="admin-list-search">
+  <input type="search" id="list-search" placeholder="{$placeholder}" autocomplete="off" aria-label="Search">
+</div>
+HTML;
+}
+
+/**
+ * Render pagination controls.
+ * $total = total rows, $perPage = rows per page, $currentPage = current page (1-based).
+ * Returns HTML string (empty if no pages needed).
+ */
+function admin_list_pagination(int $total, int $perPage, int $currentPage): string
+{
+    $totalPages = max(1, (int)ceil($total / $perPage));
+    if ($totalPages <= 1) return '';
+    $currentPage = max(1, min($currentPage, $totalPages));
+    $baseUrl = strtok($_SERVER['REQUEST_URI'] ?? '?', '?');
+    // Preserve existing query params except page
+    $params = $_GET;
+    unset($params['page']);
+    $qs = http_build_query($params);
+    $sep = $qs ? "$qs&" : '';
+    $html = '<div class="admin-list-pagination">';
+    // Prev
+    if ($currentPage > 1) {
+        $html .= "<a href=\"?{$sep}page=" . ($currentPage - 1) . "\" class=\"btn btn-sm btn-outline\">&laquo; Prev</a>";
+    }
+    // Page numbers
+    for ($i = 1; $i <= $totalPages; $i++) {
+        if ($i == $currentPage) {
+            $html .= "<span class=\"btn btn-sm btn-primary pagination-current\">$i</span>";
+        } else {
+            $html .= "<a href=\"?{$sep}page=$i\" class=\"btn btn-sm btn-outline\">$i</a>";
+        }
+    }
+    // Next
+    if ($currentPage < $totalPages) {
+        $html .= "<a href=\"?{$sep}page=" . ($currentPage + 1) . "\" class=\"btn btn-sm btn-outline\">Next &raquo;</a>";
+    }
+    $html .= '<span class="pagination-info">' . count($params ? 'Filtered: ' : '') . "$total item(s), page $currentPage/$totalPages</span>";
+    $html .= '</div>';
+    return $html;
+}
+
+/**
+ * Render the bulk-action bar (above table).
+ * $entity = CRUD entity name, $actions = array of ['value' => ..., 'label' => ...].
+ */
+function admin_list_bulk_bar(string $entity, array $actions): string
+{
+    if (empty($actions)) return '';
+    $opts = '';
+    foreach ($actions as $a) {
+        $opts .= '<option value="' . e($a['value']) . '">' . e($a['label']) . '</option>';
+    }
+    return <<<HTML
+<div class="admin-list-bulk" id="bulk-bar" style="display:none;">
+  <span id="bulk-count">0</span> selected
+  <select id="bulk-action">
+    <option value="">Bulk actions…</option>
+    {$opts}
+  </select>
+  <button type="button" class="btn btn-sm btn-danger-outline" id="bulk-apply" data-entity="{$entity}">Apply</button>
+  <button type="button" class="btn btn-sm btn-outline" id="bulk-deselect">Cancel</button>
+</div>
+HTML;
+}
+
 /**
  * Handle simple text/textarea form save (POST to database)
  */

@@ -1,5 +1,5 @@
 <?php
-// Dining Items List — Viata Luxe Guesthouse (Track B)
+// Dining Items List — Viata Luxe Guesthouse
 $db = Database::get();
 $trash = !empty($_GET['trash']);
 $params = [];
@@ -16,7 +16,7 @@ function dining_badge(array $r): string {
 ?>
 <div class="admin-page">
   <div class="page-header page-header-inline">
-    <div><h2><?= $trash ? 'Trashed Dining Items' : 'Dining Items' ?></h2><p class="muted small"><?= count($rows) ?> item(s) — 4 cards</p></div>
+    <div><h2><?= $trash ? 'Trashed Dining Items' : 'Dining Items' ?></h2><p class="muted small"><?= count($rows) ?> item(s)</p></div>
     <div class="btn-group">
       <?php if ($trash): ?>
         <a href="/admin/dining" class="btn btn-outline"><?= admin_icon('list', 14) ?> Active</a>
@@ -26,6 +26,11 @@ function dining_badge(array $r): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search dining…') ?>
+  <?= admin_list_bulk_bar('dining_item', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Unpublish'],
+  ]) ?>
   <?php if (empty($rows)): ?>
     <div class="empty-state"><p><?= $trash ? 'Trash is empty.' : 'No dining items yet.' ?></p></div>
   <?php else: ?>

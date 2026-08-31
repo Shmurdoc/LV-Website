@@ -2,16 +2,30 @@
 // Sections List — Viata Luxe Guesthouse
 $db = Database::get();
 $trash = !empty($_GET['trash']);
+$perPage = 20;
+$page = max(1, (int)($_GET['page'] ?? 1));
+$offset = ($page - 1) * $perPage;
+
 $params = [];
 $where = active_where($params, 's', include_deleted: $trash);
+$countStmt = $db->prepare("SELECT COUNT(*) FROM sections s $where");
+$countStmt->execute($params);
+$total = (int)$countStmt->fetchColumn();
+
+$params2 = [];
+$where2 = active_where($params2, 's', include_deleted: $trash);
 $sections = $db->prepare("
     SELECT s.*, p.title AS page_title
     FROM sections s
     LEFT JOIN pages p ON p.id = s.page_id
-    $where
+    $where2
     ORDER BY s.deleted_at IS NULL DESC, s.page_id ASC, s.sort_order ASC
+    LIMIT :limit OFFSET :offset
 ");
-$sections->execute($params);
+$sections->bindValue(':limit', $perPage, PDO::PARAM_INT);
+$sections->bindValue(':offset', $offset, PDO::PARAM_INT);
+foreach ($params2 as $k => $v) $sections->bindValue($k, $v);
+$sections->execute();
 $sections = $sections->fetchAll();
 
 function section_status_badge(array $row): string {
@@ -23,7 +37,7 @@ function section_status_badge(array $row): string {
 ?>
 <div class="admin-page">
   <div class="page-header page-header-inline">
-    <div><h2><?= $trash ? 'Trashed Sections' : 'Sections' ?></h2><p class="muted small"><?= count($sections) ?> section(s) &middot; building blocks of each page</p></div>
+    <div><h2><?= $trash ? 'Trashed Sections' : 'Sections' ?></h2><p class="muted small"><?= $total ?> section(s) &middot; building blocks of each page</p></div>
     <div class="btn-group">
       <?php if ($trash): ?>
         <a href="/admin/sections" class="btn btn-outline"><?= admin_icon('list', 14) ?> Active</a>
@@ -33,6 +47,11 @@ function section_status_badge(array $row): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search sections…') ?>
+  <?= admin_list_bulk_bar('section', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Hide'],
+  ]) ?>
   <?php if (empty($sections)): ?>
     <div class="empty-state"><div class="empty-icon"><?= admin_icon('sections', 24) ?></div><p><?= $trash ? 'Trash is empty.' : 'No sections yet.' ?></p>
       <?php if (!$trash): ?><a href="/admin/sections/edit" class="btn btn-primary btn-sm">Add a section</a><?php endif; ?>
@@ -83,5 +102,6 @@ function section_status_badge(array $row): string {
       </tbody>
     </table>
     </div>
+    <?= admin_list_pagination($total, $perPage, $page) ?>
   <?php endif; ?>
 </div>

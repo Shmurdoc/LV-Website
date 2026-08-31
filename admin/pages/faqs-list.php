@@ -33,6 +33,11 @@ function faq_status_badge(array $row): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search FAQs…') ?>
+  <?= admin_list_bulk_bar('faq', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Unpublish'],
+  ]) ?>
   <?php if (empty($faqs)): ?>
     <div class="empty-state"><div class="empty-icon"><?= admin_icon('faqs', 24) ?></div><p><?= $trash ? 'Trash is empty.' : 'No FAQs yet.' ?></p>
       <?php if (!$trash): ?><a href="/admin/faqs/edit" class="btn btn-primary btn-sm">Add your first FAQ</a><?php endif; ?>

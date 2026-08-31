@@ -83,20 +83,61 @@ switch ($entity) {
         json_error('Unknown entity');
 }
 
+// ── BULK ACTIONS ──
+$action = $_POST['action'] ?? '';
+$entity = $_POST['entity'] ?? '';
+if (str_starts_with($action, 'bulk_')) {
+    $bulkAction = substr($action, 5); // 'delete' or 'unpublish'
+    $idsRaw = $_POST['ids'] ?? '';
+    $ids = array_filter(array_map('intval', explode(',', $idsRaw)));
+    if (empty($ids)) json_error('No IDs provided');
+    $db = Database::get();
+    // Validate table whitelist
+    $entityTableMap = [
+        'page' => 'pages', 'section' => 'sections', 'apartment' => 'apartments',
+        'faq' => 'faqs', 'testimonial' => 'testimonials', 'navigation' => 'navigation',
+        'safari' => 'safari_activities', 'gallery_category' => 'public_categories',
+        'gallery_image' => 'gallery_images', 'apartment_image' => 'apartment_images',
+        'apartment_amenity' => 'apartment_amenities', 'contact_submission' => 'contact_submissions',
+        'hero_slide' => 'hero_slides', 'promise_pillar' => 'promise_pillars',
+        'moment' => 'moments', 'dining_item' => 'dining_items',
+    ];
+    $table = $entityTableMap[$entity] ?? '';
+    if (!$table) json_error('Unknown entity for bulk action');
+    if ($bulkAction === 'delete') {
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $db->prepare("UPDATE `$table` SET deleted_at = NOW() WHERE id IN ($placeholders) AND deleted_at IS NULL")->execute($ids);
+        log_activity('bulk_delete', $entity, null, ['ids' => $ids]);
+    } elseif ($bulkAction === 'unpublish') {
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $db->prepare("UPDATE `$table` SET is_published = 0 WHERE id IN ($placeholders)")->execute($ids);
+        log_activity('bulk_unpublish', $entity, null, ['ids' => $ids]);
+    } else {
+        json_error('Unknown bulk action: ' . $bulkAction);
+    }
+    json_response(['success' => true, 'count' => count($ids)]);
+}
+
 // ── SOFT-DELETE HELPERS ──
 function soft_delete(string $table, int $id): void {
     $db = Database::get();
-    $db->prepare("UPDATE $table SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL")->execute([$id]);
+    $allowed = ['pages','sections','apartments','apartment_images','gallery_images','safari_activities','testimonials','navigation','hero_slides','faq_items','contact_submissions','dining_items','promise_pillars','moments','public_categories','page_seo','section_orientation'];
+    if (!in_array($table, $allowed, true)) { json_error('Invalid table'); return; }
+    $db->prepare("UPDATE `$table` SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL")->execute([$id]);
 }
 
 function restore_entity(string $table, int $id): void {
     $db = Database::get();
-    $db->prepare("UPDATE $table SET deleted_at = NULL WHERE id = ?")->execute([$id]);
+    $allowed = ['pages','sections','apartments','apartment_images','gallery_images','safari_activities','testimonials','navigation','hero_slides','faq_items','contact_submissions','dining_items','promise_pillars','moments','public_categories','page_seo','section_orientation'];
+    if (!in_array($table, $allowed, true)) { json_error('Invalid table'); return; }
+    $db->prepare("UPDATE `$table` SET deleted_at = NULL WHERE id = ?")->execute([$id]);
 }
 
 function permanent_delete(string $table, int $id, string $entity_type): void {
     $db = Database::get();
-    $db->prepare("DELETE FROM $table WHERE id = ?")->execute([$id]);
+    $allowed = ['pages','sections','apartments','apartment_images','gallery_images','safari_activities','testimonials','navigation','hero_slides','faq_items','contact_submissions','dining_items','promise_pillars','moments','public_categories','page_seo','section_orientation'];
+    if (!in_array($table, $allowed, true)) { json_error('Invalid table'); return; }
+    $db->prepare("DELETE FROM `$table` WHERE id = ?")->execute([$id]);
     log_activity('permanent_delete', $entity_type, $id);
 }
 
@@ -529,21 +570,21 @@ function handleGalleryCategory(string $action): void {
     if ($action === 'delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        soft_delete('gallery_categories', $id);
+        soft_delete('public_categories', $id);
         log_activity('delete', 'gallery_category', $id);
         json_response(['success' => true, 'redirect' => '/admin/gallery']);
     }
     if ($action === 'restore') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        restore_entity('gallery_categories', $id);
+        restore_entity('public_categories', $id);
         log_activity('restore', 'gallery_category', $id);
         json_response(['success' => true, 'redirect' => '/admin/gallery']);
     }
     if ($action === 'permanent_delete') {
         $id = (int)($_POST['id'] ?? 0);
         if (!$id) json_error('Missing id');
-        permanent_delete('gallery_categories', $id, 'gallery_category');
+        permanent_delete('public_categories', $id, 'gallery_category');
         json_response(['success' => true, 'redirect' => '/admin/gallery?trash=1']);
     }
     if ($action === 'save') {
@@ -559,12 +600,12 @@ function handleGalleryCategory(string $action): void {
         if ($id) {
             $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($data)));
             $data['id'] = $id;
-            $db->prepare("UPDATE gallery_categories SET $sets WHERE id = :id")->execute($data);
+            $db->prepare("UPDATE public_categories SET $sets WHERE id = :id")->execute($data);
             log_activity('update', 'gallery_category', $id);
         } else {
             $cols = implode(', ', array_keys($data));
             $placeholders = implode(', ', array_map(fn($k) => ":$k", array_keys($data)));
-            $db->prepare("INSERT INTO gallery_categories ($cols, created_at) VALUES ($placeholders, NOW())")->execute($data);
+            $db->prepare("INSERT INTO public_categories ($cols, entity_type, created_at) VALUES ($placeholders, 'gallery', NOW())")->execute($data);
             $id = (int)$db->lastInsertId();
             log_activity('create', 'gallery_category', $id);
         }

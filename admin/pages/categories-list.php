@@ -28,6 +28,10 @@ if ($filter && in_array($filter, $types)) {
       <a href="/admin/categories/edit" class="btn btn-primary btn-sm"><?= admin_icon('plus', 14) ?> New Category</a>
     </div>
   </div>
+  <?= admin_list_search('Search categories…') ?>
+  <?= admin_list_bulk_bar('public_category', [
+      ['value' => 'delete', 'label' => 'Delete'],
+  ]) ?>
   <?php if (empty($categories)): ?>
     <div class="empty-state"><p>No categories found.</p>
       <a href="/admin/categories/edit" class="btn btn-primary btn-sm">Create your first category</a>

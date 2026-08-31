@@ -1,5 +1,5 @@
 <?php
-// Hero Slides List — Viata Luxe Guesthouse (Track B)
+// Hero Slides List — Viata Luxe Guesthouse
 $db = Database::get();
 $trash = !empty($_GET['trash']);
 $params = [];
@@ -16,7 +16,7 @@ function hero_slide_badge(array $r): string {
 ?>
 <div class="admin-page">
   <div class="page-header page-header-inline">
-    <div><h2><?= $trash ? 'Trashed Hero Slides' : 'Hero Slides' ?></h2><p class="muted small"><?= count($slides) ?> slide(s) — homepage slideshow (5)</p></div>
+    <div><h2><?= $trash ? 'Trashed Hero Slides' : 'Hero Slides' ?></h2><p class="muted small"><?= count($slides) ?> slide(s)</p></div>
     <div class="btn-group">
       <?php if ($trash): ?>
         <a href="/admin/hero-slides" class="btn btn-outline"><?= admin_icon('list', 14) ?> Active</a>
@@ -26,6 +26,11 @@ function hero_slide_badge(array $r): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search slides…') ?>
+  <?= admin_list_bulk_bar('hero_slide', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Unpublish'],
+  ]) ?>
   <?php if (empty($slides)): ?>
     <div class="empty-state"><p><?= $trash ? 'Trash is empty.' : 'No slides yet.' ?></p></div>
   <?php else: ?>

@@ -4,7 +4,7 @@ $db = Database::get();
 $category = null;
 $id = (int)($_GET['id'] ?? 0);
 if ($id) {
-    $stmt = $db->prepare('SELECT * FROM gallery_categories WHERE id = :id');
+    $stmt = $db->prepare('SELECT * FROM public_categories WHERE id = :id');
     $stmt->execute(['id' => $id]);
     $category = $stmt->fetch() ?: null;
 }

@@ -2,16 +2,30 @@
 // Testimonials List — Viata Luxe Guesthouse
 $db = Database::get();
 $trash = !empty($_GET['trash']);
+$perPage = 20;
+$page = max(1, (int)($_GET['page'] ?? 1));
+$offset = ($page - 1) * $perPage;
+
 $params = [];
 $where = active_where($params, 't', include_deleted: $trash);
+$countStmt = $db->prepare("SELECT COUNT(*) FROM testimonials t $where");
+$countStmt->execute($params);
+$total = (int)$countStmt->fetchColumn();
+
+$params2 = [];
+$where2 = active_where($params2, 't', include_deleted: $trash);
 $testimonials = $db->prepare("
     SELECT t.*, a.slug AS apartment_slug, a.name AS apartment_name
     FROM testimonials t
     LEFT JOIN apartments a ON a.id = t.apartment_id
-    $where
+    $where2
     ORDER BY t.deleted_at IS NULL DESC, t.sort_order ASC, t.id DESC
+    LIMIT :limit OFFSET :offset
 ");
-$testimonials->execute($params);
+$testimonials->bindValue(':limit', $perPage, PDO::PARAM_INT);
+$testimonials->bindValue(':offset', $offset, PDO::PARAM_INT);
+foreach ($params2 as $k => $v) $testimonials->bindValue($k, $v);
+$testimonials->execute();
 $testimonials = $testimonials->fetchAll();
 
 function testimonial_status_badge(array $row): string {
@@ -23,7 +37,7 @@ function testimonial_status_badge(array $row): string {
 ?>
 <div class="admin-page">
   <div class="page-header page-header-inline">
-    <div><h2><?= $trash ? 'Trashed Testimonials' : 'Testimonials' ?></h2><p class="muted small"><?= count($testimonials) ?> review(s)</p></div>
+    <div><h2><?= $trash ? 'Trashed Testimonials' : 'Testimonials' ?></h2><p class="muted small"><?= $total ?> review(s)</p></div>
     <div class="btn-group">
       <?php if ($trash): ?>
         <a href="/admin/testimonials" class="btn btn-outline"><?= admin_icon('list', 14) ?> Active</a>
@@ -33,6 +47,11 @@ function testimonial_status_badge(array $row): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search reviews…') ?>
+  <?= admin_list_bulk_bar('testimonial', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Unpublish'],
+  ]) ?>
   <?php if (empty($testimonials)): ?>
     <div class="empty-state"><p><?= $trash ? 'Trash is empty.' : 'No testimonials yet.' ?></p></div>
   <?php else: ?>
@@ -80,5 +99,6 @@ function testimonial_status_badge(array $row): string {
       </tbody>
     </table>
     </div>
+    <?= admin_list_pagination($total, $perPage, $page) ?>
   <?php endif; ?>
 </div>

@@ -34,6 +34,11 @@ function nav_status_badge(array $row): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search navigation…') ?>
+  <?= admin_list_bulk_bar('navigation', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Unpublish'],
+  ]) ?>
   <?php if (empty($items)): ?>
     <div class="empty-state"><div class="empty-icon"><?= admin_icon('navigation', 24) ?></div><p><?= $trash ? 'Trash is empty.' : 'No navigation items yet.' ?></p>
       <?php if (!$trash): ?><a href="/admin/navigation/edit" class="btn btn-primary btn-sm">Add a menu item</a><?php endif; ?>

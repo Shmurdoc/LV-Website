@@ -7,11 +7,11 @@ $category = null;
 if ($category_id) {
     $params = ['id' => $category_id];
     $whereExtra = active_where($params, 'gi', include_deleted: $trash);
-    $stmt = $db->prepare("SELECT * FROM gallery_images gi $whereExtra AND gi.category_id = :id ORDER BY gi.deleted_at IS NULL DESC, gi.sort_order ASC, gi.id ASC");
+    $stmt = $db->prepare("SELECT * FROM gallery_images gi $whereExtra AND gi.public_category_id = :id ORDER BY gi.deleted_at IS NULL DESC, gi.sort_order ASC, gi.id ASC");
     $stmt->execute($params);
     $images = $stmt->fetchAll();
     // Also load the category (even if trashed)
-    $catStmt = $db->prepare('SELECT * FROM gallery_categories WHERE id = :id');
+    $catStmt = $db->prepare('SELECT * FROM public_categories WHERE id = :id');
     $catStmt->execute(['id' => $category_id]);
     $category = $catStmt->fetch() ?: null;
 }

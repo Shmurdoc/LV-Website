@@ -17,7 +17,7 @@ $initials = strtoupper(mb_substr($adminName, 0, 2));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin &middot; Viata Luxe Guesthouse</title>
     <meta name="csrf_token" content="<?= e(csrf_token()) ?>">
-    <link rel="icon" type="image/png" href="<?= e(url('/Luxury Images/logos/logo-viata-monogram-gold.png')) ?>">
+    <link rel="icon" type="image/svg+xml" href="<?= e(url('/Luxury Images/logos/logo-viata-monogram.svg')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(url('/admin/css/admin.css')) ?>">
@@ -129,6 +129,127 @@ $initials = strtoupper(mb_substr($adminName, 0, 2));
     <script src="<?= e(url('/admin/js/admin.js')) ?>"></script>
     <script>
         AdminApp.init('<?= e($currentPage) ?>', '<?= e(url('/admin')) ?>');
+    </script>
+    <script>
+    (function(){
+        // ── LIST SEARCH (client-side) ──
+        document.addEventListener('DOMContentLoaded', function(){
+            var search = document.getElementById('list-search');
+            if (!search) return;
+            search.addEventListener('input', function(){
+                var q = this.value.toLowerCase();
+                var table = document.querySelector('.data-table');
+                if (!table) return;
+                var rows = table.querySelectorAll('tbody tr');
+                var visible = 0;
+                rows.forEach(function(row){
+                    var text = row.textContent.toLowerCase();
+                    var show = text.indexOf(q) !== -1;
+                    row.style.display = show ? '' : 'none';
+                    if (show) visible++;
+                });
+                // Update count badge if present
+                var cnt = document.getElementById('list-count');
+                if (cnt) cnt.textContent = visible;
+            });
+        });
+
+        // ── BULK ACTIONS ──
+        document.addEventListener('DOMContentLoaded', function(){
+            var table = document.querySelector('.data-table');
+            var bar = document.getElementById('bulk-bar');
+            if (!table || !bar) return;
+            var countEl = document.getElementById('bulk-count');
+            var actionEl = document.getElementById('bulk-action');
+            var applyBtn = document.getElementById('bulk-apply');
+            var deselectBtn = document.getElementById('bulk-deselect');
+            var entity = applyBtn ? applyBtn.getAttribute('data-entity') : '';
+
+            // Add checkbox column to thead
+            var thead = table.querySelector('thead tr');
+            if (thead) {
+                var th = document.createElement('th');
+                th.className = 'bulk-th';
+                var cb = document.createElement('input');
+                cb.type = 'checkbox'; cb.id = 'select-all';
+                cb.setAttribute('aria-label', 'Select all');
+                th.appendChild(cb);
+                thead.insertBefore(th, thead.firstChild);
+            }
+
+            // Add checkbox to each tbody row
+            var rows = table.querySelectorAll('tbody tr');
+            rows.forEach(function(row){
+                var td = document.createElement('td');
+                td.className = 'bulk-td';
+                var cb = document.createElement('input');
+                cb.type = 'checkbox'; cb.className = 'row-check';
+                // Find the entity id from a hidden input or data attribute
+                var idInput = row.querySelector('input[name="id"]');
+                if (idInput) cb.value = idInput.value;
+                td.appendChild(cb);
+                row.insertBefore(td, row.firstChild);
+            });
+
+            function updateBulkBar(){
+                var checked = table.querySelectorAll('.row-check:checked');
+                var n = checked.length;
+                countEl.textContent = n;
+                bar.style.display = n > 0 ? 'flex' : 'none';
+            }
+
+            // Select-all checkbox
+            var selectAll = document.getElementById('select-all');
+            if (selectAll) {
+                selectAll.addEventListener('change', function(){
+                    table.querySelectorAll('.row-check').forEach(function(cb){
+                        cb.checked = selectAll.checked;
+                    });
+                    updateBulkBar();
+                });
+            }
+            // Row checkboxes
+            table.addEventListener('change', function(e){
+                if (e.target.classList.contains('row-check')) updateBulkBar();
+            });
+            // Deselect
+            if (deselectBtn) {
+                deselectBtn.addEventListener('click', function(){
+                    table.querySelectorAll('.row-check').forEach(function(cb){ cb.checked = false; });
+                    if (selectAll) selectAll.checked = false;
+                    updateBulkBar();
+                });
+            }
+            // Apply bulk action
+            if (applyBtn) {
+                applyBtn.addEventListener('click', function(){
+                    var action = actionEl.value;
+                    if (!action) { alert('Select an action first.'); return; }
+                    var checked = table.querySelectorAll('.row-check:checked');
+                    if (!checked.length) { alert('No items selected.'); return; }
+                    var ids = [];
+                    checked.forEach(function(cb){ ids.push(cb.value); });
+                    if (!confirm('Apply "' + action + '" to ' + ids.length + ' item(s)?')) return;
+
+                    var token = document.querySelector('meta[name="csrf_token"]');
+                    var csrfVal = token ? token.content : '';
+                    var formData = new FormData();
+                    formData.append('entity', entity);
+                    formData.append('action', 'bulk_' + action);
+                    formData.append('ids', ids.join(','));
+                    formData.append('csrf_token', csrfVal);
+
+                    fetch('/admin/api/crud.php', { method: 'POST', body: formData })
+                        .then(function(r){ return r.json(); })
+                        .then(function(res){
+                            if (res.error) { alert('Error: ' + res.error); return; }
+                            window.location.reload();
+                        })
+                        .catch(function(){ alert('Request failed.'); });
+                });
+            }
+        });
+    })();
     </script>
 </body>
 </html>

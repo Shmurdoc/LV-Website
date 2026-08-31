@@ -33,6 +33,11 @@ function page_status_badge(array $row): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search pages…') ?>
+  <?= admin_list_bulk_bar('page', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Unpublish'],
+  ]) ?>
   <?php if (empty($pages)): ?>
     <div class="empty-state"><div class="empty-icon"><?= admin_icon('pages', 24) ?></div><p><?= $trash ? 'Trash is empty.' : 'No pages yet.' ?></p>
       <?php if (!$trash): ?><a href="/admin/pages/edit" class="btn btn-primary btn-sm">Create your first page</a><?php endif; ?>

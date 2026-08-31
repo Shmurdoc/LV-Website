@@ -1,5 +1,5 @@
 <?php
-// Promise Pillars List — Viata Luxe Guesthouse (Track B)
+// Promise Pillars List — Viata Luxe Guesthouse
 $db = Database::get();
 $trash = !empty($_GET['trash']);
 $params = [];
@@ -16,7 +16,7 @@ function pillar_badge(array $r): string {
 ?>
 <div class="admin-page">
   <div class="page-header page-header-inline">
-    <div><h2><?= $trash ? 'Trashed Promise Pillars' : 'Promise Pillars' ?></h2><p class="muted small"><?= count($rows) ?> pillar(s) — 5 cards</p></div>
+    <div><h2><?= $trash ? 'Trashed Promise Pillars' : 'Promise Pillars' ?></h2><p class="muted small"><?= count($rows) ?> pillar(s)</p></div>
     <div class="btn-group">
       <?php if ($trash): ?>
         <a href="/admin/promise-pillars" class="btn btn-outline"><?= admin_icon('list', 14) ?> Active</a>
@@ -26,6 +26,11 @@ function pillar_badge(array $r): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search pillars…') ?>
+  <?= admin_list_bulk_bar('promise_pillar', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Unpublish'],
+  ]) ?>
   <?php if (empty($rows)): ?>
     <div class="empty-state"><p><?= $trash ? 'Trash is empty.' : 'No pillars yet.' ?></p></div>
   <?php else: ?>

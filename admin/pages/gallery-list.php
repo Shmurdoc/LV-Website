@@ -6,8 +6,9 @@ $params = [];
 $where = active_where($params, 'gc', include_deleted: $trash);
 $categories = $db->prepare("
     SELECT gc.*, COUNT(gi.id) AS image_count
-    FROM gallery_categories gc
-    LEFT JOIN gallery_images gi ON gi.category_id = gc.id
+    FROM public_categories gc
+    LEFT JOIN gallery_images gi ON gi.public_category_id = gc.id
+    WHERE gc.entity_type = 'gallery'
     $where
     GROUP BY gc.id
     ORDER BY gc.deleted_at IS NULL DESC, gc.sort_order ASC, gc.name ASC
@@ -32,6 +33,10 @@ function gallery_status_badge(array $row): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search categories…') ?>
+  <?= admin_list_bulk_bar('gallery_category', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+  ]) ?>
   <?php if (empty($categories)): ?>
     <div class="empty-state"><div class="empty-icon"><?= admin_icon('gallery', 24) ?></div><p><?= $trash ? 'Trash is empty.' : 'No gallery categories yet.' ?></p>
       <?php if (!$trash): ?><a href="/admin/gallery/edit" class="btn btn-primary btn-sm">Create a category</a><?php endif; ?>

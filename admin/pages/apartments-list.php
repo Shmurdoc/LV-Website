@@ -33,6 +33,11 @@ function apt_status_badge(array $row): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search apartments…') ?>
+  <?= admin_list_bulk_bar('apartment', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Unpublish'],
+  ]) ?>
   <?php if (empty($apartments)): ?>
     <div class="empty-state"><div class="empty-icon"><?= admin_icon('apartments', 24) ?></div><p><?= $trash ? 'Trash is empty.' : 'No apartments yet.' ?></p>
       <?php if (!$trash): ?><a href="/admin/apartments/edit" class="btn btn-primary btn-sm">Create your first apartment</a><?php endif; ?>

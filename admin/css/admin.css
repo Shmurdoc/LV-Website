@@ -768,6 +768,40 @@ button { font-family: inherit; }
   outline: none; border-color: var(--admin-gold); box-shadow: var(--admin-ring);
 }
 
+/* ---------- Admin list: search / pagination / bulk ---------- */
+.admin-list-search {
+  margin-bottom: 16px;
+}
+.admin-list-search input[type="search"] {
+  width: 100%; max-width: 360px;
+  padding: 8px 14px; border: 1px solid var(--admin-border);
+  border-radius: var(--admin-r-sm); font-size: .86rem; font-family: inherit;
+  background: var(--admin-surface);
+}
+.admin-list-search input[type="search"]:focus {
+  outline: none; border-color: var(--admin-gold); box-shadow: var(--admin-ring);
+}
+.admin-list-pagination {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap; margin-top: 16px;
+}
+.admin-list-pagination .btn { min-width: 32px; text-align: center; }
+.pagination-current { pointer-events: none; opacity: 1; }
+.pagination-info { margin-left: auto; font-size: .8rem; color: var(--admin-muted); }
+.admin-list-bulk {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; margin-bottom: 14px;
+  background: var(--admin-info-bg); border: 1px solid var(--admin-info);
+  border-radius: var(--admin-r-sm); font-size: .85rem;
+}
+.admin-list-bulk select {
+  padding: 4px 8px; border: 1px solid var(--admin-border);
+  border-radius: var(--admin-r-sm); font-size: .82rem;
+}
+.bulk-th, .bulk-td { width: 36px; text-align: center; }
+.bulk-th input[type="checkbox"],
+.bulk-td input[type="checkbox"] { cursor: pointer; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }

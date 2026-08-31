@@ -27,6 +27,11 @@ function safari_status_badge(array $row): string {
       <?php endif; ?>
     </div>
   </div>
+  <?= admin_list_search('Search safari…') ?>
+  <?= admin_list_bulk_bar('safari', [
+      ['value' => 'delete', 'label' => 'Move to Trash'],
+      ['value' => 'unpublish', 'label' => 'Unpublish'],
+  ]) ?>
   <?php if (empty($activities)): ?>
     <div class="empty-state"><div class="empty-icon"><?= admin_icon('safari', 24) ?></div><p><?= $trash ? 'Trash is empty.' : 'No safari activities yet.' ?></p>
       <?php if (!$trash): ?><a href="/admin/safari/edit" class="btn btn-primary btn-sm">Add an activity</a><?php endif; ?>
