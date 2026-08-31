@@ -106,12 +106,12 @@ require __DIR__ . '/../templates/header.php';
 
   <!-- Info cards + testimonial -->
   <section class="reveal" style="margin-top:22px; display:grid; gap:18px">
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px">
+    <div class="info-grid">
       <div class="card card__pad"><div class="eyebrow">City Views</div><h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px">Breathtaking Phalaborwa</h3><p style="color:var(--ink-70); margin-top:8px; font-size:14px">Every window frames acacia — especially enchanting at night.</p></div>
       <div class="card card__pad"><div class="eyebrow">Tours</div><h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px">Explore local culture</h3><p style="color:var(--ink-70); margin-top:8px; font-size:14px">Curated tours immersing you in local culture and stunning landscapes — Kedibone Safari minutes away.</p></div>
       <div class="card card__pad"><div class="eyebrow">Drinks &amp; Food</div><h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px">Gourmet delivered</h3><p style="color:var(--ink-70); margin-top:8px; font-size:14px">Breakfast on request + affiliated exclusive restaurants, convenient terrace dining — indulgent, relaxed.</p></div>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+    <div class="grid-2col-even">
       <div class="card card__pad">
         <?php foreach ($amenities as $i => $amenity): ?>
         <div class="micro"<?php if ($i > 0): ?> style="margin-top:14px"<?php endif; ?>><?= e($amenity['amenity_name']) ?></div>
@@ -140,7 +140,7 @@ require __DIR__ . '/../templates/header.php';
   <?php if (count($images) > 2): ?>
   <section class="reveal" style="margin-top:18px">
     <div class="kicker">Gallery — <?= e($apartment['name']) ?> extras</div>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px">
+    <div class="info-grid" style="gap:10px; margin-top:12px">
       <?php foreach (array_slice($images, 0, 3) as $img): ?>
       <img src="<?= e(image_url($img['image_path'])) ?>" alt="<?= e($img['alt_text'] ?? $apartment['name']) ?>" style="aspect-ratio:4/3; object-fit:cover; border-radius:10px; border:1px solid var(--line)" data-lightbox href="<?= e(image_url($img['image_path'])) ?>" loading="lazy" decoding="async">
       <?php endforeach; ?>
@@ -150,7 +150,7 @@ require __DIR__ . '/../templates/header.php';
 
   <!-- Booking CTA -->
   <section class="book reveal" style="margin-top:22px; border-radius:22px; overflow:hidden">
-    <div style="padding: clamp(24px, 4vw, 36px); display:grid; grid-template-columns: 1.2fr 0.8fr; gap:24px; align-items:center">
+    <div class="grid-2col" style="padding: clamp(24px, 4vw, 36px); gap:24px; align-items:center">
       <div>
         <h3 style="font-family:var(--font-display);font-weight:300;font-size:28px;line-height:0.95;color:var(--cream)"><?= e($apartment['name']) ?> awaits.<br><em style="color:var(--gold-300);font-style:italic">Book direct.</em></h3>
         <p style="color:rgba(248,246,241,0.7);max-width:52ch;margin-top:8px"><?= e($apartment['room_size_m2'] ?? 13) ?> m² · <?= e($apartment['beds_description'] ?? 'Queen 157cm') ?> · City views · Host on arrival</p>

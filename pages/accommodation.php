@@ -45,12 +45,6 @@ foreach ($apartments as $ap) {
 }
 $minPriceDisplay = $minPrice ? 'From R' . number_format($minPrice, 0) : 'From R950';
 
-// Build apartment lookup by slug for easy access
-$aptBySlug = [];
-foreach ($apartments as $ap) {
-    $aptBySlug[strtolower($ap['slug'] ?? '')] = $ap;
-}
-
 // Header handles meta/OG/canonical/fonts/tokens/preloader/grain/nav
 require __DIR__ . '/../templates/header.php';
 ?>
@@ -87,98 +81,73 @@ require __DIR__ . '/../templates/header.php';
   </div>
   <?php endif; ?>
 
-  <!-- ====== ROOM CARDS (4 apartments) ====== -->
+  <!-- ====== ROOM CARDS (DB-driven) ====== -->
   <section class="rooms" style="margin-top:14px">
 
     <?php
-    // Apartment card data: DB-driven with layout overrides
-    $roomCards = [
-        [
-            'slug'       => 'bachelor-apartment',
-            'grade'      => 1,
-            'amenities'  => [
-                ['◐', 'City Views', 'Breathtaking Phalaborwa'],
-                ['≋', 'Tours', 'Curated local culture'],
-                ['✦', 'Drinks &amp; Food', 'Gourmet delivered'],
-                ['⬢', 'Wifi + DSTV', 'Complimentary + Flat-screen'],
-            ],
-            'detailUrl'  => '/bachelor-apartment/',
-            'testimonial'=> '<strong>Kurhula Hlomane</strong>: "I enjoyed every moment of my stay. What an ambience."',
-            'reverse'    => false,
-        ],
-        [
-            'slug'       => 'classic-apartment-2',
-            'grade'      => 2,
-            'amenities'  => [
-                ['☾', 'Spacious Rooms', 'En-suite bathroom'],
-                ['⚑', '2 km to Kruger', 'Gate at opening'],
-                ['⬢', 'Self-catering', 'Your rhythm'],
-                ['♡', 'Host', 'Human, not code'],
-            ],
-            'detailUrl'  => '/classic-apartment-2/',
-            'testimonial'=> '<strong>Shawn Radov</strong>: "First class services, friendly staff, amazing food my stay was a great working holiday experience"',
-            'reverse'    => true,
-        ],
-        [
-            'slug'       => 'comfort-apartment-3',
-            'grade'      => 3,
-            'amenities'  => [],
-            'detailUrl'  => '/comfort-apartment-3/',
-            'testimonial'=> '',
-            'reverse'    => false,
-        ],
-        [
-            'slug'       => 'deluxe-apartment-4',
-            'grade'      => 4,
-            'amenities'  => [],
-            'detailUrl'  => '/deluxe-apartment-4/',
-            'testimonial'=> '',
-            'reverse'    => true,
-        ],
+    // Fetch all apartment amenities grouped by apartment_id
+    try {
+        $allAptAmenities = $db->query("
+            SELECT apartment_id, amenity_name, amenity_icon
+            FROM apartment_amenities
+            WHERE deleted_at IS NULL
+            ORDER BY apartment_id ASC, sort_order ASC
+        ")->fetchAll(PDO::FETCH_ASSOC);
+        $amenitiesByApt = [];
+        foreach ($allAptAmenities as $am) {
+            $amenitiesByApt[(int)$am['apartment_id']][] = $am;
+        }
+    } catch (Throwable $e) {
+        $amenitiesByApt = [];
+    }
+
+    $amenityIconFallback = [
+        'wifi' => '⬢', 'tv' => '✦', 'kitchen' => '◐', 'car' => '⚑',
+        'hot-tub' => '♡', 'snowflake' => '☾', 'balcony' => '◉',
+        'bath' => '≋', 'dishwasher' => '◐', 'patio' => '◉',
+        'mountain' => '◎', 'bed' => '☾', 'droplets' => '≋',
     ];
 
-    foreach ($roomCards as $idx => $card):
-        // Use DB data as primary source, fallback to hardcoded
-        $dbApt = $aptBySlug[$card['slug']] ?? null;
-        $images = $dbApt ? get_apartment_images((int)$dbApt['id']) : [];
-        $firstImg = !empty($images) ? ($images[0]['image_path'] ?? '') : '';
+    $fallbackImages = [
+        'bachelor-apartment'   => '/Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg',
+        'classic-apartment-2'  => '/Luxury Images/apartments-classic-2/apt2-bedroom-main-view.jpg',
+        'comfort-apartment-3'  => '/Luxury Images/apartments-classic-3/apt3-bedroom-main-view.jpg',
+        'deluxe-apartment-4'   => '/Luxury Images/apartments-classic-4/apt4-bedroom-main-view.jpg',
+    ];
 
-        // Get category slug for filtering
-        $catSlug = '';
-        if ($dbApt && isset($aptCategoryMap[$dbApt['id']])) {
-            $catSlug = $aptCategoryMap[$dbApt['id']];
-        }
+    foreach ($apartments as $idx => $apt):
+        $aptId      = (int)$apt['id'];
+        $aptSlug    = $apt['slug'];
+        $aptName    = $apt['name'];
+        $aptDesc    = $apt['description'] ?? '';
+        $aptPrice   = (float)($apt['price_from'] ?? $apt['price_per_night'] ?? 950);
+        $aptGuests  = (int)($apt['max_guests'] ?? 2);
+        $aptSize    = (float)($apt['room_size_m2'] ?? 13);
+        $aptBeds    = $apt['beds_description'] ?? 'Queen 157cm';
+        $aptGrade   = (int)$apt['sort_order'];
 
-        // Fallback image paths by apartment slug
-        $fallbackImages = [
-            'bachelor-apartment'   => '/Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg',
-            'classic-apartment-2'  => '/Luxury Images/apartments-classic-2/apt2-bedroom-main-view.jpg',
-            'comfort-apartment-3'  => '/Luxury Images/apartments-classic-3/apt3-bedroom-main-view.jpg',
-            'deluxe-apartment-4'   => '/Luxury Images/apartments-classic-4/apt4-bedroom-main-view.jpg',
-        ];
-        $fallbackAlts = [
-            'bachelor-apartment'   => 'Classic Apartment 1 — Bachelor kitchen dining main',
-            'classic-apartment-2'  => 'Classic Apartment 2 — Classic 2 bedroom main view',
-            'comfort-apartment-3'  => 'Comfort Apartment 3 — Classic 3 bedroom main',
-            'deluxe-apartment-4'   => 'Deluxe Apartment 4 — Classic 4 bedroom main',
-        ];
-
+        // Image: hero_image from DB, fallback to known paths
+        $firstImg = $apt['hero_image'] ?? '';
         if (empty($firstImg)) {
-            $firstImg = $fallbackImages[$card['slug']] ?? '/Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg';
+            $firstImg = $fallbackImages[$aptSlug] ?? '/Luxury Images/apartments-classic-1/apt1-kitchen-dining-main.jpg';
         }
-        $imgAlt = $fallbackAlts[$card['slug']] ?? e($dbApt['name'] ?? $card['slug']);
         $imgUrl = url($firstImg);
+        $imgAlt = e($apt['tagline'] ?? $aptName);
 
-        // DB-driven fields with fallbacks
-        $aptName    = $dbApt['name'] ?? ucwords(str_replace('-', ' ', $card['slug']));
-        $aptDesc    = $dbApt['description'] ?? '';
-        $aptPrice   = (float)($dbApt['price_from'] ?? 950);
-        $aptGuests  = (int)($dbApt['max_guests'] ?? 2);
-        $aptSize    = (float)($dbApt['room_size_m2'] ?? 13);
-        $aptBeds    = $dbApt['beds_description'] ?? 'Queen 157cm';
-        $aptFeatures = json_decode($dbApt['features'] ?? '[]', true);
+        // Category slug for filtering
+        $catSlug = $aptCategoryMap[$aptId] ?? '';
 
-        // Build specs from DB
+        // Amenities from DB (up to 4 per card)
+        $aptAmenities = array_slice($amenitiesByApt[$aptId] ?? [], 0, 4);
+
+        // Alternate layout: even indices reverse
+        $reverse = ($idx % 2 === 1);
+
+        // Badge & kicker
+        $badge = $aptName . ' · Sleeps ' . $aptGuests . ' · ' . $aptSize . ' m²';
+        $kicker = str_pad($aptGrade, 2, '0', STR_PAD_LEFT) . ' — ' . $aptName;
+
+        // Specs
         $specs = [
             '<strong>' . $aptSize . ' m²</strong>',
             'Sleeps <strong>' . $aptGuests . '</strong>',
@@ -186,52 +155,40 @@ require __DIR__ . '/../templates/header.php';
             'City Views',
         ];
 
-        // Build copy from DB description
-        $copy = e($aptDesc);
-
-        // Build badge
-        $gradeLabels = [1 => 'Classic 1 · Bachelor', 2 => 'Classic 2', 3 => 'Comfort', 4 => 'Deluxe'];
-        $badge = ($gradeLabels[$card['grade']] ?? 'Apartment') . ' · Sleeps ' . $aptGuests . ' · ' . $aptSize . ' m²';
-
-        // Build kicker
-        $kicker = '0' . $card['grade'] . ' — ' . $aptName;
-
-        // Build price display
+        // Price
         $price = '<strong>From R' . number_format($aptPrice, 0) . '</strong><span>per night · Cancellation 0–7 days 100%</span>';
     ?>
-    <article class="room<?= $card['reverse'] ? ' room--reverse' : '' ?> reveal" data-grade="<?= $card['grade'] ?>" data-category="<?= e($catSlug) ?>">
+    <article class="room<?= $reverse ? ' room--reverse' : '' ?> reveal" data-grade="<?= $aptGrade ?>" data-category="<?= e($catSlug) ?>">
       <div class="room__media" data-lightbox href="<?= e($imgUrl) ?>">
         <img src="<?= e($imgUrl) ?>" alt="<?= e($imgAlt) ?>" width="1200" height="800" loading="lazy" decoding="async">
-        <div class="room__grade room__grade--<?= $card['grade'] ?>"></div>
-        <span class="room__badge"><?= $badge ?></span>
+        <div class="room__grade room__grade--<?= $aptGrade ?>"></div>
+        <span class="room__badge"><?= e($badge) ?></span>
       </div>
       <div class="room__body">
-        <div class="room__kicker"><?= $kicker ?></div>
+        <div class="room__kicker"><?= e($kicker) ?></div>
         <h2 class="room__title"><?= e($aptName) ?></h2>
         <div class="room__specs">
           <?php foreach ($specs as $spec): ?>
             <span class="spec"><?= $spec ?></span>
           <?php endforeach; ?>
         </div>
-        <p class="room__copy"><?= $copy ?></p>
+        <p class="room__copy"><?= e($aptDesc) ?></p>
         <div class="room__price"><?= $price ?></div>
-        <?php if (!empty($card['amenities'])): ?>
+        <?php if (!empty($aptAmenities)): ?>
           <div class="amenities">
-            <?php foreach ($card['amenities'] as $amenity): ?>
+            <?php foreach ($aptAmenities as $amenity): ?>
+              <?php $icon = $amenityIconFallback[$amenity['amenity_icon']] ?? '◉'; ?>
               <div class="amenity">
-                <span class="amenity__icon"><?= $amenity[0] ?></span>
-                <span class="amenity__text"><strong><?= $amenity[1] ?></strong><br><?= $amenity[2] ?></span>
+                <span class="amenity__icon"><?= $icon ?></span>
+                <span class="amenity__text"><strong><?= e($amenity['amenity_name']) ?></strong></span>
               </div>
             <?php endforeach; ?>
           </div>
         <?php endif; ?>
         <div class="room__actions">
-          <a class="btn btn--navy" href="<?= e(url($card['detailUrl'])) ?>">View <?= e($aptName) ?> detail →</a>
+          <a class="btn btn--navy" href="<?= e(url("/{$aptSlug}/")) ?>">View <?= e($aptName) ?> detail →</a>
           <a class="link" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener">Book Now</a>
         </div>
-        <?php if (!empty($card['testimonial'])): ?>
-          <div class="room__notice">Testimonial — <?= $card['testimonial'] ?></div>
-        <?php endif; ?>
       </div>
     </article>
     <?php endforeach; ?>

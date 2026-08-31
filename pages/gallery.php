@@ -22,9 +22,9 @@ $db = Database::get();
 $stmt = $db->query("
     SELECT gi.*, gc.name AS cat_name, gc.slug AS cat_slug
     FROM gallery_images gi
-    JOIN gallery_categories gc ON gi.category_id = gc.id
+    JOIN public_categories gc ON gi.public_category_id = gc.id
     WHERE gi.deleted_at IS NULL
-    ORDER BY gi.category_id ASC, gi.sort_order ASC
+    ORDER BY gi.public_category_id ASC, gi.sort_order ASC
 ");
 $images = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

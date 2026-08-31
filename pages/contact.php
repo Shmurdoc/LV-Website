@@ -78,7 +78,8 @@ require __DIR__ . '/../templates/header.php';
     <div class="reveal">
       <h2 style="font-family:var(--font-display); font-weight:300; font-size:22px">Send us a message</h2>
       <p class="caption" style="margin-top:6px; max-width:52ch">Please enable JavaScript in your browser to complete this form.</p>
-      <form id="connectForm" class="connect-form" style="margin-top:14px" novalidate>
+      <form id="connectForm" class="connect-form" style="margin-top:14px" action="<?= e(url('/api/contact.php')) ?>" novalidate>
+        <?= csrf_field() ?>
         <div class="honey" aria-hidden="true"><label for="website">Website (leave blank)</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
         <div class="field"><label class="field__label" for="fName">Name *</label><input class="field__input" id="fName" name="name" required placeholder="Your name"></div>
         <div class="field"><label class="field__label" for="fEmail">Email *</label><input class="field__input" id="fEmail" name="email" type="email" required placeholder="you@example.com"></div>
@@ -91,7 +92,7 @@ require __DIR__ . '/../templates/header.php';
           <div class="field"><label class="field__label" for="fGuests">Guests</label><select class="field__input" id="fGuests" name="guests"><option value="2 guests">2 guests</option><option value="3 guests">3 guests</option><option value="4 guests">4 guests</option><option value="5 guests">5 guests</option><option value="6 guests">6 guests</option></select></div>
         </div>
         <div class="field"><label class="field__label" for="fNotes">Comment or Message</label><textarea class="field__input" id="fNotes" name="notes" rows="4" placeholder="Comment or Message"></textarea></div>
-        <button type="submit" class="btn btn--navy" style="width:100%; justify-content:center">Submit <span style="font-weight:400; opacity:0.7">(mailto fallback)</span></button>
+        <button type="submit" class="btn btn--navy" id="connectBtn" style="width:100%; justify-content:center">Send Enquiry</button>
         <div id="formMsg" class="connect-form__msg" hidden></div>
       </form>
     </div>
@@ -142,24 +143,30 @@ function loadMaps(){ if(!mf||!mframe) return; mf.style.display='none'; mframe.hi
 if(mf){ mf.addEventListener('click', loadMaps); mf.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); loadMaps(); } }); var mb=document.getElementById('mapsBtn'); if(mb) mb.addEventListener('click', function(e){ e.stopPropagation(); loadMaps(); }); }
 var form=document.getElementById('connectForm');
 if(form){
-  var hp=document.getElementById('website'), msg=document.getElementById('formMsg');
+  var hp=document.getElementById('website'), msg=document.getElementById('formMsg'), btn=document.getElementById('connectBtn');
   function showMsg(t,ok){ if(!msg) return; msg.hidden=false; msg.textContent=t; msg.className='connect-form__msg '+(ok?'connect-form__msg--ok':'connect-form__msg--err'); }
   var today=new Date().toISOString().slice(0,10);
   var arr=document.getElementById('fArrival'), dep=document.getElementById('fDeparture');
   if(arr) arr.min=today; if(dep) dep.min=today;
   if(arr&&dep) arr.addEventListener('change', function(){ dep.min=arr.value||today; if(dep.value && dep.value <= arr.value){ dep.value=''; showMsg('Departure must be after arrival.', false); }});
   form.addEventListener('submit', function(e){
-    if(hp && hp.value.trim()!==''){ e.preventDefault(); showMsg('Spam detected — not sent.', false); return; }
-    if(!form.checkValidity()){ showMsg('Please fill required: Name, Email, Arrival, Departure.', false); return; }
-    var a=arr.value, d=dep.value;
-    if(a && d && d <= a){ e.preventDefault(); showMsg('Departure must be after arrival.', false); return; }
     e.preventDefault();
-    var name=(document.getElementById('fName')||{}).value||'', email=(document.getElementById('fEmail')||{}).value||'', phone=(document.getElementById('fPhone')||{}).value||'', guests=(document.getElementById('fGuests')||{}).value||'', notes=(document.getElementById('fNotes')||{}).value||'';
-    var subject=encodeURIComponent('Viata Luxe enquiry — '+name+' · '+a+' → '+d);
-    var body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nGuests: '+guests+'\nArrival: '+a+'\nDeparture: '+d+'\nNotes: '+notes+'\n\n— via viata luxe contact form (mailto fallback)');
-    var mailto='mailto:<?= e($email) ?>?subject='+subject+'&body='+body;
-    showMsg('Opening mail app… If nothing opens, email <?= e($email) ?>. NightsBridge above is instant.', true);
-    setTimeout(function(){ window.location.href=mailto; }, 400);
+    if(hp && hp.value.trim()!==''){ showMsg('Spam detected - not sent.', false); return; }
+    if(!form.checkValidity()){ showMsg('Please fill required: Name, Email, Arrival, Departure.', false); return; }
+    var a=arr?arr.value:'', d=dep?dep.value:'';
+    if(a && d && d<=a){ showMsg('Departure must be after arrival.', false); return; }
+    var fd=new FormData(form);
+    if(btn){ btn.disabled=true; btn.textContent='Sending...'; }
+    fetch(form.action,{method:'POST',body:fd,headers:{'X-CSRF-TOKEN':fd.get('csrf_token')}})
+      .then(function(r){ return r.json().then(function(j){ return {status:r.status,body:j}; }); })
+      .then(function(res){
+        if(res.status===200 && res.body.ok){ showMsg(res.body.message||'Sent - thanks!', true); form.reset(); }
+        else if(res.status===429){ showMsg('Too many requests. Wait a minute.', false); }
+        else if(res.status===422 && res.body.details){ var keys=Object.keys(res.body.details); showMsg(keys.map(function(k){return res.body.details[k];}).join(' '), false); }
+        else { showMsg(res.body.error||'Something went wrong. Try again.', false); }
+      })
+      .catch(function(){ showMsg('Network error. Check connection and try again.', false); })
+      .finally(function(){ if(btn){ btn.disabled=false; btn.textContent='Send Enquiry'; } });
   });
 }
 </script>
