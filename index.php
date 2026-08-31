@@ -69,6 +69,7 @@ $routes = [
     '/gallery'          => 'pages/gallery.php',
     '/safari'           => 'pages/safari.php',
     '/contact'          => 'pages/contact.php',
+    '/about'            => 'pages/about.php',
     '/api/health'       => 'api/health.php',
     '/api/contact'      => 'api/contact.php',
 ];
