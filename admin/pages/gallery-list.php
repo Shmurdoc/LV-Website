@@ -8,8 +8,7 @@ $categories = $db->prepare("
     SELECT gc.*, COUNT(gi.id) AS image_count
     FROM public_categories gc
     LEFT JOIN gallery_images gi ON gi.public_category_id = gc.id
-    WHERE gc.entity_type = 'gallery'
-    $where
+    $where AND gc.entity_type = 'gallery'
     GROUP BY gc.id
     ORDER BY gc.deleted_at IS NULL DESC, gc.sort_order ASC, gc.name ASC
 ");

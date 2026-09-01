@@ -859,7 +859,7 @@ hr{border:0; height:1px; background:var(--line); margin:24px 0}
 .page-head__title{max-width:14ch}
 
 /* Room fine */
-.room{contain:paint}
+.room{contain:layout}
 .room__media{contain:layout}
 .room__body > *{max-width:62ch}
 .room__kicker{opacity:0.95}

@@ -97,9 +97,9 @@ require_once __DIR__ . '/../templates/header.php';
     <h1 class="page-hero__title reveal"><?= $heroTitle /* raw HTML */ ?></h1>
     <p class="page-hero__lead reveal"><?= $heroLead /* raw HTML */ ?></p>
     <div class="page-hero__meta reveal">
-      <a class="btn btn--gold" href="<?= e($pricelistUrl) ?>" download>Download Pricelist — PDF</a>
-      <span class="chip">Phalaborwa Gate</span>
-      <span class="chip">Boat · Canyon · Amarula</span>
+      <a class="btn btn--gold" href="<?= e($pricelistUrl) ?>" download><?= e(setting('safari_cta_label', 'Download Pricelist — Kedibone 2025 PDF')) ?></a>
+      <span class="chip"><?= e(setting('safari_chip_gate_text', 'Phalaborwa Gate')) ?></span>
+      <span class="chip"><?= e(setting('safari_chip_experiences_text', 'Boat · Canyon · Amarula')) ?></span>
     </div>
   </div>
 </section>
@@ -108,7 +108,7 @@ require_once __DIR__ . '/../templates/header.php';
      YOUTUBE FACADES — 2×2 video grid
      ════════════════════════════════════════════════════ -->
 <section class="reveal" style="display:grid; gap:14px; margin-top:28px">
-  <div class="kicker">Video — Safari Highlights</div>
+  <div class="kicker"><?= e(setting('safari_video_kicker', 'Video — Safari Highlights')) ?></div>
   <div class="grid-2col-even">
     <?php foreach ($videoIds as $vid): ?>
     <div class="yt-facade" data-yt="<?= e($vid['id']) ?>" tabindex="0" role="button" aria-label="Play YouTube video">
@@ -133,13 +133,13 @@ require_once __DIR__ . '/../templates/header.php';
      ════════════════════════════════════════════════════ -->
 <section class="reveal grid-2col-even" style="margin-top:28px">
   <div class="card card__pad">
-    <h2 style="font-family:var(--font-display); font-weight:300; font-size:26px">Boat Safaris</h2>
-    <p style="color:var(--ink-70); margin-top:8px; font-size:15px">The nearby <strong>Olifants River</strong> offers scenic boat safaris — hippos, crocodiles, diverse birdlife. Dive into history at <strong>Foskor Mine Museum</strong> and <strong>Masorini Archaeological Site</strong> within Kruger — BaPhalaborwa Iron Age smelting remnants.</p>
+    <h2 style="font-family:var(--font-display); font-weight:300; font-size:26px"><?= e(setting('safari_boat_title', 'Boat Safaris')) ?></h2>
+    <p style="color:var(--ink-70); margin-top:8px; font-size:15px"><?= setting('safari_boat_body', 'The nearby <strong>Olifants River</strong> offers scenic boat safaris — hippos, crocodiles, diverse birdlife. Dive into history at <strong>Foskor Mine Museum</strong> and <strong>Masorini Archaeological Site</strong> within Kruger — BaPhalaborwa Iron Age smelting remnants.') ?></p>
     <img src="<?= e(url('/Luxury Images/activities/hippos-water-group.jpg')) ?>" alt="Hippos water group — Olifants boat safari" style="margin-top:14px; border-radius:10px; aspect-ratio:16/10; object-fit:cover; width:100%" loading="lazy" decoding="async">
   </div>
   <div class="card card__pad">
-    <h2 style="font-family:var(--font-display); font-weight:300; font-size:26px">Adventure</h2>
-    <p style="color:var(--ink-70); margin-top:8px; font-size:15px">Iconic <strong>Blyde River Canyon</strong> — one of largest canyons, hiking + boat trips. <strong>Amarula Lapa</strong> — learn how Amarula liqueur is made, tasting session.</p>
+    <h2 style="font-family:var(--font-display); font-weight:300; font-size:26px"><?= e(setting('safari_adventure_title', 'Adventure')) ?></h2>
+    <p style="color:var(--ink-70); margin-top:8px; font-size:15px"><?= setting('safari_adventure_body', 'Iconic <strong>Blyde River Canyon</strong> — one of largest canyons, hiking + boat trips. <strong>Amarula Lapa</strong> — learn how Amarula liqueur is made, tasting session.') ?></p>
     <img src="<?= e(url('/Luxury Images/activities/blyde-river-canyon-panorama.jpg')) ?>" alt="Blyde River Canyon panorama" style="margin-top:14px; border-radius:10px; aspect-ratio:16/10; object-fit:cover; width:100%" loading="lazy" decoding="async">
   </div>
 </section>
@@ -149,7 +149,7 @@ require_once __DIR__ . '/../templates/header.php';
      ════════════════════════════════════════════════════ -->
 <?php if (!empty($beyondCards)): ?>
 <section class="reveal" style="margin-top:18px">
-  <div class="kicker">Beyond Gate — measured distances</div>
+  <div class="kicker"><?= e(setting('safari_beyond_gate_kicker', 'Beyond Gate — measured distances')) ?></div>
   <div class="beyond-grid" style="margin-top:12px">
     <?php foreach ($beyondCards as $card): ?>
     <div class="beyond-card">
@@ -181,7 +181,7 @@ require_once __DIR__ . '/../templates/header.php';
      CTA — DOWNLOAD PRICELIST
      ════════════════════════════════════════════════════ -->
 <div class="reveal" style="margin-top:18px; text-align:center">
-  <a class="btn btn--navy" href="<?= e($pricelistUrl) ?>" download>Download Pricelist — Kedibone 2025 PDF</a>
+  <a class="btn btn--navy" href="<?= e($pricelistUrl) ?>" download><?= e(setting('safari_cta', 'Download Pricelist — Kedibone 2025 PDF')) ?></a>
 </div>
 
 <!-- ════════════════════════════════════════════════════

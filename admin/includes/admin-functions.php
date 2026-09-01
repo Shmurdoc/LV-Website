@@ -247,7 +247,7 @@ function admin_list_pagination(int $total, int $perPage, int $currentPage): stri
     if ($currentPage < $totalPages) {
         $html .= "<a href=\"?{$sep}page=" . ($currentPage + 1) . "\" class=\"btn btn-sm btn-outline\">Next &raquo;</a>";
     }
-    $html .= '<span class="pagination-info">' . count($params ? 'Filtered: ' : '') . "$total item(s), page $currentPage/$totalPages</span>";
+    $html .= '<span class="pagination-info">' . ($params ? 'Filtered: ' : '') . "$total item(s), page $currentPage/$totalPages</span>";
     $html .= '</div>';
     return $html;
 }

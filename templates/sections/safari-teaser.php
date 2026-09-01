@@ -70,8 +70,8 @@ $defaultThumb = '/Luxury Images/gallery-scenic/exterior-grey-cottages-red-doors.
             <div class="safari-tease__veil"></div>
         </div>
         <div class="safari-tease__body">
-            <div class="safari-teaser__body-title">Safari Videos</div>
-            <div class="safari-teaser__body-sub">Click to play — Kruger wildlife footage</div>
+            <div class="safari-teaser__body-title"><?= e(setting('safari_teaser_body_title', 'Safari Videos')) ?></div>
+            <div class="safari-teaser__body-sub"><?= e(setting('safari_teaser_body_sub', 'Click to play — Kruger wildlife footage')) ?></div>
         </div>
     </div>
     <?php endif; ?>

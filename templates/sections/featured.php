@@ -26,12 +26,12 @@ $iconMap = [
 
 <section class="apartments reveal" id="apartments">
     <div class="apartments__head">
-        <span class="kicker">4 Luxury Options</span>
-        <h2 class="section-heading"><em class="gold">Our</em> Apartments</h2>
+        <span class="kicker"><?= e(setting('featured_kicker', '4 Luxury Options')) ?></span>
+        <h2 class="section-heading"><em class="gold"><?= e(setting('featured_heading_prefix', 'Our')) ?></em> <?= e(setting('featured_heading_suffix', ' Apartments')) ?></h2>
         <?php if (!empty($section['content'])): ?>
         <p class="subhead"><?= e($section['content']) ?></p>
         <?php else: ?>
-        <p class="subhead">Each 13 m² suite is self-catering with city views, queen bed, and everything you need for a comfortable Phalaborwa stay.</p>
+        <p class="subhead"><?= e(setting('featured_subhead', 'Each 13 m² suite is self-catering with city views, queen bed, and everything you need for a comfortable Phalaborwa stay.')) ?></p>
         <?php endif; ?>
     </div>
 
@@ -49,7 +49,7 @@ $iconMap = [
                     <img src="<?= e(image_url($img)) ?>" alt="<?= e($apt['name']) ?>" width="600" height="400" loading="lazy" decoding="async">
                     <?php endif; ?>
                     <div class="apartment-card__overlay"></div>
-                    <span class="apartment-card__price"><?= format_price($price) ?><small>/night</small></span>
+                    <span class="apartment-card__price"><?= format_price($price) ?><small><?= e(setting('featured_price_suffix', '/night')) ?></small></span>
                     <span class="apartment-card__grade"><?= e($apt['name']) ?></span>
                 </div>
                 <div class="apartment-card__body">
@@ -64,7 +64,7 @@ $iconMap = [
                         <?php endforeach; ?>
                     </ul>
                     <?php endif; ?>
-                    <span class="apartment-card__cta">View Details <i data-lucide="arrow-right" class="icon--xs"></i></span>
+                    <span class="apartment-card__cta"><?= e(setting('featured_cta_text', 'View Details')) ?> <i data-lucide="arrow-right" class="icon--xs"></i></span>
                 </div>
             </a>
         </article>

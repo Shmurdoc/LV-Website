@@ -85,14 +85,14 @@ require __DIR__ . '/../templates/header.php';
   <div class="page-hero__content">
     <p class="page-hero__kicker"><?= e($page['hero_kicker'] ?? 'Gallery — Luxe Bedrooms, Kitchens, Bathrooms, Living Rooms, Outdoors') ?></p>
     <h1 class="page-hero__title"><?= $total ?> frames.<br><em>One story.</em></h1>
-    <p class="page-hero__lead">Our curated collection of Viata Luxe interiors, kitchens, bathrooms, and outdoor spaces.</p>
+    <p class="page-hero__lead"><?= e(setting('gallery_hero_lead', 'Our curated collection of Viata Luxe interiors, kitchens, bathrooms, and outdoor spaces.')) ?></p>
   </div>
 </section>
 
 <!-- FILTER BAR -->
 <div class="filter" id="filter">
   <div class="filter__inner">
-    <button class="is-active" data-filter="all">All</button>
+    <button class="is-active" data-filter="all"><?= e(setting('gallery_filter_all', 'All')) ?></button>
     <?php foreach ($categories as $cat): ?>
       <button data-filter="<?= e(strtolower($cat['slug'])) ?>"><?= e($cat['name']) ?></button>
     <?php endforeach; ?>

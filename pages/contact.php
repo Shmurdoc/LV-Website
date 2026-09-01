@@ -43,7 +43,7 @@ require __DIR__ . '/../templates/header.php';
   <div class="page-hero__veil"></div>
   <div class="page-hero__content">
     <p class="page-hero__kicker reveal"><?= e($page['hero_kicker'] ?: 'Contact — Reach Us Anytime') ?></p>
-    <h1 class="page-hero__title reveal">Contact <em>Us</em></h1>
+    <h1 class="page-hero__title reveal"><?= setting('contact_hero_title', 'Contact <em>Us</em>') ?></h1>
     <p class="page-hero__lead reveal"><?= e($page['hero_lead'] ?: 'We would love to hear from you. Reach us by phone, email, or visit us in person.') ?></p>
   </div>
 </section>
@@ -53,7 +53,7 @@ require __DIR__ . '/../templates/header.php';
   <!-- TOP INFO CARDS — Phone / Email / Address -->
   <section class="info-cards reveal" style="margin-top:28px">
     <div class="info-card">
-      <div class="info-card__label">Phone</div>
+      <div class="info-card__label"><?= e(setting('contact_info_card_phone_label', 'Phone')) ?></div>
       <p class="info-card__value">
         <a href="tel:<?= e(preg_replace('/\s+/', '', $phone)) ?>"><?= e($phone) ?></a>
         <span style="color:var(--ink-55)"> | </span>
@@ -62,12 +62,12 @@ require __DIR__ . '/../templates/header.php';
       <a class="link" href="tel:<?= e(preg_replace('/\s+/', '', $phone)) ?>" style="margin-top:4px; display:inline-block">Call Tel</a> · <a class="link" href="tel:<?= e(preg_replace('/\s+/', '', $phone_mob)) ?>">Call Mobile</a>
     </div>
     <div class="info-card">
-      <div class="info-card__label">Email</div>
+      <div class="info-card__label"><?= e(setting('contact_info_card_email_label', 'Email')) ?></div>
       <p class="info-card__value"><a href="mailto:<?= e($email) ?>"><?= e($email) ?></a></p>
       <a class="link" href="mailto:<?= e($email) ?>" style="margin-top:4px; display:inline-block">Send Email</a>
     </div>
     <div class="info-card">
-      <div class="info-card__label">Address</div>
+      <div class="info-card__label"><?= e(setting('contact_info_card_address_label', 'Address')) ?></div>
       <p class="info-card__detail"><?= nl2br(e($address)) ?></p>
       <a class="link" href="https://www.google.com/maps/search/<?= e($map_query) ?>" target="_blank" rel="noopener" style="margin-top:4px; display:inline-block">Open in Maps →</a>
     </div>
@@ -76,23 +76,23 @@ require __DIR__ . '/../templates/header.php';
   <!-- CONTACT GRID — Form + Map/Booking -->
   <section class="contact-grid" style="margin-top:18px">
     <div class="reveal">
-      <h2 style="font-family:var(--font-display); font-weight:300; font-size:22px">Send us a message</h2>
+      <h2 style="font-family:var(--font-display); font-weight:300; font-size:22px"><?= e(setting('contact_form_heading', 'Send us a message')) ?></h2>
       <p class="caption" style="margin-top:6px; max-width:52ch">Please enable JavaScript in your browser to complete this form.</p>
       <form id="connectForm" class="connect-form" style="margin-top:14px" action="<?= e(url('/api/contact.php')) ?>" novalidate data-contact-bound="1">
         <?= csrf_field() ?>
         <div class="honey" aria-hidden="true"><label for="website">Website (leave blank)</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
-        <div class="field"><label class="field__label" for="fName">Name *</label><input class="field__input" id="fName" name="name" required placeholder="Your name"></div>
-        <div class="field"><label class="field__label" for="fEmail">Email *</label><input class="field__input" id="fEmail" name="email" type="email" required placeholder="you@example.com"></div>
+        <div class="field"><label class="field__label" for="fName">Name *</label><input class="field__input" id="fName" name="name" required placeholder="<?= e(setting('contact_form_placeholder_name', 'Your name')) ?>"></div>
+        <div class="field"><label class="field__label" for="fEmail">Email *</label><input class="field__input" id="fEmail" name="email" type="email" required placeholder="<?= e(setting('contact_form_placeholder_email', 'you@example.com')) ?>"></div>
         <div class="grid-2col-even">
           <div class="field"><label class="field__label" for="fArrival">Arrival *</label><input class="field__input" id="fArrival" name="arrival" type="date" required></div>
           <div class="field"><label class="field__label" for="fDeparture">Departure *</label><input class="field__input" id="fDeparture" name="departure" type="date" required></div>
         </div>
         <div class="grid-2col-even">
-          <div class="field"><label class="field__label" for="fPhone">Phone</label><input class="field__input" id="fPhone" name="phone" placeholder="+27 ..."></div>
+          <div class="field"><label class="field__label" for="fPhone">Phone</label><input class="field__input" id="fPhone" name="phone" placeholder="<?= e(setting('contact_form_placeholder_phone', '+27 ...')) ?>"></div>
           <div class="field"><label class="field__label" for="fGuests">Guests</label><select class="field__input" id="fGuests" name="guests"><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option><option value="5">5 guests</option><option value="6">6 guests</option></select></div>
         </div>
-        <div class="field"><label class="field__label" for="fNotes">Comment or Message</label><textarea class="field__input" id="fNotes" name="notes" rows="4" placeholder="Comment or Message"></textarea></div>
-        <button type="submit" class="btn btn--navy" id="connectBtn" style="width:100%; justify-content:center">Send Enquiry</button>
+        <div class="field"><label class="field__label" for="fNotes">Comment or Message</label><textarea class="field__input" id="fNotes" name="notes" rows="4" placeholder="<?= e(setting('contact_form_placeholder_comment', 'Comment or Message')) ?>"></textarea></div>
+        <button type="submit" class="btn btn--navy" id="connectBtn" style="width:100%; justify-content:center"><?= e(setting('contact_form_button', 'Send Enquiry')) ?></button>
         <div id="formMsg" class="connect-form__msg" hidden></div>
       </form>
     </div>
@@ -104,7 +104,7 @@ require __DIR__ . '/../templates/header.php';
         <div style="position:relative; z-index:2; display:grid; gap:10px; place-items:center; padding:18px">
           <div style="font-family:var(--font-display); font-weight:300; font-size:20px; color:var(--navy)"><?= e($address) ?></div>
           <div style="font-size:12px; color:var(--ink-55)">Phalaborwa 1390 — Corner 13 Prinsloo &amp; Nollie Bosman</div>
-          <button class="maps-facade__btn" id="mapsBtn">Load Map — Google Maps</button>
+          <button class="maps-facade__btn" id="mapsBtn"><?= e(setting('contact_map_button', 'Load Map — Google Maps')) ?></button>
         </div>
       </div>
       <div id="mapsFrame" hidden style="border:1px solid var(--line); border-radius:var(--radius-lg); overflow:hidden; height:360px; background:var(--ivory)">
@@ -113,13 +113,13 @@ require __DIR__ . '/../templates/header.php';
 
       <!-- NightsBridge card -->
       <div class="nb-card">
-        <div class="kicker">NightsBridge — Instant book</div>
-        <h3 class="nb-card__title">Book direct — <em>38331</em></h3>
-        <p style="color:rgba(248,246,241,0.7); font-size:13px; margin-top:4px">Book direct via NightsBridge — instant confirmation.</p>
+        <div class="kicker"><?= e(setting('contact_nightsbridge_kicker', 'NightsBridge — Instant book')) ?></div>
+        <h3 class="nb-card__title"><?= setting('contact_nightsbridge_title', 'Book direct — <em>38331</em>') ?></h3>
+        <p style="color:rgba(248,246,241,0.7); font-size:13px; margin-top:4px"><?= e(setting('contact_nightsbridge_desc', 'Book direct via NightsBridge — instant confirmation.')) ?></p>
         <div style="margin-top:12px; border:1px solid rgba(248,246,241,0.16); border-radius:12px; overflow:hidden; height:320px; background:var(--cream)">
           <iframe src="https://book.nightsbridge.com/38331" title="NightsBridge — Viata Luxe 38331" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%; height:100%; border:0"></iframe>
         </div>
-        <a href="https://book.nightsbridge.com/38331" target="_blank" rel="noopener" class="btn btn--gold" style="width:100%; justify-content:center; margin-top:12px">Open NightsBridge — 38331</a>
+        <a href="https://book.nightsbridge.com/38331" target="_blank" rel="noopener" class="btn btn--gold" style="width:100%; justify-content:center; margin-top:12px"><?= e(setting('contact_nightsbridge_cta', 'Open NightsBridge — 38331')) ?></a>
       </div>
     </div>
   </section>
@@ -127,9 +127,9 @@ require __DIR__ . '/../templates/header.php';
   <!-- EMERGENCY / HOURS -->
   <section class="reveal" style="margin-top:18px">
     <div class="card card__pad">
-      <div class="micro">Business — via Home context</div>
-      <h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px">Minutes to Kruger</h3>
-      <p style="color:var(--ink-70); margin-top:6px; font-size:14px">We Would Love To Hear From You — <?= e($phone) ?> Tel | <?= e($phone_mob) ?> Mobile. Host on arrival, self-catering, secure parking.</p>
+      <div class="micro"><?= e(setting('contact_business_heading', 'Business — via Home context')) ?></div>
+      <h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px"><?= e(setting('contact_business_title', 'Minutes to Kruger')) ?></h3>
+      <p style="color:var(--ink-70); margin-top:6px; font-size:14px"><?= e(setting('contact_business_body', 'We Would Love To Hear From You — ' . $phone . ' Tel | ' . $phone_mob . ' Mobile. Host on arrival, self-catering, secure parking.')) ?></p>
     </div>
   </section>
 
@@ -166,7 +166,7 @@ if(form){
         else { showMsg(res.body.error||'Something went wrong. Try again.', false); }
       })
       .catch(function(){ showMsg('Network error. Check connection and try again.', false); })
-      .finally(function(){ if(btn){ btn.disabled=false; btn.textContent='Send Enquiry'; } });
+      .finally(function(){ if(btn){ btn.disabled=false; btn.textContent='<?= e(setting('contact_form_button', 'Send Enquiry')) ?>'; } });
   });
 }
 </script>

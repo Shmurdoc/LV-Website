@@ -74,7 +74,7 @@ if (!empty($heroSlides)):
     <div class="hero-dots" id="heroDots" role="tablist" aria-label="Slideshow dots"></div>
     <div class="hero-progress" id="heroProgress"></div>
     <div class="slide__caption" id="slideCaption"><?= e($heroSlides[0]['caption'] ?? '') ?></div>
-    <div class="hero__meta hide-mobile"><span>Self-catering</span><span>·</span><span>4 Apartments</span><span>·</span><span>Hosted</span></div>
+    <div class="hero__meta hide-mobile"><?= e(setting('hero_meta_strip', 'Self-catering · 4 Apartments · Hosted')) ?></div>
 </section>
 <?php else: // fallback single-image hero (for subpages / no slides)
 $heroImg = $section['image'] ?? $section['background_image'] ?? null;

@@ -64,7 +64,7 @@ require __DIR__ . '/../templates/header.php';
       <?php if (!empty($apartment['room_size_m2'])): ?><span class="chip"><?= e($apartment['room_size_m2']) ?> m²</span><?php endif; ?>
       <?php if (!empty($apartment['beds_description'])): ?><span class="chip"><?= e($apartment['beds_description']) ?></span><?php endif; ?>
       <?php if (!empty($apartment['max_guests'])): ?><span class="chip">Max <?= e($apartment['max_guests']) ?> guests</span><?php endif; ?>
-      <span class="chip">City view · Private bathroom</span>
+      <span class="chip"><?= e(setting('accom_spec_city_views_label', 'City view')) ?> · <?= e(setting('accom_spec_bathroom_label', 'Private bathroom')) ?></span>
     </div>
   </div>
 </header>
@@ -82,12 +82,12 @@ require __DIR__ . '/../templates/header.php';
         <h2 class="room__title"><?= e($apartment['subtitle'] ?? $apartment['name']) ?></h2>
         <div class="room__specs">
           <?php if (!empty($apartment['room_size_m2'])): ?><span class="spec"><strong><?= e($apartment['room_size_m2']) ?> m²</strong></span><?php endif; ?>
-          <?php if (!empty($apartment['max_guests'])): ?><span class="spec">Sleeps <strong><?= e($apartment['max_guests']) ?></strong></span><?php endif; ?>
+          <?php if (!empty($apartment['max_guests'])): ?><span class="spec"><?= e(setting('accom_spec_sleeps_label', 'Sleeps')) ?> <strong><?= e($apartment['max_guests']) ?></strong></span><?php endif; ?>
           <?php if (!empty($apartment['beds_description'])): ?><span class="spec"><?= e($apartment['beds_description']) ?></span><?php endif; ?>
-          <span class="spec">City Views</span>
+          <span class="spec"><?= e(setting('accom_spec_city_views_label', 'City Views')) ?></span>
         </div>
         <p class="room__copy"><?= e($apartment['description']) ?></p>
-        <div class="room__price"><strong>From <?= format_price((float)$apartment['price_per_night']) ?></strong><span>per night · 0–7 days cancellation 100%</span></div>
+        <div class="room__price"><strong>From <?= format_price((float)$apartment['price_per_night']) ?></strong><span><?= e(setting('accom_price_suffix', 'per night · 0–7 days cancellation 100%')) ?></span></div>
         <?php if ($amenityNotice): ?>
         <div class="room__notice">Additional Amenities · <?= e($amenityNotice) ?></div>
         <?php endif; ?>
@@ -107,9 +107,9 @@ require __DIR__ . '/../templates/header.php';
   <!-- Info cards + testimonial -->
   <section class="reveal" style="margin-top:22px; display:grid; gap:18px">
     <div class="info-grid">
-      <div class="card card__pad"><div class="eyebrow">City Views</div><h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px">Breathtaking Phalaborwa</h3><p style="color:var(--ink-70); margin-top:8px; font-size:14px">Every window frames acacia — especially enchanting at night.</p></div>
-      <div class="card card__pad"><div class="eyebrow">Tours</div><h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px">Explore local culture</h3><p style="color:var(--ink-70); margin-top:8px; font-size:14px">Curated tours immersing you in local culture and stunning landscapes — Kedibone Safari minutes away.</p></div>
-      <div class="card card__pad"><div class="eyebrow">Drinks &amp; Food</div><h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px">Gourmet delivered</h3><p style="color:var(--ink-70); margin-top:8px; font-size:14px">Breakfast on request + affiliated exclusive restaurants, convenient terrace dining — indulgent, relaxed.</p></div>
+      <div class="card card__pad"><div class="eyebrow"><?= e(setting('apt_info_city_eyebrow', 'City Views')) ?></div><h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px"><?= e(setting('apt_info_city_title', 'Breathtaking Phalaborwa')) ?></h3><p style="color:var(--ink-70); margin-top:8px; font-size:14px"><?= e(setting('apt_info_city_body', 'Every window frames acacia — especially enchanting at night.')) ?></p></div>
+      <div class="card card__pad"><div class="eyebrow"><?= e(setting('apt_info_tours_eyebrow', 'Tours')) ?></div><h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px"><?= e(setting('apt_info_tours_title', 'Explore local culture')) ?></h3><p style="color:var(--ink-70); margin-top:8px; font-size:14px"><?= e(setting('apt_info_tours_body', 'Curated tours immersing you in local culture and stunning landscapes — Kedibone Safari minutes away.')) ?></p></div>
+      <div class="card card__pad"><div class="eyebrow"><?= e(setting('apt_info_food_eyebrow', 'Drinks &amp; Food')) ?></div><h3 style="font-family:var(--font-display); font-weight:300; margin-top:6px"><?= e(setting('apt_info_food_title', 'Gourmet delivered')) ?></h3><p style="color:var(--ink-70); margin-top:8px; font-size:14px"><?= e(setting('apt_info_food_body', 'Breakfast on request + affiliated exclusive restaurants, convenient terrace dining — indulgent, relaxed.')) ?></p></div>
     </div>
     <div class="grid-2col-even">
       <div class="card card__pad">
@@ -125,10 +125,10 @@ require __DIR__ . '/../templates/header.php';
         <?php endif; ?>
         <div class="rate-table" style="margin-top:16px">
           <table>
-            <thead><tr><th>Policy</th><th>Detail</th></tr></thead>
+            <thead><tr><th><?= e(setting('accom_table_header_policy', 'Policy')) ?></th><th><?= e(setting('accom_table_header_detail', 'Detail')) ?></th></tr></thead>
             <tbody>
-              <tr><td><strong>Cancelation</strong></td><td>0–7 days within stay: 100% charged</td></tr>
-              <tr><td><strong>Bedding</strong></td><td><?= e($apartment['bedrooms'] ?? 1) ?> bedroom <?= e($apartment['beds_description'] ?? 'queen') ?> · Max <?= e($apartment['max_guests'] ?? 2) ?> · <?= e($apartment['room_size_m2'] ?? 13) ?> m²</td></tr>
+              <tr><td><strong><?= e(setting('accom_table_cancelation_title', 'Cancelation')) ?></strong></td><td><?= e(setting('accom_cancelation_policy', '0–7 days within stay: 100% charged')) ?></td></tr>
+              <tr><td><strong><?= e(setting('accom_table_bedding_title', 'Bedding')) ?></strong></td><td><?= e($apartment['bedrooms'] ?? 1) ?> <?= e(setting('accom_table_bedding_room_text', 'bedroom')) ?> <?= e($apartment['beds_description'] ?? 'queen') ?> · Max <?= e($apartment['max_guests'] ?? 2) ?> · <?= e($apartment['room_size_m2'] ?? 13) ?> m²</td></tr>
             </tbody>
           </table>
         </div>
@@ -139,7 +139,7 @@ require __DIR__ . '/../templates/header.php';
   <!-- Gallery extras -->
   <?php if (count($images) > 2): ?>
   <section class="reveal" style="margin-top:18px">
-    <div class="kicker">Gallery — <?= e($apartment['name']) ?> extras</div>
+    <div class="kicker"><?= e(setting('apt_gallery_kicker_prefix', 'Gallery')) ?> — <?= e($apartment['name']) ?> <?= e(setting('apt_gallery_kicker_suffix', 'extras')) ?></div>
     <div class="info-grid" style="gap:10px; margin-top:12px">
       <?php foreach (array_slice($images, 0, 3) as $img): ?>
       <img src="<?= e(image_url($img['image_path'])) ?>" alt="<?= e($img['alt_text'] ?? $apartment['name']) ?>" style="aspect-ratio:4/3; object-fit:cover; border-radius:10px; border:1px solid var(--line)" data-lightbox href="<?= e(image_url($img['image_path'])) ?>" loading="lazy" decoding="async">
@@ -153,11 +153,11 @@ require __DIR__ . '/../templates/header.php';
     <div class="grid-2col" style="padding: clamp(24px, 4vw, 36px); gap:24px; align-items:center">
       <div>
         <h3 style="font-family:var(--font-display);font-weight:300;font-size:28px;line-height:0.95;color:var(--cream)"><?= e($apartment['name']) ?> awaits.<br><em style="color:var(--gold-300);font-style:italic">Book direct.</em></h3>
-        <p style="color:rgba(248,246,241,0.7);max-width:52ch;margin-top:8px"><?= e($apartment['room_size_m2'] ?? 13) ?> m² · <?= e($apartment['beds_description'] ?? 'Queen 157cm') ?> · City views · Host on arrival</p>
+        <p style="color:rgba(248,246,241,0.7);max-width:52ch;margin-top:8px"><?= e(setting('apt_cta_lead', ($apartment['room_size_m2'] ?? 13) . ' m² · ' . ($apartment['beds_description'] ?? 'Queen 157cm') . ' · City views · Host on arrival')) ?></p>
       </div>
       <div>
-        <a class="btn btn--gold" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener" style="width:100%;justify-content:center">Book <?= e($apartment['name']) ?> — NightsBridge</a>
-        <p class="small" style="color:rgba(248,246,241,0.6);text-align:center;margin-top:8px">Also via <a href="https://www.booking.com/hotel/za/viata-luxe-guesthouse-phalaborwa.en-gb.html" target="_blank" rel="noopener" style="text-decoration:underline">Booking.com</a></p>
+        <a class="btn btn--gold" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener" style="width:100%;justify-content:center"><?= e(setting('apt_cta_btn_prefix', 'Book')) ?> <?= e($apartment['name']) ?> <?= e(setting('apt_cta_btn_suffix', '— NightsBridge')) ?></a>
+        <p class="small" style="color:rgba(248,246,241,0.6);text-align:center;margin-top:8px"><?= setting('apt_booking_alt', 'Also via <a href="https://www.booking.com/hotel/za/viata-luxe-guesthouse-phalaborwa.en-gb.html" target="_blank" rel="noopener" style="text-decoration:underline">Booking.com</a>') ?></p>
       </div>
     </div>
   </section>

@@ -17,7 +17,7 @@
 <?php if (!empty($section['link_text']) && !empty($section['link_url'])): ?>
 <div class="hero__actions reveal reveal--delay-3">
     <a class="btn btn--gold" href="<?= e($section['link_url']) ?>" target="_blank" rel="noopener"><?= e($section['link_text']) ?></a>
-    <a class="btn btn--ghost" href="<?= e(url('/accomodation/')) ?>">Explore Accommodation</a>
+    <a class="btn btn--ghost" href="<?= e(url('/accomodation/')) ?>"><?= e(setting('homepage_hero_cta_explore', 'Explore Accommodation')) ?></a>
 </div>
 <?php elseif (!empty($section['link_text'])): ?>
 <div class="hero__actions reveal reveal--delay-3">
@@ -25,7 +25,7 @@
 </div>
 <?php else: ?>
 <div class="hero__actions reveal reveal--delay-3">
-    <a class="btn btn--gold" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener">Book Now — NightsBridge</a>
-    <a class="btn btn--ghost" href="<?= e(url('/accomodation/')) ?>">Explore Accommodation</a>
+    <a class="btn btn--gold" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener"><?= e(setting('homepage_hero_cta_book', 'Book Now — NightsBridge')) ?></a>
+    <a class="btn btn--ghost" href="<?= e(url('/accomodation/')) ?>"><?= e(setting('homepage_hero_cta_explore', 'Explore Accommodation')) ?></a>
 </div>
 <?php endif; ?>

@@ -15,12 +15,21 @@ if (empty($items) && !empty($section['content'])) {
     }
 }
 if (empty($items)) {
-    $items = [
-        ['title' => 'Self-Catering', 'time_label' => 'In your apartment', 'text' => 'Full kitchen with oven, hob, microwave, fridge, and all utensils.'],
-        ['title' => 'Braai & Boma', 'time_label' => 'Outdoor area', 'text' => 'Traditional South African braai setup under the Limpopo stars.'],
-        ['title' => 'Local Restaurants', 'time_label' => '5-10 min drive', 'text' => 'Bushveld dining, Italian, steakhouse — curated recommendations on arrival.'],
-        ['title' => 'Private Bush Dinner', 'time_label' => 'On request', 'text' => 'Chef-prepared multi-course dinner in the bushveld setting.'],
-    ];
+    $fallbackJson = setting('dining_fallback_items', null);
+    if ($fallbackJson) {
+        $decoded = json_decode($fallbackJson, true);
+        if (is_array($decoded) && isset($decoded[0]['title'])) {
+            $items = $decoded;
+        }
+    }
+    if (empty($items)) {
+        $items = [
+            ['title' => 'Self-Catering', 'time_label' => 'In your apartment', 'text' => 'Full kitchen with oven, hob, microwave, fridge, and all utensils.'],
+            ['title' => 'Braai & Boma', 'time_label' => 'Outdoor area', 'text' => 'Traditional South African braai setup under the Limpopo stars.'],
+            ['title' => 'Local Restaurants', 'time_label' => '5-10 min drive', 'text' => 'Bushveld dining, Italian, steakhouse — curated recommendations on arrival.'],
+            ['title' => 'Private Bush Dinner', 'time_label' => 'On request', 'text' => 'Chef-prepared multi-course dinner in the bushveld setting.'],
+        ];
+    }
 }
 ?>
 <div class="dining__inner">

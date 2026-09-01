@@ -33,20 +33,20 @@ $apartments = $apartments ?? get_apartments();
             <h2 class="room__title"><?= e($short) ?></h2>
             <div class="room__specs">
                 <?php if ($roomSize): ?><span class="spec"><strong><?= e($roomSize) ?> m²</strong></span><?php endif; ?>
-                <span class="spec">Sleeps <strong><?= e($apt['max_guests']) ?></strong></span>
+                <span class="spec"><?= e(setting('apt_cards_spec_sleeps', 'Sleeps')) ?> <strong><?= e($apt['max_guests']) ?></strong></span>
                 <span class="spec"><?= e($beds) ?></span>
-                <span class="spec">Bushveld Views</span>
+                <span class="spec"><?= e(setting('apt_cards_spec_views', 'Bushveld Views')) ?></span>
             </div>
             <?php if (!empty($apt['description'])): ?>
             <p class="room__copy"><?= e(mb_strimwidth($apt['description'], 0, 300, '...')) ?></p>
             <?php endif; ?>
             <div class="room__price">
                 <strong><?= format_price((float)$apt['price_per_night']) ?></strong>
-                <span>per night</span>
+                <span><?= e(setting('apt_cards_price_suffix', 'per night')) ?></span>
             </div>
             <div class="room__actions">
-                <a class="btn btn--navy" href="<?= e(url($apt['slug'])) ?>">View <?= e($apt['name']) ?> detail →</a>
-                <a class="link" href="<?= e(setting('booking_url', '#')) ?>" target="_blank" rel="noopener">Book Now</a>
+                <a class="btn btn--navy" href="<?= e(url($apt['slug'])) ?>"><?= e(setting('apt_cards_view_detail', 'View detail →')) ?></a>
+                <a class="link" href="<?= e(setting('booking_url', '#')) ?>" target="_blank" rel="noopener"><?= e(setting('apt_cards_book_now', 'Book Now')) ?></a>
             </div>
         </div>
     </article>

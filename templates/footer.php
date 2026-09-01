@@ -50,13 +50,13 @@ $navFooter = $nav ?? get_navigation();
             </div>
             <div>
                 <a href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" class="btn btn--navy footer__cta" target="_blank" rel="noopener"><?= e(setting('booking_cta_text', 'Check Availability — NightsBridge')) ?></a>
-                <p class="small footer__cta-sub">Instant confirm · Secure · Best rate</p>
+                <p class="small footer__cta-sub"><?= e(setting('footer_fine_print', 'Instant confirm · Secure · Best rate')) ?></p>
             </div>
         </div>
 
         <div class="footer__legal">
             <span><?= e(setting('footer_copyright', '© 2026 Viata Luxe Guesthouse. All rights reserved.')) ?></span>
-            <span>Created by Madoc Mhlongo</span>
+            <span><?= e(setting('footer_credit', 'Built with pride by Recast Media')) ?></span>
             <a class="footer__admin-btn" href="<?= e(url('/admin/login')) ?>" rel="nofollow" aria-label="Admin login"><i data-lucide="settings" style="width:12px;height:12px;vertical-align:-0.1em;margin-right:4px"></i> Admin</a>
         </div>
         <div class="footer__logos" aria-label="Trusted partners">

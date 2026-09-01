@@ -29,24 +29,24 @@ $amenityIcons = [
     'Premium Linens'   => '☾',
 ];
 
-// Amenity descriptions for tooltips
+// Amenity descriptions for tooltips — all from DB
 $amenityDescs = [
-    'Free WiFi'        => 'Complimentary high-speed',
-    'DStv'             => 'Flat-screen satellite',
-    'Full Kitchen'     => 'Tea/Coffee, Minibar, Kettle',
-    'Gourmet Kitchen'  => 'Fully equipped, premium',
-    'Secure Parking'   => 'Covered, on-site',
-    'Swimming Pool'    => 'Shared pool',
-    'Private Pool'     => 'In-unit pool',
-    'Premium Pool'     => 'In-suite, luxury',
-    'Air Conditioning' => 'Climate controlled',
-    'Ensuite Bathroom' => 'Private, modern fittings',
-    'Dishwasher'       => 'Convenience included',
-    'Private Patio'    => 'Outdoor relaxation',
-    'Private Balcony'  => 'City view perch',
-    'Soaking Tub'      => 'Deep soaking,放松',
-    'Panoramic Views'  => 'Breathtaking Phalaborwa',
-    'Premium Linens'   => 'Curated comfort',
+    'Free WiFi'        => setting('pricing_amenity_wifi_desc', 'Complimentary high-speed'),
+    'DStv'             => setting('pricing_amenity_dstv_desc', 'Flat-screen satellite'),
+    'Full Kitchen'     => setting('pricing_amenity_full_kitchen_desc', 'Tea/Coffee, Minibar, Kettle'),
+    'Gourmet Kitchen'  => setting('pricing_amenity_gourmet_kitchen_desc', 'Fully equipped, premium'),
+    'Secure Parking'   => setting('pricing_amenity_secure_parking_desc', 'Covered, on-site'),
+    'Swimming Pool'    => setting('pricing_amenity_swimming_pool_desc', 'Shared pool'),
+    'Private Pool'     => setting('pricing_amenity_private_pool_desc', 'In-unit pool'),
+    'Premium Pool'     => setting('pricing_amenity_premium_pool_desc', 'In-suite, luxury'),
+    'Air Conditioning' => setting('pricing_amenity_air_conditioning_desc', 'Climate controlled'),
+    'Ensuite Bathroom' => setting('pricing_amenity_ensuite_bathroom_desc', 'Private, modern fittings'),
+    'Dishwasher'       => setting('pricing_amenity_dishwasher_desc', 'Convenience included'),
+    'Private Patio'    => setting('pricing_amenity_private_patio_desc', 'Outdoor relaxation'),
+    'Private Balcony'  => setting('pricing_amenity_private_balcony_desc', 'City view perch'),
+    'Soaking Tub'      => setting('pricing_amenity_soaking_tub_desc', 'Deep soaking, spa-style'),
+    'Panoramic Views'  => setting('pricing_amenity_panoramic_views_desc', 'Breathtaking Phalaborwa'),
+    'Premium Linens'   => setting('pricing_amenity_premium_linens_desc', 'Curated comfort'),
 ];
 ?>
 
@@ -113,14 +113,14 @@ $amenityDescs = [
             <h2 class="room__title"><?= e($apt['subtitle'] ?? $apt['name']) ?></h2>
             <div class="room__specs">
                 <?php if ($roomSize): ?><span class="spec"><strong><?= e($roomSize) ?> m²</strong></span><?php endif; ?>
-                <span class="spec">Sleeps <strong><?= e($maxGuests) ?></strong></span>
+                <span class="spec"><?= e(setting('pricing_spec_sleeps', 'Sleeps')) ?> <strong><?= e($maxGuests) ?></strong></span>
                 <span class="spec"><?= e($beds) ?></span>
-                <span class="spec">City Views</span>
+                <span class="spec"><?= e(setting('pricing_spec_label', 'City Views')) ?></span>
             </div>
             <p class="room__copy"><?= e($copyText) ?></p>
             <div class="room__price">
                 <strong><?= format_price((float)$apt['price_per_night']) ?></strong>
-                <span>per night · Self-catering</span>
+                <span><?= e(setting('pricing_price_suffix', 'per night · Self-catering')) ?></span>
             </div>
             <?php if (!empty($amenities)): ?>
             <div class="amenities">
@@ -137,8 +137,8 @@ $amenityDescs = [
             </div>
             <?php endif; ?>
             <div class="room__actions">
-                <a class="btn btn--navy" href="<?= e(url($apt['slug'])) ?>">View <?= e($apt['name']) ?> detail →</a>
-                <a class="link" href="https://book.nightsbridge.com/38331" target="_blank" rel="noopener">Book Now</a>
+                <a class="btn btn--navy" href="<?= e(url($apt['slug'])) ?>"><?= e(setting('apt_cards_view_detail', 'View detail →')) ?></a>
+                <a class="link" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener"><?= e(setting('booking_button_text', 'Book Now')) ?></a>
             </div>
             <?php if ($aptTestimonial): ?>
             <div class="room__notice">Testimonial — <strong><?= e($aptTestimonial['reviewer_name']) ?></strong>: "<?= e($aptTestimonial['review_text']) ?>"</div>

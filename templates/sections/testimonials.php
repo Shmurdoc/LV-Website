@@ -39,7 +39,7 @@ $reviews = get_featured_testimonials();
                         <div class="testi-slide__role"><?= e($review['source'] ?? 'Guest') ?></div>
                     </div>
                 </div>
-                <span class="testi-slide__badge"><i data-lucide="badge-check" style="width:12px;height:12px;vertical-align:-0.1em;margin-right:4px"></i> Verified Guest</span>
+                <span class="testi-slide__badge"><i data-lucide="badge-check" style="width:12px;height:12px;vertical-align:-0.1em;margin-right:4px"></i> <?= e(setting('testimonials_badge', 'Verified Guest')) ?></span>
             </div>
         </article>
         <?php endforeach; ?>

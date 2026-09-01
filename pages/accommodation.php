@@ -57,12 +57,12 @@ require __DIR__ . '/../templates/header.php';
   </div>
   <div class="page-hero__veil"></div>
   <div class="page-hero__content">
-    <p class="page-hero__kicker">Accommodation — 4 Apartments · Viata Luxe</p>
-    <h1 class="page-hero__title">Four apartments.<br><em>One standard: luxe.</em></h1>
-    <p class="page-hero__lead">One Bedroom Apartment · 5 Sleeper Apartment — both with <strong>City Views</strong>, <strong>Tours</strong>, <strong>Drinks &amp; Food</strong>, <strong>Wifi</strong>, <strong>DSTV</strong>, <strong>Spacious Rooms</strong>. All apartments feature City Views, Tours, Drinks &amp; Food, Wifi, DSTV, and Spacious Rooms.</p>
+    <p class="page-hero__kicker"><?= e(setting('accom_hero_kicker', 'Accommodation — 4 Apartments · Viata Luxe')) ?></p>
+    <h1 class="page-hero__title"><?= setting('accom_hero_title', 'Four apartments.<br><em>One standard: luxe.</em>') ?></h1>
+    <p class="page-hero__lead"><?= setting('accom_hero_lead', 'One Bedroom Apartment · 5 Sleeper Apartment — both with <strong>City Views</strong>, <strong>Tours</strong>, <strong>Drinks &amp; Food</strong>, <strong>Wifi</strong>, <strong>DSTV</strong>, <strong>Spacious Rooms</strong>. All apartments feature City Views, Tours, Drinks &amp; Food, Wifi, DSTV, and Spacious Rooms.') ?></p>
     <div class="page-hero__meta">
-      <span class="chip">13 m² · Queen beds</span>
-      <span class="chip">Max 2–6 guests</span>
+      <span class="chip"><?= e(setting('accom_hero_chip_size', '13 m² · Queen beds')) ?></span>
+      <span class="chip"><?= e(setting('accom_hero_chip_guests', 'Max 2–6 guests')) ?></span>
       <span class="chip"><?= e($minPriceDisplay) ?></span>
       <a class="btn btn--primary" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener">Book Now</a>
     </div>
@@ -150,13 +150,13 @@ require __DIR__ . '/../templates/header.php';
         // Specs
         $specs = [
             '<strong>' . $aptSize . ' m²</strong>',
-            'Sleeps <strong>' . $aptGuests . '</strong>',
+            e(setting('accom_spec_sleeps_label', 'Sleeps')) . ' <strong>' . $aptGuests . '</strong>',
             $aptBeds,
-            'City Views',
+            e(setting('accom_spec_city_views_label', 'City Views')),
         ];
 
         // Price
-        $price = '<strong>From R' . number_format($aptPrice, 0) . '</strong><span>per night · Cancellation 0–7 days 100%</span>';
+        $price = '<strong>From R' . number_format($aptPrice, 0) . '</strong><span>' . e(setting('accom_price_suffix', 'per night · Cancellation 0–7 days 100%')) . '</span>';
     ?>
     <article class="room<?= $reverse ? ' room--reverse' : '' ?> reveal" data-grade="<?= $aptGrade ?>" data-category="<?= e($catSlug) ?>">
       <div class="room__media" data-lightbox href="<?= e($imgUrl) ?>">
@@ -186,8 +186,8 @@ require __DIR__ . '/../templates/header.php';
           </div>
         <?php endif; ?>
         <div class="room__actions">
-          <a class="btn btn--navy" href="<?= e(url("/{$aptSlug}/")) ?>">View <?= e($aptName) ?> detail →</a>
-          <a class="link" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener">Book Now</a>
+          <a class="btn btn--navy" href="<?= e(url("/{$aptSlug}/")) ?>"><?= e(setting('accom_view_detail_btn', 'View')) ?> <?= e($aptName) ?> <?= e(setting('accom_view_detail_arrow', 'detail →')) ?></a>
+          <a class="link" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener"><?= e(setting('accom_book_now_btn', 'Book Now')) ?></a>
         </div>
       </div>
     </article>
@@ -217,7 +217,7 @@ require __DIR__ . '/../templates/header.php';
   }
   ?>
   <section class="reveal" style="margin-top:28px; background:var(--white); border:1px solid var(--line); border-radius:var(--radius-lg); padding: clamp(18px, 3vw, 28px); display:grid; gap:16px">
-    <div class="kicker">Amenities</div>
+    <div class="kicker"><?= e(setting('accom_amenities_kicker', 'Amenities')) ?></div>
     <div class="amenities" style="max-width:100%">
       <?php if (!empty($allAmenities)): ?>
         <?php foreach ($allAmenities as $am): ?>
@@ -225,16 +225,16 @@ require __DIR__ . '/../templates/header.php';
           <div class="amenity"><span class="amenity__icon"><?= $iconChar ?></span><span class="amenity__text"><strong><?= e($am['amenity_name']) ?></strong></span></div>
         <?php endforeach; ?>
       <?php else: ?>
-        <div class="amenity"><span class="amenity__icon">⬢</span><span class="amenity__text"><strong>Wifi + DSTV</strong><br>Complimentary WiFi · Flat-screen DSTV</span></div>
-        <div class="amenity"><span class="amenity__icon">♡</span><span class="amenity__text"><strong>Spacious</strong><br>Large en-suite, comfortable, curated</span></div>
+        <div class="amenity"><span class="amenity__icon">⬢</span><span class="amenity__text"><strong><?= e(setting('accom_amenity_fallback_1_name', 'Wifi + DSTV')) ?></strong><br><?= e(setting('accom_amenity_fallback_1_desc', 'Complimentary WiFi · Flat-screen DSTV')) ?></span></div>
+        <div class="amenity"><span class="amenity__icon">♡</span><span class="amenity__text"><strong><?= e(setting('accom_amenity_fallback_2_name', 'Spacious')) ?></strong><br><?= e(setting('accom_amenity_fallback_2_desc', 'Large en-suite, comfortable, curated')) ?></span></div>
       <?php endif; ?>
     </div>
     <div class="rate-table" style="margin-top:8px">
       <table>
-        <thead><tr><th>Policy</th><th>Detail</th></tr></thead>
+        <thead><tr><th><?= e(setting('accom_table_header_policy', 'Policy')) ?></th><th><?= e(setting('accom_table_header_detail', 'Detail')) ?></th></tr></thead>
         <tbody>
-          <tr><td><strong>Cancelation Policy</strong></td><td>0–7 days within stay: 100% charged </td></tr>
-          <tr><td><strong>Check</strong></td><td>Wifi complimentary in room · DSTV flat-screen · Spacious en-suite</td></tr>
+          <tr><td><strong>Cancelation Policy</strong></td><td><?= e(setting('accom_cancelation_policy', '0–7 days within stay: 100% charged')) ?></td></tr>
+          <tr><td><strong>Check</strong></td><td><?= setting('accom_check_description', 'Wifi complimentary in room · DSTV flat-screen · Spacious en-suite') ?></td></tr>
         </tbody>
       </table>
     </div>
@@ -242,16 +242,16 @@ require __DIR__ . '/../templates/header.php';
 
   <!-- ====== 5 SLEEPER CARD ====== -->
   <section class="reveal" style="margin-top:18px; background:var(--ivory); border:1px solid var(--line); border-radius:12px; padding:16px">
-    <div style="font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:800; color:var(--ink-55)">5 Sleeper Apartment</div>
-    <p style="font-size:13px; color:var(--ink-70); margin-top:6px; max-width:68ch"><strong>5 Sleeper:</strong> 1 bedroom queen-sized bed · 1 bedroom 3 single beds · Maximum 2 guests · Room size: 13 m².</p>
+    <div style="font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:800; color:var(--ink-55)"><?= e(setting('accom_5sleeper_heading', '5 Sleeper Apartment')) ?></div>
+    <p style="font-size:13px; color:var(--ink-70); margin-top:6px; max-width:68ch"><?= setting('accom_5sleeper_body', '<strong>5 Sleeper:</strong> 1 bedroom queen-sized bed · 1 bedroom 3 single beds · Maximum 2 guests · Room size: 13 m².') ?></p>
   </section>
 
   <!-- ====== BOOK CTA ====== -->
   <section class="book reveal" style="margin-top:22px; border-radius:22px; overflow:hidden">
     <div class="grid-2col" style="padding: clamp(24px, 4vw, 36px); gap:24px; align-items:center">
       <div>
-        <h3 style="font-family:var(--font-display);font-weight:300;font-size:28px;line-height:0.95;color:var(--cream)">Ready to stay?<br><em style="color:var(--gold-300);font-style:italic">One check.</em></h3>
-        <p style="color:rgba(248,246,241,0.7);max-width:52ch;margin-top:8px">Pick Classic 1–4, pick a date — NightsBridge instant confirms.</p>
+        <h3 style="font-family:var(--font-display);font-weight:300;font-size:28px;line-height:0.95;color:var(--cream)"><?= setting('accom_cta_title', 'Ready to stay?<br><em style="color:var(--gold-300);font-style:italic">One check.</em>') ?></h3>
+        <p style="color:rgba(248,246,241,0.7);max-width:52ch;margin-top:8px"><?= e(setting('accom_cta_lead', 'Pick Classic 1–4, pick a date — NightsBridge instant confirms.')) ?></p>
       </div>
       <div>
         <a class="btn btn--gold" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener" style="width:100%;justify-content:center">Check Availability — NightsBridge</a>

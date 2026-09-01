@@ -53,6 +53,21 @@ $p = $page ?? [];
       </div>
       <div class="form-row">
         <div class="form-group">
+          <label>OG Image</label>
+          <div class="flex gap-2">
+            <input type="text" name="og_image" value="<?= e($p['og_image'] ?? '') ?>" placeholder="/Luxury Images/home-hero/hero.jpg" class="grow">
+            <button type="button" class="btn btn-sm btn-outline browse-btn" data-target="og_image">Browse</button>
+          </div>
+          <small style="color:var(--text-muted,#999)">Social share image (Facebook, WhatsApp)</small>
+        </div>
+        <div class="form-group">
+          <label>Canonical URL</label>
+          <input type="text" name="canonical_url" value="<?= e($p['canonical_url'] ?? '') ?>" placeholder="https://viataluxe.com/accommodation">
+          <small style="color:var(--text-muted,#999)">Leave blank to auto-generate</small>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label>Sort Order</label>
           <input type="number" name="sort_order" value="<?= (int)($p['sort_order'] ?? 0) ?>">
         </div>
@@ -75,6 +90,16 @@ $p = $page ?? [];
         <div class="form-group">
           <label>Hero Kicker</label>
           <input type="text" name="hero_kicker" value="<?= e($p['hero_kicker'] ?? '') ?>" placeholder="Accommodation — 4 Apartments">
+        </div>
+        <div class="form-group">
+          <label>Hero Title</label>
+          <input type="text" name="hero_title" value="<?= e($p['hero_title'] ?? '') ?>" placeholder="Four apartments. One standard: luxe.">
+          <small style="color:var(--text-muted,#999)">Override for the page hero heading (supports HTML for emphasis)</small>
+        </div>
+        <div class="form-group">
+          <label>Hero Lead</label>
+          <textarea name="hero_lead" rows="3" placeholder="One Bedroom Apartment · 5 Sleeper Apartment..."><?= e($p['hero_lead'] ?? '') ?></textarea>
+          <small style="color:var(--text-muted,#999)">Override for the page hero description</small>
         </div>
         <div class="form-group">
           <label>Hero Text Align</label>

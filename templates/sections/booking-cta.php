@@ -27,11 +27,11 @@ $booking = $booking ?? settings_group('booking');
     </div>
     <div>
         <div class="book__card">
-            <div class="book__label kicker">Book Now</div>
+            <div class="book__label kicker"><?= e(setting('booking_cta_label', 'Book Now')) ?></div>
             <a class="book__cta-btn btn btn--gold" href="<?= e(setting('booking_url', 'https://book.nightsbridge.com/38331')) ?>" target="_blank" rel="noopener">
                 <?= e(setting('booking_cta_text', 'Check Availability — NightsBridge')) ?><i data-lucide="arrow-right" class="icon--cta"></i>
             </a>
-            <p class="book__fine-print small">Self-catering · Secure · Instant confirm</p>
+            <p class="book__fine-print small"><?= e(setting('booking_cta_fine_print', 'Self-catering · Secure · Instant confirm')) ?></p>
         </div>
     </div>
 </div>

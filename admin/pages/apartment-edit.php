@@ -116,6 +116,14 @@ $a = $apartment ?? [];
         <label>Meta Description</label>
         <textarea name="meta_description"><?= e($a['meta_description'] ?? '') ?></textarea>
       </div>
+      <div class="form-group">
+        <label>OG Image</label>
+        <div class="flex gap-2">
+          <input type="text" name="og_image" value="<?= e($a['og_image'] ?? '') ?>" placeholder="/Luxury Images/apartments-classic-1/apt1.jpg" class="grow">
+          <button type="button" class="btn btn-sm btn-outline browse-btn" data-target="og_image">Browse</button>
+        </div>
+        <small style="color:var(--text-muted,#999)">Social share image (Facebook, WhatsApp)</small>
+      </div>
       <div class="form-row">
         <div class="form-group">
           <label>Sort Order</label>
