@@ -116,8 +116,8 @@ require __DIR__ . '/../templates/header.php';
         <div class="kicker"><?= e(setting('contact_nightsbridge_kicker', 'NightsBridge — Instant book')) ?></div>
         <h3 class="nb-card__title"><?= setting('contact_nightsbridge_title', 'Book direct — <em>38331</em>') ?></h3>
         <p style="color:rgba(248,246,241,0.7); font-size:13px; margin-top:4px"><?= e(setting('contact_nightsbridge_desc', 'Book direct via NightsBridge — instant confirmation.')) ?></p>
-        <div style="margin-top:12px; border:1px solid rgba(248,246,241,0.16); border-radius:12px; overflow:hidden; height:320px; background:var(--cream)">
-          <iframe src="https://book.nightsbridge.com/38331" title="NightsBridge — Viata Luxe 38331" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%; height:100%; border:0"></iframe>
+        <div style="margin-top:12px; border:1px solid rgba(248,246,241,0.16); border-radius:12px; overflow:hidden; height:520px; background:var(--cream)">
+          <iframe src="https://book.nightsbridge.com/38331?nbid=371" title="NightsBridge — Viata Luxe 38331" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%; height:100%; border:0"></iframe>
         </div>
         <a href="https://book.nightsbridge.com/38331" target="_blank" rel="noopener" class="btn btn--gold" style="width:100%; justify-content:center; margin-top:12px"><?= e(setting('contact_nightsbridge_cta', 'Open NightsBridge — 38331')) ?></a>
       </div>
