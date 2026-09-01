@@ -125,7 +125,7 @@ require_once __DIR__ . '/../templates/header.php';
      BRAND MARK
      ════════════════════════════════════════════════════ -->
 <div class="brand-mark reveal" aria-hidden="true">
-  <img src="<?= e(url('/Luxury Images/logos/logo-viata-full-dark.png')) ?>" alt="">
+  <img src="<?= e(url('/Luxury Images/logos/logo-viata-monogram.svg')) ?>" alt="">
 </div>
 
 <!-- ════════════════════════════════════════════════════

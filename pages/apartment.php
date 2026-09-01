@@ -102,7 +102,7 @@ require __DIR__ . '/../templates/header.php';
     </article>
   </div>
 
-  <div class="brand-mark reveal" aria-hidden="true"><img src="<?= url('Luxury Images/logos/logo-viata-full-dark.png') ?>" alt=""></div>
+  <div class="brand-mark reveal" aria-hidden="true"><img src="<?= url('Luxury Images/logos/logo-viata-monogram.svg') ?>" alt=""></div>
 
   <!-- Info cards + testimonial -->
   <section class="reveal" style="margin-top:22px; display:grid; gap:18px">
