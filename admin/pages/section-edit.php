@@ -18,7 +18,7 @@ if ($id) {
 }
 $isNew = $section === null;
 $s = $section ?? [];
-$sectionTypes = ['hero','about','services','features','text-left','text-right','text-top','image-top','text-only','image-only','full-width','centered','grid'];
+$sectionTypes = ['hero','about','services','features','specials','text-left','text-right','text-top','image-top','text-only','image-only','full-width','centered','grid'];
 ?>
 <div class="admin-page">
   <div class="page-header page-header-inline">
