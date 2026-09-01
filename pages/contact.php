@@ -78,18 +78,18 @@ require __DIR__ . '/../templates/header.php';
     <div class="reveal">
       <h2 style="font-family:var(--font-display); font-weight:300; font-size:22px">Send us a message</h2>
       <p class="caption" style="margin-top:6px; max-width:52ch">Please enable JavaScript in your browser to complete this form.</p>
-      <form id="connectForm" class="connect-form" style="margin-top:14px" action="<?= e(url('/api/contact.php')) ?>" novalidate>
+      <form id="connectForm" class="connect-form" style="margin-top:14px" action="<?= e(url('/api/contact.php')) ?>" novalidate data-contact-bound="1">
         <?= csrf_field() ?>
         <div class="honey" aria-hidden="true"><label for="website">Website (leave blank)</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
         <div class="field"><label class="field__label" for="fName">Name *</label><input class="field__input" id="fName" name="name" required placeholder="Your name"></div>
         <div class="field"><label class="field__label" for="fEmail">Email *</label><input class="field__input" id="fEmail" name="email" type="email" required placeholder="you@example.com"></div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+        <div class="grid-2col-even">
           <div class="field"><label class="field__label" for="fArrival">Arrival *</label><input class="field__input" id="fArrival" name="arrival" type="date" required></div>
           <div class="field"><label class="field__label" for="fDeparture">Departure *</label><input class="field__input" id="fDeparture" name="departure" type="date" required></div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+        <div class="grid-2col-even">
           <div class="field"><label class="field__label" for="fPhone">Phone</label><input class="field__input" id="fPhone" name="phone" placeholder="+27 ..."></div>
-          <div class="field"><label class="field__label" for="fGuests">Guests</label><select class="field__input" id="fGuests" name="guests"><option value="2 guests">2 guests</option><option value="3 guests">3 guests</option><option value="4 guests">4 guests</option><option value="5 guests">5 guests</option><option value="6 guests">6 guests</option></select></div>
+          <div class="field"><label class="field__label" for="fGuests">Guests</label><select class="field__input" id="fGuests" name="guests"><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option><option value="5">5 guests</option><option value="6">6 guests</option></select></div>
         </div>
         <div class="field"><label class="field__label" for="fNotes">Comment or Message</label><textarea class="field__input" id="fNotes" name="notes" rows="4" placeholder="Comment or Message"></textarea></div>
         <button type="submit" class="btn btn--navy" id="connectBtn" style="width:100%; justify-content:center">Send Enquiry</button>

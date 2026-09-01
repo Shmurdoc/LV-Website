@@ -277,13 +277,25 @@ HTML;
 }
 
 /**
+ * Purge activity_log entries older than N days. Returns rows deleted.
+ */
+function purge_old_activity(int $days = 90): int
+{
+    $db = Database::get();
+    $stmt = $db->prepare('DELETE FROM activity_log WHERE created_at < DATE_SUB(NOW(), INTERVAL :days DAY)');
+    $stmt->bindValue(':days', $days, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->rowCount();
+}
+
+/**
  * Handle simple text/textarea form save (POST to database)
  */
 function save_setting(string $key, string $value): void
 {
     $db = Database::get();
     $stmt = $db->prepare('
-        INSERT INTO global_settings (setting_key, setting_value, updated_at)
+        INSERT INTO site_settings (setting_key, setting_value, updated_at)
         VALUES (:key, :val, NOW())
         ON DUPLICATE KEY UPDATE setting_value = :val2, updated_at = NOW()
     ');

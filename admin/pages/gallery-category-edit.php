@@ -9,7 +9,7 @@ if ($id) {
     $category = $stmt->fetch() ?: null;
 }
 if (!$id) {
-    $category = ['is_published' => 1];
+    $category = ['is_active' => 1];
 }
 $isNew = $category === null || (int)($_GET['id'] ?? 0) === 0;
 $c = $category ?? [];
@@ -17,10 +17,10 @@ $c = $category ?? [];
 <div class="admin-page">
   <div class="page-header page-header-inline">
     <div><h2><?= $isNew ? 'New Gallery Category' : 'Edit Gallery Category' ?></h2><p class="muted small"><?= $isNew ? 'Create a new category' : 'Editing "' . e($c['name'] ?? '') . '"' ?></p></div>
-    <a href="/admin/gallery" class="btn btn-outline">&larr; Back</a>
+    <a href="<?= url('/admin/gallery') ?>" class="btn btn-outline">&larr; Back</a>
   </div>
   <div class="form-card"><div class="form-card__body form-card__body--narrow">
-    <form method="POST" action="/admin/api/crud.php" data-ajax>
+    <form method="POST" action="<?= url('/admin/api/crud.php') ?>" data-ajax>
       <?= csrf_field() ?>
       <input type="hidden" name="entity" value="gallery_category">
       <input type="hidden" name="action" value="save">
@@ -46,13 +46,13 @@ $c = $category ?? [];
           <input type="number" name="sort_order" value="<?= (int)($c['sort_order'] ?? 0) ?>">
         </div>
         <div class="form-group form-row--bottom">
-          <label class="checkbox-label"><input type="checkbox" name="is_published" value="1" <?= isset($c['is_published']) && $c['is_published'] ? 'checked' : '' ?>> Published</label>
+          <label class="checkbox-label"><input type="checkbox" name="is_active" value="1" <?= isset($c['is_active']) && $c['is_active'] ? 'checked' : (isset($c['is_published']) && $c['is_published'] ? 'checked' : (!isset($c['id']) ? 'checked' : '')) ?>> Active</label>
         </div>
       </div>
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Save Category</button>
-        <a href="/admin/gallery" class="btn btn-outline">Cancel</a>
+        <a href="<?= url('/admin/gallery') ?>" class="btn btn-outline">Cancel</a>
       </div>
     </form>
   </div></div>

@@ -17,8 +17,7 @@ $categories->execute($params);
 $categories = $categories->fetchAll();
 
 function gallery_status_badge(array $row): string {
-    if (!empty($row['deleted_at'])) return '<span class="badge badge-trashed">Trashed</span>';
-    return $row['is_published'] ? '<span class="badge badge-published">Published</span>' : '<span class="badge badge-draft">Draft</span>';
+    return !empty($row['is_active']) ? '<span class="badge badge-published">Active</span>' : '<span class="badge badge-draft">Inactive</span>';
 }
 ?>
 <div class="admin-page">

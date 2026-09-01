@@ -42,13 +42,29 @@ const AdminApp = {
             const path = window.location.pathname.replace(/^.*\/admin/, '') || '/dashboard';
             this.loadPage(path);
         });
+
+        // Intercept ALL admin link clicks in loaded content for SPA navigation
+        if (this.contentEl) {
+            this.contentEl.addEventListener('click', e => {
+                const link = e.target.closest('a[href]');
+                if (!link) return;
+                const href = link.getAttribute('href');
+                if (!href || !href.includes('/admin/')) return;
+                e.preventDefault();
+                const adminPath = href.replace(/^.*\/admin/, '') || '/dashboard';
+                window.history.pushState({}, '', href);
+                this.loadPage(adminPath);
+            });
+        }
     },
 
     loadPage(path) {
         if (!this.contentEl) return;
         this.contentEl.innerHTML = '<div class="loading">Loading...</div>';
 
-        fetch(this.adminBase + path, {
+        // Preserve query string from current URL only if path doesn't already have one
+        const qs = path.includes('?') ? '' : (window.location.search || '');
+        fetch(this.adminBase + path + qs, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(r => {
@@ -251,7 +267,7 @@ const ImageBrowser = {
         if (search) params.set('search', search);
         if (dir) params.set('dir', dir);
 
-        fetch('/final website/admin/api/images.php?' + params.toString(), {
+        fetch(this.adminBase + '/api/images.php?' + params.toString(), {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(r => r.json())
@@ -292,7 +308,7 @@ const ImageBrowser = {
             tile.dataset.path = img.path;
             tile.title = img.path;
             tile.innerHTML = `
-                <img src="/final website/${img.path}" alt="${img.name}" loading="lazy">
+                <img src="${this.adminBase.replace(/\/admin$/, '')}/${img.path}" alt="${img.name}" loading="lazy">
                 <div class="img-browser-tile-name">${img.name}</div>
             `;
             tile.addEventListener('click', () => this.selectTile(tile));
@@ -320,7 +336,7 @@ const ImageBrowser = {
 
         this.grid.innerHTML = '<div class="img-browser-loading">Uploading...</div>';
 
-        fetch('/final website/admin/api/images.php', {
+        fetch(this.adminBase + '/api/images.php', {
             method: 'POST',
             body: formData,
             headers: { 'X-Requested-With': 'XMLHttpRequest' }

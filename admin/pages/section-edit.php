@@ -6,7 +6,9 @@ $section = null;
 $id = (int)($_GET['id'] ?? 0);
 if ($id) {
     $stmt = $db->prepare('
-        SELECT s.*, so.layout, so.background_color, so.text_color, so.alignment, so.animation
+        SELECT s.*, so.layout, so.background_color, so.text_color, so.alignment, so.animation,
+               so.padding_top, so.padding_bottom, so.padding_left, so.padding_right,
+               so.max_width, so.vertical_alignment, so.responsive_stack
         FROM sections s
         LEFT JOIN section_orientation so ON so.section_id = s.id
         WHERE s.id = :id

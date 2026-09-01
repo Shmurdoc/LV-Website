@@ -109,7 +109,7 @@ require_once __DIR__ . '/../templates/header.php';
      ════════════════════════════════════════════════════ -->
 <section class="reveal" style="display:grid; gap:14px; margin-top:28px">
   <div class="kicker">Video — Safari Highlights</div>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+  <div class="grid-2col-even">
     <?php foreach ($videoIds as $vid): ?>
     <div class="yt-facade" data-yt="<?= e($vid['id']) ?>" tabindex="0" role="button" aria-label="Play YouTube video">
       <img src="<?= e(url($vid['image'])) ?>" alt="<?= e($vid['title']) ?> — click to play" decoding="async">
@@ -131,7 +131,7 @@ require_once __DIR__ . '/../templates/header.php';
 <!-- ════════════════════════════════════════════════════
      BOAT SAFARIS  /  ADVENTURE
      ════════════════════════════════════════════════════ -->
-<section class="reveal" style="margin-top:28px; display:grid; grid-template-columns:1fr 1fr; gap:18px">
+<section class="reveal grid-2col-even" style="margin-top:28px">
   <div class="card card__pad">
     <h2 style="font-family:var(--font-display); font-weight:300; font-size:26px">Boat Safaris</h2>
     <p style="color:var(--ink-70); margin-top:8px; font-size:15px">The nearby <strong>Olifants River</strong> offers scenic boat safaris — hippos, crocodiles, diverse birdlife. Dive into history at <strong>Foskor Mine Museum</strong> and <strong>Masorini Archaeological Site</strong> within Kruger — BaPhalaborwa Iron Age smelting remnants.</p>
@@ -171,7 +171,7 @@ require_once __DIR__ . '/../templates/header.php';
 <!-- ════════════════════════════════════════════════════
      IMAGE GALLERY — 4-column grid
      ════════════════════════════════════════════════════ -->
-<section class="reveal" style="margin-top:18px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px">
+<section class="reveal amenity-grid" style="margin-top:18px">
   <?php foreach ($galleryImages as $img): ?>
   <img src="<?= e($img['src']) ?>" alt="<?= e($img['alt']) ?>" style="aspect-ratio:4/3; object-fit:cover; border-radius:10px; border:1px solid var(--line)" loading="lazy" decoding="async">
   <?php endforeach; ?>

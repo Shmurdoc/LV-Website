@@ -248,7 +248,7 @@ require __DIR__ . '/../templates/header.php';
 
   <!-- ====== BOOK CTA ====== -->
   <section class="book reveal" style="margin-top:22px; border-radius:22px; overflow:hidden">
-    <div style="padding: clamp(24px, 4vw, 36px); display:grid; grid-template-columns: 1.2fr 0.8fr; gap:24px; align-items:center">
+    <div class="grid-2col" style="padding: clamp(24px, 4vw, 36px); gap:24px; align-items:center">
       <div>
         <h3 style="font-family:var(--font-display);font-weight:300;font-size:28px;line-height:0.95;color:var(--cream)">Ready to stay?<br><em style="color:var(--gold-300);font-style:italic">One check.</em></h3>
         <p style="color:rgba(248,246,241,0.7);max-width:52ch;margin-top:8px">Pick Classic 1–4, pick a date — NightsBridge instant confirms.</p>

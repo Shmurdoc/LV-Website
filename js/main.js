@@ -418,57 +418,28 @@
     if(mb) mb.addEventListener("click", function(e){ e.stopPropagation(); loadMaps(); });
   }
 
-  /* ——— Contact form ——— */
-  var form = document.getElementById("connectForm");
-  if(form){
-    var hp = document.getElementById("website");
-    var msg = document.getElementById("formMsg");
-    function showMsg(text, ok){
-      if(!msg) return;
-      msg.hidden=false;
-      msg.textContent=text;
-      msg.className = "connect-form__msg " + (ok ? "connect-form__msg--ok" : "connect-form__msg--err");
+  /* ——— Contact form date helpers (submission is handled by inline script in pages/contact.php via fetch to /api/contact.php) ——— */
+  (function(){
+    var cForm = document.getElementById("connectForm");
+    if(!cForm) return;
+    // Skip if inline handler already owns the form (contact.php sets data-contact-bound)
+    if(cForm.dataset.contactBound) return;
+    var cMsg = document.getElementById("formMsg");
+    function cShowMsg(text, ok){
+      if(!cMsg) return;
+      cMsg.hidden=false;
+      cMsg.textContent=text;
+      cMsg.className = "connect-form__msg " + (ok ? "connect-form__msg--ok" : "connect-form__msg--err");
     }
-    var today = new Date().toISOString().slice(0,10);
-    var arr = document.getElementById("fArrival");
-    var dep = document.getElementById("fDeparture");
-    if(arr) arr.min = today;
-    if(dep) dep.min = today;
-    if(arr && dep){
-      arr.addEventListener("change", function(){ dep.min = arr.value || today; if(dep.value && dep.value <= arr.value){ dep.value=""; showMsg("Departure must be after arrival.", false);} });
+    var cToday = new Date().toISOString().slice(0,10);
+    var cArr = document.getElementById("fArrival");
+    var cDep = document.getElementById("fDeparture");
+    if(cArr) cArr.min = cToday;
+    if(cDep) cDep.min = cToday;
+    if(cArr && cDep){
+      cArr.addEventListener("change", function(){ cDep.min = cArr.value || cToday; if(cDep.value && cDep.value <= cArr.value){ cDep.value=""; cShowMsg("Departure must be after arrival.", false);} });
     }
-    form.addEventListener("submit", function(e){
-      if(hp && hp.value.trim() !== ""){
-        e.preventDefault();
-        showMsg("Spam detected — not sent.", false);
-        return;
-      }
-      var name = (document.getElementById("fName")||{}).value || "";
-      var email = (document.getElementById("fEmail")||{}).value || "";
-      var arrival = (document.getElementById("fArrival")||{}).value || "";
-      var departure = (document.getElementById("fDeparture")||{}).value || "";
-      if(!form.checkValidity()){
-        showMsg("Please fill the required fields (name, email, arrival, departure).", false);
-        return;
-      }
-      if(arrival && departure && departure <= arrival){
-        e.preventDefault();
-        showMsg("Departure must be after arrival.", false);
-        return;
-      }
-      e.preventDefault();
-      var phone = (document.getElementById("fPhone")||{}).value || "";
-      var guests = (document.getElementById("fGuests")||{}).value || "";
-      var notes = (document.getElementById("fNotes")||{}).value || "";
-      var subject = encodeURIComponent("Viata Luxe enquiry — "+name+" · "+arrival+" → "+departure);
-      var body = encodeURIComponent(
-        "Name: "+name+"\nEmail: "+email+"\nPhone: "+phone+"\nGuests: "+guests+"\nArrival: "+arrival+"\nDeparture: "+departure+"\nNotes: "+notes+"\n\n— via Viata Luxe connect form"
-      );
-      var mailto = "mailto:info@viataluxe.com?subject="+subject+"&body="+body;
-      showMsg("Opening your mail app… If nothing opens, email info@viataluxe.com directly. NightsBridge above is instant.", true);
-      setTimeout(function(){ window.location.href = mailto; }, 400);
-    });
-  }
+  })();
 
   /* ——— Masonry prepare ——— */
   function prepareMasonry(){

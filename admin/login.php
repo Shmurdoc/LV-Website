@@ -4,6 +4,7 @@
  */
 require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/includes/rbac.php';
 
 $error = '';
 
@@ -33,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['admin_name'] = $user['full_name'];
                 $_SESSION['admin_role'] = $user['role'];
                 $_SESSION['last_activity'] = time();
+                load_user_permissions($user['id']);
 
                 try {
                     $db->prepare('UPDATE admin_users SET last_login = NOW() WHERE id = :id')->execute(['id' => $user['id']]);

@@ -21,24 +21,24 @@ if ($category_id) {
     <div><h2><?= $trash ? 'Trashed Images' : 'Gallery Images' ?></h2><p class="muted small"><?= $category ? e($category['name']) . ' — ' . count($images) . ' image(s)' : 'Select a category' ?></p></div>
     <div class="btn-group">
       <?php if ($trash): ?>
-        <a href="/admin/gallery/images?category_id=<?= $category_id ?>" class="btn btn-outline">Active</a>
+        <a href="<?= url("/admin/gallery/images?category_id=$category_id") ?>" class="btn btn-outline">Active</a>
       <?php else: ?>
-        <a href="/admin/gallery/images?category_id=<?= $category_id ?>&trash=1" class="btn btn-outline"><?= admin_icon('trash', 14) ?> Trash</a>
+        <a href="<?= url("/admin/gallery/images?category_id=$category_id&trash=1") ?>" class="btn btn-outline"><?= admin_icon('trash', 14) ?> Trash</a>
       <?php endif; ?>
-      <a href="/admin/gallery" class="btn btn-outline">&larr; Back</a>
+      <a href="<?= url('/admin/gallery') ?>" class="btn btn-outline">&larr; Back</a>
     </div>
   </div>
 
   <?php if (!$category): ?>
     <div class="empty-state">
-      <p>No category selected. <a href="/admin/gallery">Pick a gallery category</a> to view its images.</p>
+      <p>No category selected. <a href="<?= url('/admin/gallery') ?>">Pick a gallery category</a> to view its images.</p>
     </div>
   <?php else: ?>
 
     <?php if (!$trash): ?>
     <div class="form-card" style="margin-bottom:20px"><div class="form-card__body form-card__body--narrow">
       <h3 class="section-heading--sm">Add image to <?= e($category['name']) ?></h3>
-      <form method="POST" action="/admin/api/crud.php" data-ajax>
+      <form method="POST" action="<?= url('/admin/api/crud.php') ?>" data-ajax>
         <?= csrf_field() ?>
         <input type="hidden" name="entity" value="gallery_image">
         <input type="hidden" name="action" value="save">
@@ -96,26 +96,29 @@ if ($category_id) {
               <?php endif; ?>
               <div class="btn-group" style="margin-top:8px">
                 <?php if ($trash): ?>
-                  <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <form method="POST" action="<?= url('/admin/api/crud.php') ?>" data-ajax class="form-inline">
                     <?= csrf_field() ?>
                     <input type="hidden" name="entity" value="gallery_image">
                     <input type="hidden" name="action" value="restore">
                     <input type="hidden" name="id" value="<?= $img['id'] ?>">
+                    <input type="hidden" name="category_id" value="<?= $category_id ?>">
                     <button type="submit" class="btn btn-sm btn-outline" data-confirm="Restore?">Restore</button>
                   </form>
-                  <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <form method="POST" action="<?= url('/admin/api/crud.php') ?>" data-ajax class="form-inline">
                     <?= csrf_field() ?>
                     <input type="hidden" name="entity" value="gallery_image">
                     <input type="hidden" name="action" value="permanent_delete">
                     <input type="hidden" name="id" value="<?= $img['id'] ?>">
+                    <input type="hidden" name="category_id" value="<?= $category_id ?>">
                     <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Permanently delete?">Delete Forever</button>
                   </form>
                 <?php else: ?>
-                  <form method="POST" action="/admin/api/crud.php" data-ajax class="form-inline">
+                  <form method="POST" action="<?= url('/admin/api/crud.php') ?>" data-ajax class="form-inline">
                     <?= csrf_field() ?>
                     <input type="hidden" name="entity" value="gallery_image">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="id" value="<?= $img['id'] ?>">
+                    <input type="hidden" name="category_id" value="<?= $category_id ?>">
                     <button type="submit" class="btn btn-sm btn-danger-outline" data-confirm="Move to trash?"><?= admin_icon('trash', 13) ?> Delete</button>
                   </form>
                 <?php endif; ?>

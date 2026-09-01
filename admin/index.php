@@ -7,6 +7,7 @@
 require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/includes/admin-functions.php';
+require_once __DIR__ . '/includes/rbac.php';
 
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $uri = rtrim($uri, '/');
@@ -113,10 +114,27 @@ $pageRoutes = [
     '/categories'       => 'pages/categories-list.php',
     '/categories/edit'  => 'pages/category-edit.php',
     '/categories/edit/' => 'pages/category-edit.php',
+    '/users'            => 'pages/users-list.php',
+    '/users/edit'       => 'pages/user-edit.php',
+    '/users/edit/'      => 'pages/user-edit.php',
 ];
 
 if (isset($pageRoutes[$path])) {
     $adminPage = $path;
+
+    // Permission check: map path to required permission
+    $navPerms = get_nav_permission_map();
+    $requiredPerm = $navPerms[$path] ?? null;
+    if ($requiredPerm && !has_permission($requiredPerm)) {
+        // Check if it's an edit sub-route (needs write permission)
+        $writePerm = str_replace('.read', '.write', $requiredPerm);
+        if (!has_permission($writePerm) && !has_permission($requiredPerm)) {
+            $_SESSION['flash_error'] = "You don't have permission to access that page.";
+            header('Location: ' . url('/admin/dashboard'));
+            exit;
+        }
+    }
+
     // AJAX requests get content only (no layout wrapper)
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
         require __DIR__ . '/' . $pageRoutes[$path];

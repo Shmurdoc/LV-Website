@@ -1,14 +1,15 @@
 <?php
 /**
  * Admin Navigation — Grouped sidebar configuration.
- * Replaces the flat array from get_admin_nav().
+ * Filters items based on user permissions via RBAC.
  */
 
 function get_admin_nav_groups(): array
 {
     $base = admin_base();
+    $navPerms = get_nav_permission_map();
 
-    return [
+    $allGroups = [
         [
             'label' => null,
             'items' => [
@@ -58,8 +59,27 @@ function get_admin_nav_groups(): array
             'label' => 'System & Operations',
             'items' => [
                 ['label' => 'FAQs',   'url' => "$base/faqs",              'path' => '/faqs',          'icon' => 'faqs'],
+                ['label' => 'Users',  'url' => "$base/users",             'path' => '/users',         'icon' => 'settings'],
                 ['label' => 'Trash',  'url' => "$base/pages?trash=1",     'path' => '/pages',         'icon' => 'trash'],
             ],
         ],
     ];
+
+    // Filter: remove items user doesn't have permission for
+    $filtered = [];
+    foreach ($allGroups as $group) {
+        $items = [];
+        foreach ($group['items'] as $item) {
+            $perm = $navPerms[$item['path']] ?? null;
+            if ($perm && !has_permission($perm)) {
+                continue;
+            }
+            $items[] = $item;
+        }
+        if (!empty($items)) {
+            $filtered[] = ['label' => $group['label'], 'items' => $items];
+        }
+    }
+
+    return $filtered;
 }

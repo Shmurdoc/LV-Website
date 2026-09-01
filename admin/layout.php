@@ -22,7 +22,7 @@ $initials = strtoupper(mb_substr($adminName, 0, 2));
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(url('/admin/css/admin.css')) ?>">
 </head>
-<body class="admin-body">
+<body class="admin-body" data-admin-base="<?= e(url('/admin')) ?>">
     <aside class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="<?= e(url('/admin/dashboard')) ?>" class="sidebar-brand">
@@ -239,7 +239,7 @@ $initials = strtoupper(mb_substr($adminName, 0, 2));
                     formData.append('ids', ids.join(','));
                     formData.append('csrf_token', csrfVal);
 
-                    fetch('/admin/api/crud.php', { method: 'POST', body: formData })
+                    fetch(document.body.getAttribute('data-admin-base') + '/api/crud.php', { method: 'POST', body: formData })
                         .then(function(r){ return r.json(); })
                         .then(function(res){
                             if (res.error) { alert('Error: ' + res.error); return; }

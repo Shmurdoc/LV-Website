@@ -32,6 +32,12 @@ if (!empty($section['padding_top'])) {
 if (!empty($section['padding_bottom'])) {
     $style .= 'padding-bottom:' . e($section['padding_bottom']) . ';';
 }
+if (!empty($section['padding_left'])) {
+    $style .= 'padding-left:' . e($section['padding_left']) . ';';
+}
+if (!empty($section['padding_right'])) {
+    $style .= 'padding-right:' . e($section['padding_right']) . ';';
+}
 
 $maxWidth = $section['max_width'] ?? '1200px';
 $alignment = $section['alignment'] ?? 'left';
